@@ -4,7 +4,7 @@
 **Document Version:** 2.0
 **Target Delivery:** December 2025
 **Owner:** Keith Hayes
-**Stakeholders:** Divya Dayanidhi, Stacy, Rafa, Leadership Team
+**Stakeholders:** Jennifer Martinez, Stacy, Rafa, Leadership Team
 
 ---
 
@@ -1246,7 +1246,7 @@ Returns all users with "Hayes" in display name
 
 | Reviewer | Role | Status | Date |
 |----------|------|--------|------|
-| Divya Dayanidhi | Manager / Product Owner | Pending | |
+| Jennifer Martinez | Manager / Product Owner | Pending | |
 | Rafa | [Role TBD] | Pending | |
 | Stacy | [Role TBD] | Pending | |
 

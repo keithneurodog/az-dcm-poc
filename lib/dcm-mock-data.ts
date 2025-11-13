@@ -1615,11 +1615,11 @@ export const MOCK_COLLECTIONS: Collection[] = [
       "Curated collection of Phase III lung cancer studies with ctDNA biomarker monitoring and immunotherapy treatment arms. Suitable for outcomes research, biomarker analysis, and multimodal data fusion.",
     status: "provisioning",
     progress: 60,
-    totalUsers: 120,
-    usersWithAccess: 60,
+    totalUsers: 35,
+    usersWithAccess: 10,
     totalDatasets: 6,
     createdAt: new Date("2025-11-11T10:30:00"),
-    createdBy: "Divya Dayanidhi",
+    createdBy: "Jennifer Martinez",
     therapeuticAreas: ["Oncology", "Immunology"],
     tags: ["ctDNA", "biomarkers", "Phase III", "lung cancer"],
     accessLevel: "member",
@@ -1627,10 +1627,10 @@ export const MOCK_COLLECTIONS: Collection[] = [
     isFavorite: true,
     selectedDatasets: MOCK_DATASETS.slice(0, 6),
     accessBreakdown: {
-      immediate: 60,
-      instantGrant: 48,
-      pendingApproval: 12,
-      dataDiscovery: 0,
+      immediate: 30,  // 30% ~10 users
+      instantGrant: 25, // 25% ~9 users
+      pendingApproval: 25, // 25% ~9 users
+      dataDiscovery: 20, // 20% ~7 users (training blocked)
     },
     instantGrantProgress: 70,
     approvalRequests: [
@@ -1644,12 +1644,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-11-11T10:30:00"),
       },
       {
-        name: "60 users granted immediate access",
+        name: "10 users granted immediate access",
         status: "completed",
         timestamp: new Date("2025-11-11T10:31:00"),
       },
       {
-        name: "Instant grant (108 users expected)",
+        name: "Instant grant (9 users expected)",
         status: "in_progress",
         estimatedTime: new Date(Date.now() + 3600000),
       },
@@ -1672,8 +1672,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
       "Comprehensive cardiovascular outcomes data from Phase II-IV trials. Includes primary endpoints, safety data, and long-term follow-up across multiple indications.",
     status: "completed",
     progress: 100,
-    totalUsers: 180,
-    usersWithAccess: 180,
+    totalUsers: 22,
+    usersWithAccess: 22,
     totalDatasets: 8,
     createdAt: new Date("2025-10-28T14:15:00"),
     createdBy: "Dr. Sarah Martinez",
@@ -1684,10 +1684,10 @@ export const MOCK_COLLECTIONS: Collection[] = [
     isFavorite: false,
     selectedDatasets: MOCK_DATASETS.slice(2, 8),
     accessBreakdown: {
-      immediate: 90,
-      instantGrant: 72,
-      pendingApproval: 18,
-      dataDiscovery: 0,
+      immediate: 60,  // 60% ~13 users
+      instantGrant: 30, // 30% ~7 users
+      pendingApproval: 10, // 10% ~2 users
+      dataDiscovery: 0, // 0% no training blocked
     },
     instantGrantProgress: 100,
     approvalRequests: [],
@@ -1698,12 +1698,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-10-28T14:15:00"),
       },
       {
-        name: "90 users granted immediate access",
+        name: "13 users granted immediate access",
         status: "completed",
         timestamp: new Date("2025-10-28T14:16:00"),
       },
       {
-        name: "Instant grant completed (162 users)",
+        name: "Instant grant completed (7 users)",
         status: "completed",
         timestamp: new Date("2025-10-28T15:20:00"),
       },
@@ -1721,8 +1721,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
       "Multi-indication immunotherapy response datasets with detailed biomarker, imaging, and clinical outcome data. Focused on checkpoint inhibitor therapies across multiple tumor types.",
     status: "completed",
     progress: 100,
-    totalUsers: 95,
-    usersWithAccess: 95,
+    totalUsers: 18,
+    usersWithAccess: 18,
     totalDatasets: 5,
     createdAt: new Date("2025-10-15T09:45:00"),
     createdBy: "Dr. Michael Chen",
@@ -1733,10 +1733,10 @@ export const MOCK_COLLECTIONS: Collection[] = [
     isFavorite: true,
     selectedDatasets: MOCK_DATASETS.slice(1, 6),
     accessBreakdown: {
-      immediate: 47,
-      instantGrant: 38,
-      pendingApproval: 10,
-      dataDiscovery: 0,
+      immediate: 40,  // 40% ~7 users
+      instantGrant: 20, // 20% ~4 users
+      pendingApproval: 30, // 30% ~5 users
+      dataDiscovery: 10, // 10% ~2 users (training blocked)
     },
     instantGrantProgress: 100,
     approvalRequests: [],
@@ -1747,12 +1747,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-10-15T09:45:00"),
       },
       {
-        name: "47 users granted immediate access",
+        name: "7 users granted immediate access",
         status: "completed",
         timestamp: new Date("2025-10-15T09:46:00"),
       },
       {
-        name: "Instant grant completed (85 users)",
+        name: "Instant grant completed (4 users)",
         status: "completed",
         timestamp: new Date("2025-10-15T10:50:00"),
       },
@@ -2187,7 +2187,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     collectionName: "Diabetes Management Real World Evidence",
     title: "You were mentioned in a discussion",
     message:
-      '@Divya Dayanidhi - "Can you review the patient cohort definition for the diabetes study?" asked by Emily Rodriguez.',
+      '@Jennifer Martinez - "Can you review the patient cohort definition for the diabetes study?" asked by Emily Rodriguez.',
     timestamp: new Date(Date.now() - 3600000), // 1 hour ago
     isRead: false,
     isArchived: false,
@@ -2245,7 +2245,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     collectionName: "Pediatric Oncology Clinical Trials",
     title: "New suggestion in Pediatric Oncology",
     message:
-      '@Divya Dayanidhi tagged you in a suggestion: "Consider adding DCODE-245 for additional neuroblastoma data"',
+      '@Jennifer Martinez tagged you in a suggestion: "Consider adding DCODE-245 for additional neuroblastoma data"',
     timestamp: new Date(Date.now() - 21600000), // 6 hours ago
     isRead: true,
     isArchived: false,
@@ -2332,7 +2332,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     collectionName: "Inflammatory Bowel Disease Outcomes",
     title: "Question about dataset inclusion",
     message:
-      '@Divya Dayanidhi - "Should we include the endoscopy imaging from DCODE-378 or just the clinical scores?" - Dr. David Kumar',
+      '@Jennifer Martinez - "Should we include the endoscopy imaging from DCODE-378 or just the clinical scores?" - Dr. David Kumar',
     timestamp: new Date(Date.now() - 79200000), // 22 hours ago
     isRead: false,
     isArchived: false,
@@ -2403,7 +2403,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     collectionName: "Cardiovascular Outcomes Collection",
     title: "Dataset recommendation",
     message:
-      '@Divya Dayanidhi - "The ASCEND trial data (DCODE-567) would complement this collection nicely" - Dr. Sarah Martinez',
+      '@Jennifer Martinez - "The ASCEND trial data (DCODE-567) would complement this collection nicely" - Dr. Sarah Martinez',
     timestamp: new Date(Date.now() - 194400000), // 2.25 days ago
     isRead: true,
     isArchived: false,
@@ -2475,4 +2475,326 @@ export function getMentionNotifications(): Notification[] {
 
 export function getApprovalNotifications(): Notification[] {
   return MOCK_NOTIFICATIONS.filter((n) => n.type === "approval" && !n.isRead && !n.isArchived)
+}
+
+// User Management Types and Data
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  department: string
+  manager?: {
+    name: string
+    email: string
+  }
+
+  // Access status
+  accessStatus: "immediate" | "instant_grant" | "pending_approval" | "blocked_training"
+  datasetsAccessible: string[]      // Dataset codes user can access
+  datasetsPending: string[]         // Dataset codes awaiting approval
+
+  // Training
+  trainingStatus: {
+    required: string[]              // ["GCP", "GDPR Training", "Immuta Basics"]
+    completed: string[]             // ["GCP"]
+    inProgress: Array<{             // [{ cert: "GDPR Training", progress: 60 }]
+      cert: string
+      progress: number
+    }>
+    missing: string[]               // ["Immuta Basics"]
+    completionPercent: number       // 33 (1 of 3 complete)
+    deadline?: Date
+    isOverdue: boolean
+  }
+
+  // Timeline
+  enrollmentDate: Date
+  lastActive?: Date
+  daysWaiting: number
+
+  // Communication tracking
+  lastReminderSent?: Date
+  reminderCount: number
+
+  // Approval tracking
+  approvalRequests: Array<{
+    team: string                    // "GPT-Oncology"
+    datasetCodes: string[]
+    requestedDate: Date
+    status: "pending" | "approved" | "rejected"
+  }>
+}
+
+// Helper function to generate users for a collection
+function generateUsersForCollection(
+  collectionId: string,
+  totalUsers: number,
+  breakdown: { immediate: number; instant_grant: number; pending_approval: number; blocked_training: number }
+): User[] {
+  const users: User[] = []
+
+  const firstNames = ["Sarah", "Marcus", "Priya", "David", "Emily", "James", "Amanda", "Robert", "Michelle", "Christopher",
+                      "Jennifer", "Michael", "Lisa", "John", "Maria", "Daniel", "Laura", "Kevin", "Rebecca", "Thomas"]
+  const lastNames = ["Chen", "Johnson", "Sharma", "Kim", "Rodriguez", "Patterson", "Foster", "Lee", "Torres", "Wang",
+                    "Williams", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson"]
+  const roles = ["Senior Data Scientist", "Clinical Data Analyst", "Bioinformatics Scientist", "Statistical Programmer",
+                 "Clinical Research Scientist", "Data Engineer", "Research Associate", "Junior Data Scientist",
+                 "Clinical Data Manager", "Biostatistician"]
+  const departments = ["Oncology Research", "Clinical Operations", "Genomics", "Biostatistics", "Data Platform", "Analytics"]
+  const managers = [
+    { name: "Dr. Michael Roberts", email: "michael.roberts@astrazeneca.com" },
+    { name: "Jennifer Williams", email: "jennifer.williams@astrazeneca.com" },
+    { name: "Dr. Lisa Thompson", email: "lisa.thompson@astrazeneca.com" },
+  ]
+
+  let userCounter = 1
+
+  // Generate immediate access users
+  const immediateTrainingOptions = [
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP", "GDPR Training"], inProgress: [{ cert: "Immuta Basics", progress: 85 }], missing: [], percent: 67 },
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+  ]
+
+  for (let i = 0; i < breakdown.immediate; i++) {
+    const firstName = firstNames[i % firstNames.length]
+    const lastName = lastNames[Math.floor(i / firstNames.length) % lastNames.length]
+    const trainingScenario = immediateTrainingOptions[i % immediateTrainingOptions.length]
+
+    users.push({
+      id: `${collectionId}-u${userCounter++}`,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i > 19 ? i : ""}@astrazeneca.com`,
+      role: roles[i % roles.length],
+      department: departments[i % departments.length],
+      manager: managers[i % managers.length],
+      accessStatus: "immediate",
+      datasetsAccessible: ["DCODE-101", "DCODE-102"],
+      datasetsPending: [],
+      trainingStatus: {
+        required: ["GCP", "GDPR Training", "Immuta Basics"],
+        completed: trainingScenario.completed,
+        inProgress: trainingScenario.inProgress,
+        missing: trainingScenario.missing,
+        completionPercent: trainingScenario.percent,
+        isOverdue: false
+      },
+      enrollmentDate: new Date(2025, 10, 10, 10, 30 + i),
+      lastActive: new Date(2025, 10, 13, 9, i % 60),
+      daysWaiting: 0,
+      reminderCount: 0,
+      approvalRequests: []
+    })
+  }
+
+  // Generate instant grant users
+  const instantGrantTrainingOptions = [
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP", "GDPR Training"], inProgress: [{ cert: "Immuta Basics", progress: 75 }], missing: [], percent: 67 },
+    { completed: ["GCP"], inProgress: [{ cert: "GDPR Training", progress: 90 }], missing: ["Immuta Basics"], percent: 33 },
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP", "GDPR Training"], inProgress: [{ cert: "Immuta Basics", progress: 50 }], missing: [], percent: 67 },
+  ]
+
+  for (let i = 0; i < breakdown.instant_grant; i++) {
+    const firstName = firstNames[(i + 5) % firstNames.length]
+    const lastName = lastNames[(Math.floor(i / firstNames.length) + 2) % lastNames.length]
+    const trainingScenario = instantGrantTrainingOptions[i % instantGrantTrainingOptions.length]
+
+    users.push({
+      id: `${collectionId}-u${userCounter++}`,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 100}@astrazeneca.com`,
+      role: roles[(i + 2) % roles.length],
+      department: departments[(i + 1) % departments.length],
+      manager: managers[i % managers.length],
+      accessStatus: "instant_grant",
+      datasetsAccessible: ["DCODE-101"],
+      datasetsPending: ["DCODE-102", "DCODE-103", "DCODE-104"],
+      trainingStatus: {
+        required: ["GCP", "GDPR Training", "Immuta Basics"],
+        completed: trainingScenario.completed,
+        inProgress: trainingScenario.inProgress,
+        missing: trainingScenario.missing,
+        completionPercent: trainingScenario.percent,
+        isOverdue: false
+      },
+      enrollmentDate: new Date(2025, 10, 10, 11, i % 60),
+      lastActive: new Date(2025, 10, 13, 8, i % 60),
+      daysWaiting: 3,
+      reminderCount: 0,
+      approvalRequests: []
+    })
+  }
+
+  // Generate pending approval users
+  const pendingApprovalTrainingOptions = [
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP"], inProgress: [{ cert: "GDPR Training", progress: 65 }, { cert: "Immuta Basics", progress: 40 }], missing: [], percent: 33 },
+    { completed: ["GCP", "GDPR Training"], inProgress: [{ cert: "Immuta Basics", progress: 30 }], missing: [], percent: 67 },
+    { completed: ["GCP", "GDPR Training", "Immuta Basics"], inProgress: [], missing: [], percent: 100 },
+    { completed: ["GCP"], inProgress: [{ cert: "GDPR Training", progress: 55 }], missing: ["Immuta Basics"], percent: 33 },
+  ]
+
+  for (let i = 0; i < breakdown.pending_approval; i++) {
+    const firstName = firstNames[(i + 10) % firstNames.length]
+    const lastName = lastNames[(Math.floor(i / firstNames.length) + 4) % lastNames.length]
+    const trainingScenario = pendingApprovalTrainingOptions[i % pendingApprovalTrainingOptions.length]
+
+    users.push({
+      id: `${collectionId}-u${userCounter++}`,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 200}@astrazeneca.com`,
+      role: roles[(i + 4) % roles.length],
+      department: departments[(i + 2) % departments.length],
+      manager: managers[i % managers.length],
+      accessStatus: "pending_approval",
+      datasetsAccessible: [],
+      datasetsPending: ["DCODE-299", "DCODE-105"],
+      trainingStatus: {
+        required: ["GCP", "GDPR Training", "Immuta Basics"],
+        completed: trainingScenario.completed,
+        inProgress: trainingScenario.inProgress,
+        missing: trainingScenario.missing,
+        completionPercent: trainingScenario.percent,
+        isOverdue: false
+      },
+      enrollmentDate: new Date(2025, 10, 10, 12, i % 60),
+      lastActive: new Date(2025, 10, 13, 10, i % 60),
+      daysWaiting: 3,
+      reminderCount: 0,
+      approvalRequests: [
+        {
+          team: i % 2 === 0 ? "GPT-Oncology" : "TALT-Legal",
+          datasetCodes: ["DCODE-299", "DCODE-105"],
+          requestedDate: new Date(2025, 10, 10, 12, 5 + i % 60),
+          status: "pending"
+        }
+      ]
+    })
+  }
+
+  // Generate training blocked users
+  const trainingScenarios = [
+    { completed: ["GCP"], inProgress: [{ cert: "GDPR Training", progress: 60 }], missing: ["Immuta Basics"], percent: 33 },
+    { completed: [], inProgress: [{ cert: "GCP", progress: 45 }], missing: ["GDPR Training", "Immuta Basics"], percent: 0 },
+    { completed: ["GCP", "GDPR Training"], inProgress: [], missing: ["Immuta Basics"], percent: 67 },
+    { completed: [], inProgress: [{ cert: "GCP", progress: 80 }, { cert: "GDPR Training", progress: 25 }], missing: ["Immuta Basics"], percent: 0 },
+  ]
+
+  for (let i = 0; i < breakdown.blocked_training; i++) {
+    const firstName = firstNames[(i + 15) % firstNames.length]
+    const lastName = lastNames[(Math.floor(i / firstNames.length) + 6) % lastNames.length]
+    const scenario = trainingScenarios[i % trainingScenarios.length]
+    const hasReminder = i % 2 === 0
+
+    users.push({
+      id: `${collectionId}-u${userCounter++}`,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 300}@astrazeneca.com`,
+      role: roles[(i + 6) % roles.length],
+      department: departments[(i + 3) % departments.length],
+      manager: managers[i % managers.length],
+      accessStatus: "blocked_training",
+      datasetsAccessible: [],
+      datasetsPending: ["DCODE-101", "DCODE-102"],
+      trainingStatus: {
+        required: ["GCP", "GDPR Training", "Immuta Basics"],
+        completed: scenario.completed,
+        inProgress: scenario.inProgress,
+        missing: scenario.missing,
+        completionPercent: scenario.percent,
+        deadline: new Date(2025, 11, 15 - (i * 5)),
+        isOverdue: false
+      },
+      enrollmentDate: new Date(2025, 10, 10, 13, i % 60),
+      lastActive: new Date(2025, 10, 12 + (i % 2), 11, 20 + i),
+      daysWaiting: 3,
+      lastReminderSent: hasReminder ? new Date(2025, 10, 11 + (i % 2), 9, 0) : undefined,
+      reminderCount: hasReminder ? 1 + (i % 2) : 0,
+      approvalRequests: []
+    })
+  }
+
+  return users
+}
+
+// Helper function to get users by collection
+export function getUsersByCollection(collectionId: string): User[] {
+  const collection = MOCK_COLLECTIONS.find(c => c.id === collectionId)
+  if (!collection) return []
+
+  // Calculate the breakdown based on accessBreakdown percentages
+  const breakdown = {
+    immediate: Math.floor(collection.totalUsers * (collection.accessBreakdown.immediate / 100)),
+    instant_grant: Math.floor(collection.totalUsers * (collection.accessBreakdown.instantGrant / 100)),
+    pending_approval: Math.floor(collection.totalUsers * (collection.accessBreakdown.pendingApproval / 100)),
+    blocked_training: Math.floor(collection.totalUsers * (collection.accessBreakdown.dataDiscovery / 100))
+  }
+
+  return generateUsersForCollection(collectionId, collection.totalUsers, breakdown)
+}
+
+// Helper function to get users by status
+export function getUsersByStatus(collectionId: string, status: User["accessStatus"]): User[] {
+  return getUsersByCollection(collectionId).filter(u => u.accessStatus === status)
+}
+
+// Helper function to get training-blocked users
+export function getTrainingBlockedUsers(collectionId: string): User[] {
+  return getUsersByStatus(collectionId, "blocked_training")
+}
+
+// Team contact information
+export interface TeamContact {
+  team: string
+  lead: string
+  email: string
+  teamsChannel?: string
+}
+
+export const TEAM_CONTACTS: TeamContact[] = [
+  {
+    team: "GPT-Oncology",
+    lead: "Dr. Sarah Chen",
+    email: "sarah.chen@astrazeneca.com",
+    teamsChannel: "GPT Oncology Approvals"
+  },
+  {
+    team: "GPT-Rare-Disease",
+    lead: "Dr. Michael Torres",
+    email: "michael.torres@astrazeneca.com",
+    teamsChannel: "GPT Rare Disease"
+  },
+  {
+    team: "GPT-Neurology",
+    lead: "Dr. Emily Watson",
+    email: "emily.watson@astrazeneca.com",
+    teamsChannel: "GPT Neurology"
+  },
+  {
+    team: "GPT-Respiratory",
+    lead: "Dr. James Park",
+    email: "james.park@astrazeneca.com",
+    teamsChannel: "GPT Respiratory"
+  },
+  {
+    team: "TALT-Legal",
+    lead: "Rebecca Martinez",
+    email: "rebecca.martinez@astrazeneca.com",
+    teamsChannel: "TALT Legal Requests"
+  },
+  {
+    team: "Immuta Platform",
+    lead: "Alex Johnson",
+    email: "alex.johnson@astrazeneca.com",
+    teamsChannel: "Immuta Support"
+  }
+]
+
+export function getTeamContact(teamName: string): TeamContact | undefined {
+  return TEAM_CONTACTS.find(tc => tc.team === teamName)
 }

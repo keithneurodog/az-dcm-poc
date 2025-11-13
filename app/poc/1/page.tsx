@@ -104,16 +104,16 @@ export default function UX15DCMDashboard() {
     router.push("/poc/1/dcm/progress")
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusInfo = (status: string) => {
     switch (status) {
       case "provisioning":
-        return "⚡ Provisioning"
+        return { text: "Provisioning", color: "bg-blue-50 text-blue-700 border-blue-200" }
       case "completed":
-        return "✅ Fully Provisioned"
+        return { text: "Fully Provisioned", color: "bg-green-50 text-green-700 border-green-200" }
       case "pending_approval":
-        return "🟡 Pending Approval"
+        return { text: "Pending Approval", color: "bg-amber-50 text-amber-700 border-amber-200" }
       default:
-        return status
+        return { text: status, color: "bg-neutral-50 text-neutral-700 border-neutral-200" }
     }
   }
 
@@ -147,7 +147,7 @@ export default function UX15DCMDashboard() {
               scheme.to
             )}
           >
-            <PlusCircle className="mr-2 size-5" />
+            <PlusCircle className="mr-2 size-5" strokeWidth={1.5} />
             Create New Collection
           </Button>
         </div>
@@ -169,7 +169,7 @@ export default function UX15DCMDashboard() {
                 <AlertCircle className={cn(
                   "size-5",
                   needsAttentionData.collectionsWithBlockers.length > 0 ? "text-red-400" : "text-neutral-400"
-                )} />
+                )} strokeWidth={1.5} />
               </div>
               {needsAttentionData.collectionsWithBlockers.length > 0 && (
                 <Badge variant="outline" className="border-red-200 text-red-600 font-light">
@@ -222,7 +222,7 @@ export default function UX15DCMDashboard() {
                 <MessageSquare className={cn(
                   "size-5",
                   needsAttentionData.pendingMentions.length > 0 ? "text-amber-400" : "text-neutral-400"
-                )} />
+                )} strokeWidth={1.5} />
               </div>
               {needsAttentionData.pendingMentions.length > 0 && (
                 <Badge variant="outline" className="border-amber-200 text-amber-600 font-light">
@@ -275,7 +275,7 @@ export default function UX15DCMDashboard() {
                 <Clock className={cn(
                   "size-5",
                   needsAttentionData.nearingSLA.length > 0 ? "text-blue-400" : "text-neutral-400"
-                )} />
+                )} strokeWidth={1.5} />
               </div>
               {needsAttentionData.nearingSLA.length > 0 && (
                 <Badge variant="outline" className="border-blue-200 text-blue-600 font-light">
@@ -331,7 +331,7 @@ export default function UX15DCMDashboard() {
                 <FileCheck className={cn(
                   "size-5",
                   needsAttentionData.readyForReview.length > 0 ? "text-emerald-400" : "text-neutral-400"
-                )} />
+                )} strokeWidth={1.5} />
               </div>
               {needsAttentionData.readyForReview.length > 0 && (
                 <Badge variant="outline" className="border-emerald-200 text-emerald-600 font-light">
@@ -405,7 +405,7 @@ export default function UX15DCMDashboard() {
                         </h3>
                         {collectionNotifications.length > 0 && (
                           <div className="flex items-center gap-1">
-                            <Bell className={cn("size-3", hasCritical ? "text-red-600" : "text-amber-600")} />
+                            <Bell className={cn("size-3", hasCritical ? "text-red-600" : "text-amber-600")} strokeWidth={1.5} />
                             <span className={cn("text-xs font-light", hasCritical ? "text-red-600" : "text-amber-600")}>
                               {collectionNotifications.length}
                             </span>
@@ -420,10 +420,12 @@ export default function UX15DCMDashboard() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
-                        variant="outline"
-                        className="font-light border-neutral-200"
+                        className={cn(
+                          "font-light border",
+                          getStatusInfo(collection.status).color
+                        )}
                       >
-                        {getStatusBadge(collection.status)}
+                        {getStatusInfo(collection.status).text}
                       </Badge>
                     </div>
                   </div>
@@ -450,7 +452,7 @@ export default function UX15DCMDashboard() {
                     }}
                   >
                     View Details
-                    <ArrowRight className="ml-1 size-3" />
+                    <ArrowRight className="ml-1 size-3" strokeWidth={1.5} />
                   </Button>
                 </div>
               </div>
@@ -560,17 +562,17 @@ export default function UX15DCMDashboard() {
               const getActivityIcon = () => {
                 switch (activity.type) {
                   case "blocker":
-                    return <AlertCircle className="size-4 text-red-400" />
+                    return <AlertCircle className="size-4 text-red-400" strokeWidth={1.5} />
                   case "mention":
-                    return <MessageSquare className="size-4 text-amber-400" />
+                    return <MessageSquare className="size-4 text-amber-400" strokeWidth={1.5} />
                   case "approval":
-                    return <Clock className="size-4 text-blue-400" />
+                    return <Clock className="size-4 text-blue-400" strokeWidth={1.5} />
                   case "completion":
-                    return <CheckCircle2 className="size-4 text-emerald-400" />
+                    return <CheckCircle2 className="size-4 text-emerald-400" strokeWidth={1.5} />
                   case "update":
-                    return <TrendingUp className="size-4 text-purple-400" />
+                    return <TrendingUp className="size-4 text-purple-400" strokeWidth={1.5} />
                   default:
-                    return <Bell className="size-4 text-neutral-400" />
+                    return <Bell className="size-4 text-neutral-400" strokeWidth={1.5} />
                 }
               }
 
@@ -649,7 +651,7 @@ export default function UX15DCMDashboard() {
         )}
       >
         <div className="flex size-16 items-center justify-center rounded-full bg-white mx-auto mb-6 shadow-sm">
-          <Sparkles className={cn("size-8", scheme.from.replace("from-", "text-"))} />
+          <Sparkles className={cn("size-8", scheme.from.replace("from-", "text-"))} strokeWidth={1.5} />
         </div>
         <h3 className="text-2xl font-light text-neutral-900 mb-3">
           AI-Powered Collection Curation
@@ -666,7 +668,7 @@ export default function UX15DCMDashboard() {
             scheme.to
           )}
         >
-          <PlusCircle className="mr-2 size-4" />
+          <PlusCircle className="mr-2 size-4" strokeWidth={1.5} />
           Create Your First Collection
         </Button>
       </div>

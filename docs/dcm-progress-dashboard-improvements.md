@@ -166,31 +166,37 @@ const recommendations = [
 ---
 
 ### 4. Enhanced Timeline Visualization
-**Priority:** MEDIUM | **Effort:** HIGH | **Impact:** MEDIUM
+**Priority:** MEDIUM | **Effort:** MEDIUM | **Impact:** MEDIUM
 
-Upgrade timeline tab with advanced visualization features.
+Upgrade timeline tab with improved visualization and contextual information.
 
 #### Features:
-- **Gantt Chart View**
-  - Horizontal bars showing task duration
-  - Parallel processes displayed simultaneously
-  - Dependencies shown with connecting lines
-  - Current time indicator
+- **Team Contact Information** ✅ Completed
+  - Display responsible team contact for in_progress and pending milestones
+  - Show team lead name, email, and Microsoft Teams channel
+  - Blue info card for in_progress items
+  - Amber info card for pending items
+  - Only show for non-completed collections
+  - Smart detection of team name from milestone text (e.g., "GPT-Oncology approvals")
+  - Clickable Teams links that open channel in Microsoft Teams
 
-- **Critical Path Highlighting**
-  - Bold/highlighted items on critical path
-  - Show which tasks are blocking others
-  - Identify bottlenecks visually
+- **Duration Indicators** ✅ Completed
+  - Show elapsed time for completed milestones
+  - Show estimated remaining time for in_progress items
+  - Display wait time for pending items
+  - Format: "Completed in 2 minutes" or "Est. 3 days remaining"
 
-- **Expected vs Actual**
-  - Dual-bar view: planned duration vs actual
-  - Red/green indicators for ahead/behind schedule
-  - Variance annotations
+- **Progress Details** ✅ Completed
+  - Enhanced descriptions for each milestone status
+  - Completion metrics (e.g., "5 of 9 users processed")
+  - Color-coded status text (green/blue/amber)
+  - Time-based formatting (days/hours/minutes)
 
-- **Interactive Elements**
+- **Interactive Elements** ✅ Completed
   - Hover for detailed timing info
-  - Click to see task dependencies
-  - Drag to adjust estimates (planning mode)
+  - Click contact email to open mail client
+  - Click Teams channel to open Microsoft Teams
+  - Tooltip showing full channel name on hover
 
 #### Design Notes:
 - Consider using a lightweight charting library (recharts, chart.js)
@@ -423,12 +429,15 @@ Add a sticky sidebar with prioritized actions and shortcuts.
 - **Most Important Next Actions**
   - Dynamic list based on current status
   - "Resolve 2 blockers", "Follow up on GPT approval"
+  - "Email 12 users pending training"
+  - "Follow up on 5 overdue approvals"
   - Prioritized by urgency/impact
 
 - **Quick Links**
   - Jump to specific blockers in discussion
   - Navigate to delayed approvals
-  - View users pending training
+  - View users pending training (opens User Status tab with filter)
+  - Email users by status/training category
   - Edit collection details
 
 - **Contact Stakeholders**
@@ -460,6 +469,228 @@ Add a sticky sidebar with prioritized actions and shortcuts.
 
 ---
 
+### 11. User Status Panel Enhancement
+**Priority:** HIGH | **Effort:** HIGH | **Impact:** HIGH
+
+Transform the basic 4-block status view into a comprehensive user management interface with search, filtering, training tracking, and communication features.
+
+#### Current State:
+- Simple 4-block summary (Immediate Access, Instant Grant, Pending Approval, Missing Training)
+- No user-level details or drill-down
+- No search or filtering capability
+- No direct communication features
+- Static display only
+
+#### Features:
+
+**1. Summary Metrics Cards**
+- 2x3 grid layout similar to Dataset Status tab
+- Total Users (120)
+- Immediate Access (60) - Green card
+- In Progress (48) - Blue card
+- Pending Approval (108) - Amber card
+- Training Blocked (12) - Red card
+- Average Days Waiting
+
+**2. Searchable & Filterable User Table**
+- **Columns:**
+  - Name (sortable)
+  - Email
+  - Role/Department
+  - Manager
+  - Access Status (badge with RAG colors)
+  - Training Progress (progress bar)
+  - Days Waiting (sortable)
+  - Last Activity
+
+- **Filters:**
+  - Access Status dropdown: All, Immediate Access, Instant Grant, Pending Approval, Training Blocked
+  - Training Status: Complete, In Progress, Blocked, Overdue
+  - Search by name or email (real-time filter)
+  - Sort by: Name, Days Waiting, Training Progress
+
+- **Design:**
+  - Compact table with hover states (matching Dataset Status tab)
+  - Expandable rows for user details (smooth animation)
+  - Pagination footer if 50+ users
+  - "Showing X of Y users" counter
+  - Mobile-responsive (stack on small screens)
+
+**3. Training Status Visualization**
+- **Per-User Training Display:**
+  - Progress bar showing completion percentage (e.g., "2/3 certifications")
+  - Hover tooltip showing required vs. completed courses
+  - Color-coded:
+    - Green: All complete (100%)
+    - Blue: In progress (1-99%)
+    - Red: Overdue or blocking access
+  - Missing certifications highlighted in tooltip:
+    - "Missing: GCP, GDPR Training"
+    - "Deadline: Dec 15, 2025"
+
+- **Training Breakdown Badge:**
+  - Small badge next to progress bar
+  - Shows missing count: "2 missing"
+  - Click to expand inline detail
+
+**4. User Detail Drill-Down (Expandable Row)**
+When user clicks on a row, expand inline to show:
+- **Access Details:**
+  - List of datasets accessible (with codes)
+  - List of datasets pending approval (with team names)
+  - Approval requests status: "Sent to GPT-Oncology 3 days ago"
+
+- **Training Details:**
+  - Table of certifications:
+    - ✓ GCP Certified (Completed: Nov 1, 2025)
+    - ⏳ GDPR Training (In Progress: 60%)
+    - ✗ Immuta Basics (Not Started - Deadline: Dec 15)
+  - Link to training portal (external)
+
+- **Timeline:**
+  - Mini timeline showing key events for this user:
+    - Enrolled: Nov 10, 2025
+    - Instant grant started: Nov 11, 2025
+    - Training reminder sent: Nov 12, 2025
+
+- **Quick Actions:**
+  - "Email User" button
+  - "Send Training Reminder" button
+  - "Escalate Issue" button (opens discussion tab)
+
+**5. Bulk Communication Actions**
+Similar to "Send Update" button pattern:
+
+- **"Email Selected Users" Button:**
+  - Appears when users select checkboxes in table
+  - Opens modal similar to "Send Update" with:
+    - To: Selected user emails (chip display)
+    - Cc: Optional field with manager suggestions
+    - Subject: Pre-filled templates dropdown:
+      - "Training Reminder: Complete Required Certifications"
+      - "Access Update: Your Collection is Ready"
+      - "Approval Status: Action Required"
+      - Custom (editable)
+    - Message: Template text (editable)
+    - "Include Managers" checkbox
+      - When checked, auto-adds managers to Cc field
+      - Shows "Adding 3 managers" helper text
+
+- **"Send Training Reminder" Quick Action:**
+  - Dedicated button for training-blocked users
+  - Pre-filtered to users with missing training
+  - Modal auto-populates with:
+    - To: All training-blocked users
+    - Cc: Their managers (optional)
+    - Subject: "Action Required: Complete Training to Access [Collection Name]"
+    - Message: Template listing missing certifications and deadlines
+    - "Track Reminder" - logs when reminder was sent to prevent spam
+
+- **Reminder Tracking:**
+  - Show "Last reminder: 2 days ago" in user row
+  - Disable "Send Reminder" if sent within 24 hours
+  - Toast notification: "Training reminder sent to 12 users"
+
+**6. Manager Integration**
+- **Display:**
+  - Manager name shown in user row (if available)
+  - Tooltip on hover: "Manager: John Smith (john.smith@az.com)"
+
+- **Include in Communications:**
+  - Optional "Include Managers" checkbox in email modal
+  - When checked:
+    - Auto-adds unique manager emails to Cc field
+    - Shows count: "Adding 3 managers"
+    - Managers receive FYI copy of communication
+
+- **Manager Contact:**
+  - "Email Manager" quick action in expanded user detail
+  - Pre-fills manager email for escalations
+
+**7. Status Badge Consistency**
+- Use RAG (Red-Amber-Green) highlighting matching main dashboard
+- Status badges:
+  - Immediate Access: `bg-green-50 text-green-700 border-green-200`
+  - Instant Grant: `bg-blue-50 text-blue-700 border-blue-200`
+  - Pending Approval: `bg-amber-50 text-amber-700 border-amber-200`
+  - Training Blocked: `bg-red-50 text-red-700 border-red-200`
+
+#### Mock Data Structure:
+
+```typescript
+interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  department: string
+  manager?: {
+    name: string
+    email: string
+  }
+
+  // Access status
+  accessStatus: "immediate" | "instant_grant" | "pending_approval" | "blocked_training"
+  datasetsAccessible: string[]      // Dataset codes user can access
+  datasetsPending: string[]         // Dataset codes awaiting approval
+
+  // Training
+  trainingStatus: {
+    required: string[]              // ["GCP", "GDPR Training", "Immuta Basics"]
+    completed: string[]             // ["GCP"]
+    inProgress: Array<{             // [{ cert: "GDPR Training", progress: 60 }]
+      cert: string
+      progress: number
+    }>
+    missing: string[]               // ["Immuta Basics"]
+    completionPercent: number       // 33 (1 of 3 complete)
+    deadline?: Date
+    isOverdue: boolean
+  }
+
+  // Timeline
+  enrollmentDate: Date
+  lastActive?: Date
+  daysWaiting: number
+
+  // Communication tracking
+  lastReminderSent?: Date
+  reminderCount: number
+
+  // Approval tracking
+  approvalRequests: Array<{
+    team: string                    // "GPT-Oncology"
+    datasetCodes: string[]
+    requestedDate: Date
+    status: "pending" | "approved" | "rejected"
+  }>
+}
+```
+
+#### Design Notes:
+- Maintain zen aesthetic: single-pixel borders, light shadows, font-light
+- Reuse table styling from Dataset Status tab (proven scalable)
+- Smooth animations for expand/collapse (duration-300)
+- Use same modal component as "Send Update" for consistency
+- Mobile: Stack table into card layout
+- Empty states: "No users match your filters"
+- Loading states: Skeleton rows while fetching data
+
+#### Integration Points:
+- **Smart Recommendations:** Link "12 users pending training" recommendation to this tab with filter pre-applied
+- **Help & Guidance:** Link FAQ "How do I check user training status?" to this tab
+- **Export Report:** Existing top-right button includes user list with status in export
+- **Quick Actions Sidebar:** Add "View users pending training" link that opens this tab
+
+#### Success Metrics:
+- DCMs can identify specific users in each status category
+- DCMs can contact users directly for training reminders
+- DCMs can track which users need follow-up
+- Panel remains performant with 100+ users
+- Communication tracking prevents reminder spam
+
+---
+
 ## Implementation Priority
 
 ### Phase 1 - Quick Wins (1-2 days)
@@ -472,10 +703,11 @@ Add a sticky sidebar with prioritized actions and shortcuts.
 2. Better At-a-Glance Overview
 3. Smart Recommendations Panel
 
-### Phase 3 - Advanced Features (3-5 days)
-1. Enhanced Timeline Visualization
-2. Real-Time Status Indicators
-3. Quick Actions Sidebar
+### Phase 3 - Advanced Features (4-6 days)
+1. User Status Panel Enhancement
+2. Enhanced Timeline Visualization
+3. Real-Time Status Indicators
+4. Quick Actions Sidebar
 
 ### Phase 4 - Nice-to-Haves (as time permits)
 1. Export Options Enhancement
@@ -552,6 +784,58 @@ May need to extend mock data to support:
 - Keep mobile UX in mind throughout implementation
 - Maintain consistency with improvements on other pages (categories, activities, etc.)
 - Document any new mock data structures in `lib/dcm-mock-data.ts`
+
+---
+
+## Implementation Progress
+
+### Phase 1 - Quick Wins
+- [x] 1.1: Help & Guidance Panel ✅ Completed
+- [x] 1.2: Smooth Animations ✅ Completed
+- [x] 1.3: Discussion Tab Enhancements (filters only) ✅ Completed
+
+### Phase 2 - High Impact
+- [x] 2.1: Collection Health Score Widget ✅ Completed
+- [x] 2.2: Better At-a-Glance Overview ✅ Skipped (current design is sufficient)
+- [x] 2.3: Smart Recommendations Panel ✅ Completed
+
+### Phase 3 - Advanced Features
+- [x] 3.1: User Status Panel Enhancement ✅ Completed (Core Features)
+- [x] 3.2: Enhanced Timeline Visualization ✅ Completed
+- [ ] 3.3: Real-Time Status Indicators
+- [ ] 3.4: Quick Actions Sidebar
+
+**Note:** Phase 3.1 core features completed include:
+- Summary metrics cards (2x3 grid with Total, Immediate, In Progress, Pending, Blocked, Avg Days Waiting)
+- Searchable user table with real-time filtering
+- Filter buttons for all user statuses
+- Training progress visualization with color-coded bars
+- Expandable user detail rows showing access details, training status, timeline, and quick actions
+- Manager display in table
+- User icons and chevron indicators
+
+**Pending features for Phase 3.1:**
+- Bulk communication actions (Email Selected Users with checkboxes)
+- Send Training Reminder functionality
+- Include Managers checkbox in email modal
+- Integration with Smart Recommendations panel
+
+**Phase 3.2 completed features:**
+- Team contact information cards for in_progress and pending milestones
+- Clickable email links that open mail client
+- Clickable Microsoft Teams channel links (opens Teams in new tab)
+- Duration indicators for completed milestones (e.g., "Completed in 1 hour")
+- Progress details for in_progress milestones with user counts (e.g., "Processing policies: 5 of 9 users")
+- Estimated remaining time for in_progress tasks
+- Estimated start time for pending tasks
+- Color-coded status messages (green for completed, blue for in_progress, amber for pending)
+- Smart team detection from milestone names (GPT-Oncology, TALT-Legal, Immuta Platform, etc.)
+- Teams integration with deep links to channels
+
+### Phase 4 - Nice-to-Haves
+- [ ] 4.1: Export Options Enhancement
+- [ ] 4.2: Discussion threaded replies
+- [ ] 4.3: Advanced search
 
 ---
 

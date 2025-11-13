@@ -125,10 +125,10 @@ export function UX13Sidebar() {
       <div className="border-t border-neutral-100 p-4">
         <div className="flex items-center gap-3">
           <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-full text-white text-sm font-medium bg-gradient-to-br", scheme.from, scheme.to)}>
-            DD
+            JM
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-light text-neutral-900">Divya Dayanidhi</p>
+            <p className="text-sm font-light text-neutral-900">Jennifer Martinez</p>
             <p className="text-xs text-neutral-500">DCM</p>
           </div>
         </div>

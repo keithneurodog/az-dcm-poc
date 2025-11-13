@@ -5,7 +5,7 @@
 **Last Updated:** November 11, 2025
 **Target Delivery:** December 2025
 **Owner:** Keith Hayes
-**Stakeholders:** Divya Dayanidhi, Stacy, Rafa, Leadership Team
+**Stakeholders:** Jennifer Martinez, Stacy, Rafa, Leadership Team
 
 > **Version 2.1 Updates**: Integrated critical learnings from screenshot analysis (see `dcm-workflow-learnings.md`). Enhanced DCM Data Curation Workbench requirements including: 30+ data category taxonomy, AI-assisted category suggestion workflow, multi-dimensional search, Activities/Intents selection, detailed 20/30/40/10 access provisioning breakdown, and progressive refinement flow. Emphasized that DCM workflow is a **sophisticated data curation workbench**, not simple browse/select.
 
