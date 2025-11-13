@@ -20,6 +20,7 @@ const iterations = [
   { id: 11, name: "Premium Vibrant", color: "from-blue-500 via-purple-500 to-pink-500" },
   { id: 12, name: "Zen Explorer", color: "from-rose-500 to-orange-400" },
   { id: 13, name: "Zen Dual Nav", color: "from-rose-500 to-orange-400" },
+  { id: 14, name: "Garden Zen", color: "from-emerald-500 to-teal-500" },
 ]
 
 export function IterationSwitcher() {

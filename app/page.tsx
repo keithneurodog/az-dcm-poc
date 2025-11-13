@@ -185,6 +185,20 @@ const uxThemes = [
       "Developer Color Picker",
       "Enhanced Navigation UX"
     ]
+  },
+  {
+    id: 14,
+    name: "Garden Zen",
+    description: "A different zen approach with nature-inspired serenity. Features soft sage greens and teals, organic rounded shapes, ultra-light typography, and abundant breathing space. Inspired by peaceful gardens with language like 'cultivate', 'nurture', and 'flourish' throughout.",
+    status: "Implemented",
+    route: "/ux/14/home",
+    features: [
+      "Nature-Inspired Greens & Teals",
+      "Organic Rounded Shapes",
+      "Ultra-Light Typography",
+      "Abundant White Space",
+      "Garden-Themed Language"
+    ]
   }
 ]
 
@@ -210,7 +224,82 @@ export default function Home() {
           </p>
         </div>
 
+        {/* POC Section */}
+        <div className="mb-12 max-w-7xl mx-auto">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold tracking-tight mb-2">
+              Proof of Concepts
+            </h2>
+            <p className="text-muted-foreground">
+              Interactive prototypes demonstrating full workflows and functionality
+            </p>
+          </div>
+          <Card className="border-2 border-brand/50 bg-gradient-to-br from-brand/5 to-brand/10">
+            <CardHeader>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-brand/20 font-bold text-brand">
+                  1
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-700 dark:text-green-400">
+                  Active
+                </span>
+              </div>
+              <CardTitle className="text-xl">Data Collection Manager (DCM)</CardTitle>
+              <CardDescription>
+                Complete end-to-end workflow for creating and managing data collections. Features AI-powered category suggestions,
+                multi-dimensional filtering with smart semantic search, dataset selection with access provisioning breakdown,
+                activity definition, and collection publishing. Built on Zen aesthetic with dynamic color schemes.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <p className="text-sm font-medium mb-2">Key Features:</p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>AI-Powered Smart Filtering & Category Suggestions</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Multi-Dimensional Dataset Filtering (Phase, Geography, Modality, etc.)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Real-Time Access Provisioning Breakdown</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Actionable Dashboard with Needs Attention Cards</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>7 Dynamic Color Schemes (Zen Aesthetic)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Pagination & Selected Studies Sidebar</span>
+                  </li>
+                </ul>
+              </div>
+              <Button asChild className="w-full">
+                <Link href="/poc/1">
+                  Explore DCM Prototype
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Theme Cards */}
+        <div className="mb-6 max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold tracking-tight mb-2">
+            UX Theme Concepts
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Explore different visual designs and interaction patterns
+          </p>
+        </div>
         <div className="grid gap-6 md:grid-cols-2 max-w-7xl mx-auto">
           {uxThemes.map((theme) => (
             <Card

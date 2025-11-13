@@ -7,7 +7,7 @@ import { UX13Sidebar } from "@/components/ux13-sidebar"
 import { UX13TopBar } from "@/components/ux13-top-bar"
 import { UX12DevWidget } from "@/components/ux12-dev-widget"
 
-export default function UX13RootLayout({ children }: { children: ReactNode }) {
+export default function POC1Layout({ children }: { children: ReactNode }) {
   return (
     <ColorSchemeProvider>
       <NotificationProvider>

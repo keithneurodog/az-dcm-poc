@@ -1,0 +1,392 @@
+Dayanidhi, Divya [15/09 07:11]:
+Hey Keith! Good morning
+
+Dayanidhi, Divya [06/10 08:19]:
+Hi Keith Good morning
+
+
+Hayes, Keith (20/15 Visioneers) [06/10 08:27]:
+Good morning!
+
+
+Dayanidhi, Divya [06/10 09:10]:
+yay you're back!! how are you ? how was your holidays?
+
+
+Hayes, Keith (20/15 Visioneers) [06/10 09:11]:
+Thanks it feels great to be back, everythings so farmiliar haha. Holiday was lovely thanks! super relaxing
+
+
+Dayanidhi, Divya [06/10 09:13]:
+I have booked us sometime to brief you on current plans / roadmap
+
+Dayanidhi, Divya [06/10 09:13]:
+let me know if it works for you?
+
+
+Hayes, Keith (20/15 Visioneers) [06/10 09:13]:
+Yep that's great thanks!
+
+Hayes, Keith (20/15 Visioneers) [06/10 09:14]:
+I'm just going through emails and training videos at the mo
+
+Hayes, Keith (20/15 Visioneers) [15/10 14:56]:
+Thanks for inviting me to those sessions, I think I've picked up a lot and now my brain is melting Not sure how you handle days like this on a weekly basis
+
+
+Dayanidhi, Divya [15/10 14:56]:
+I was about to ping you
+
+Dayanidhi, Divya [15/10 14:57]:
+but don't worry much the LT is on their meetings this week, they will come up with entirely new plan
+
+
+Hayes, Keith (20/15 Visioneers) [15/10 14:58]:
+Yeah I can see how volatile the whole stream is but I think that's fine, I just need to keep up with it all like you
+
+Hayes, Keith (20/15 Visioneers) [15/10 15:00]:
+If it's okay I'd like to be involved in those LT meetings if that's possible. Will you be part of them?
+
+
+Dayanidhi, Divya [15/10 15:01]:
+this week's one ? none of us are part of it.. we get to know bits and pieces from each of our LT members. like Stacy pings us on her proposed roadmaps.. but we will not know until next week, what they all finally agreed
+
+Dayanidhi, Divya [15/10 15:02]:
+And this week's LT most likely will inform what will be our 2026 deliverables. they we will have another series of workshops to align to that.. similar to the one we had today
+
+
+Hayes, Keith (20/15 Visioneers) [15/10 15:02]:
+No just more the scope ones that Rafa said he will head. I'm not sure of how formal the whole process is
+
+
+Dayanidhi, Divya [15/10 15:03]:
+but most likely the metadata, UI, access control and AI will land with Stacy's group.. but I hear there's major org level changes also coming.
+
+Dayanidhi, Divya [15/10 15:04]:
+ah okies lemme find the deck he presented you can touch base with him as well on that one
+
+Dayanidhi, Divya [15/10 15:06]:
+VS2 WP3 Single Portal Proposal-20250818_153406-Meeting Recording.mp4 (you might have to request access for this one) and the deck from this: 2025-07-30 Single portal.pptx
+
+
+Hayes, Keith (20/15 Visioneers) [15/10 15:06]:
+Thanks
+
+Hayes, Keith (20/15 Visioneers) [20/10 15:04]:
+Hi Divya I feel like I should let you know what I'm up to since we haven't really talked since that planning day last week. I'm testing a few UX tools out for both wireframing and ux flows. I'm also just helping with Alex and Oneform also. Let me know if there's something you want me to focus on though and I can switch right away. Also please let me know if you get any meaningful updates on the VS2 stuff that I can take a look at
+
+
+Dayanidhi, Divya [20/10 15:07]:
+he he he Hello
+
+Dayanidhi, Divya [20/10 15:07]:
+So sorry I'm getting all sorts of new information on what our LT is planning with you
+
+Dayanidhi, Divya [20/10 15:07]:
+tomorrow lemme talk to Stacy and understand what did they discuss finally
+
+
+Hayes, Keith (20/15 Visioneers) [20/10 15:08]:
+No problem I'll keep myself busy in the meantime
+
+
+Dayanidhi, Divya [20/10 15:08]:
+AZCt iDAP is set to decommission next year that's solid confirmation. and they are now telling whatever Keith is telling will be the replacement and you'll be engaged for the next year on this with a team. But what to plan for, is unclear to me..
+
+Dayanidhi, Divya [23/10 12:12]:
+Hi Keith!
+
+Dayanidhi, Divya [23/10 12:12]:
+Did Rafa by any chance reach out to you ? Just wondering on the UI front..
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 12:41]:
+Hi hi, no not yet
+
+Hayes, Keith (20/15 Visioneers) [23/10 12:51]:
+Is there a documentation space for VS2? Just wondering if there's any more I can learn about the idea/plan etc
+
+
+Dayanidhi, Divya [23/10 13:02]:
+I have asked Rafa now to connect with you directly.. I told him we gave it a start and our chat with Marcin but not much from there after VS2 planning
+
+Dayanidhi, Divya [23/10 13:03]:
+I don't know if I shared this already..
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:03]:
+Yeah I'm getting the vibe of change a lot haha. I'm fine being patient although I also want to ensure people don't forget that I'm here and of service
+
+
+Dayanidhi, Divya [23/10 13:03]:
+you will see things like collectoid, sherpa, sherlock and prism.. that's probably our journey now.. but in any case we need UI
+
+Dayanidhi, Divya [23/10 13:04]:
+Coz the outcomes we product this quarter will need to have high impact value, for us to get resources next year and also continued work
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:05]:
+I'm clicking the request access button for that doc but nothing seems to happen, can you please try to share it directly with me?
+
+
+Dayanidhi, Divya [23/10 13:05]:
+Rafa had been preoccupied a lil with cataloguing lately.. hence i'm worried he might not focus much and I don't want it to be too late
+
+Dayanidhi, Divya [23/10 13:05]:
+can you try this one ?
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:07]:
+hmm strange same thing, i click request and get a little loading spinner but then it refreshes the page and I get no active request shown, usually I see the little chat box type window showing me that I've requested access
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:08]:
+is it in an entirely different space that maybe I don't have access too, I've managed to request access to other docs recently
+
+
+Dayanidhi, Divya [23/10 13:21]:
+so weird
+
+Dayanidhi, Divya [23/10 13:21]:
+I have given you access with your email. can you check the latest one =
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:22]:
+hmm weird still no access, i can't download it either in teams, just says access denied
+
+Hayes, Keith (20/15 Visioneers) [23/10 13:22]:
+I'll raise a ticket about it, maybe Im missing a group identity or something
+
+Hayes, Keith (20/15 Visioneers) [23/10 14:15]:
+Hi Divya are you free for 2 mins? I'm on call with someone supporting this document sharing issue
+
+
+Dayanidhi, Divya [23/10 14:27]:
+Hi Keith
+
+Dayanidhi, Divya [23/10 14:27]:
+yes sorry was on another call
+
+Dayanidhi, Divya [23/10 14:27]:
+I'm available now and in next 30 mins
+
+Dayanidhi, Divya [23/10 14:27]:
+is this what the other chat is about ?
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 14:28]:
+Oh thats the helper agent who wants to chat with us
+
+
+Dayanidhi, Divya [23/10 14:38]:
+I need one help from you it's sort of a secret mission for now.. We have an upcoming DS&AI level hackathon https://confluence.astrazeneca.com/spaces/GDT/pages/703178372/AgenticAI+Tools+Hackathon+November+20… We would like to have you on the team.. would you be available on these dates? I will take care of clearing the tasks during this time discreetly
+
+
+Hayes, Keith (20/15 Visioneers) [23/10 14:40]:
+Yeah sounds good I don't have any holidays in Nov so should definitely be available
+
+
+Dayanidhi, Divya [23/10 14:41]:
+awesome!! thank you!
+
+Dayanidhi, Divya [23/10 14:42]:
+one weird question. you know python right ?
+
+Dayanidhi, Divya [23/10 14:42]:
+shall I call you?
+
+Dayanidhi, Divya [23/10 15:01]:
+sorry shall I call you real quick ?
+
+
+Hayes, Keith (20/15 Visioneers) [24/10 09:38]:
+Good morning, can you please reshare that agentic AI workshop document again? It seems that I can't access the one you already shared, but hopefully resharing should work now
+
+
+Dayanidhi, Divya [24/10 09:40]:
+yes of course Happy friday!!
+
+
+Hayes, Keith (20/15 Visioneers) [24/10 09:40]:
+Yay working! Happy Friday!
+
+
+Dayanidhi, Divya [Tuesday 09:45]:
+Hey Keith! Good morning
+
+Dayanidhi, Divya [Tuesday 09:45]:
+so sorry to ask you again.. but are you tagged with something by now ? or are you available ?
+
+
+Hayes, Keith (20/15 Visioneers) [Tuesday 09:46]:
+Morning morning, apologies I forgot to tell you yesterday that I wouldn't be in
+
+
+Dayanidhi, Divya [Tuesday 09:46]:
+I'm getting questions from people on UI from everywhere. so thinking to talk to Stacy to move forward something.. I might have sometime with me so wanted to check with you
+
+
+Hayes, Keith (20/15 Visioneers) [Tuesday 09:46]:
+No no I'm not too busy, I've had an intro with Rafa and the Accenture guys but it's in early stages atm, and I've been doing a little BAU on oneform but nothing important
+
+Hayes, Keith (20/15 Visioneers) [Tuesday 09:47]:
+Ah no sorry I wasn't in yesterday but all good today
+
+Hayes, Keith (20/15 Visioneers) [Tuesday 09:47]:
+Yeah it's going a little slow isn't it...
+
+
+Dayanidhi, Divya [Tuesday 11:32]:
+I’m checking with Stacy to see if we can start something now before Accenture so we could get a start
+
+Dayanidhi, Divya [Wednesday 10:44]:
+Hello Me again.. is it possible for us to get a quick protype on this data collection concept ?
+
+Dayanidhi, Divya [Wednesday 10:45]:
+they are changing it again.. but it most likely will fit into the concept of IDA we had created and the bulk collection we had in our portal but enhanced
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 10:46]:
+Can definitely get something rolling yeah! Do we have any docs describing it's concept or primary requirements?
+
+
+Dayanidhi, Divya [Wednesday 10:49]:
+at the moment I'm asking for 2x additional developers if we were to develop things for production next year.. but it's a vague estimate I've given them
+
+Dayanidhi, Divya [Wednesday 10:49]:
+are you available for a quick call now ?
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 10:50]:
+Okay yeah sure, I want to ensure we're all on the same page but I think we generally get the gist of it.
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 10:50]:
+Yeah sure
+
+
+Dayanidhi, Divya [Wednesday 11:01]:
+I just wrote to Martina.. I just don't want them to delay it forever and come back saying we can't extend or we have to delay the recruitment
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:02]:
+Yeah it's very chicken and egg atm
+
+
+Dayanidhi, Divya [Wednesday 11:02]:
+exactly! they keep saying very high level things but nothing is going anywhere
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:02]:
+And I'm not sure why we're going so slow with accenture, we had a good intro meet last week and it felt positive but not heard anything since?
+
+
+Dayanidhi, Divya [Wednesday 11:02]:
+and you're supposed to be receiving the requirements & clarity on process by now in order to give design
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:03]:
+Yeah I think at least starting from a single high level document would be a good start, just a few key points and expectations documented, we can then use it as a basis for very high level designs to aid discussion
+
+
+Dayanidhi, Divya [Wednesday 11:04]:
+from this message it looks like they haven't even finalised Accenture engagement
+
+Dayanidhi, Divya [Wednesday 11:05]:
+because what we discussed a week back was - we are looking for potential partners EDO IT or R&D IT or Accenture or in house team -- and accenture is only for defining our requirements & design
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:06]:
+Ah okay so yeah I could prototype a collectiod agentic system if you like, or focus on UI/UX. I'd honestly be happy to start anywhere
+
+
+Dayanidhi, Divya [Wednesday 11:07]:
+do you already have the idea for the collectoid ?
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:07]:
+I'd like a single definition please, it was brought up in the Accenture meet and mentioned that it had a couple of different definitions from historic slides
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:11]:
+Okay so I'll begin with a technical working prototype of Collectoid then? And as the requirements improve we can move onto the UX flow when necessary. I feel an initial discussion of what's expected would be great
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 11:13]:
+I won't need much to get started
+
+
+Dayanidhi, Divya [Wednesday 11:29]:
+Okay it goes like this in the collection management A broader user access intent (e.g., CTDNA application building) https://clinicaltrials.astrazeneca.net/data_reuse/INT-20250115-1801 We need to match all studies that qualifies this criteria - " The Oncology ctDNA initiative is focused on the proactive collection and curation of molecular and clinical data under Extended Primary Use (EPU) or with appropriate Primary Use consent, with the intent to drive innovative ctDNA based research and insights. It aims to enable comprehensive analyses across a broad spectrum of applications, such as performance evaluation, diagnostic insights, treatment response, correlation analysis, AI modeling, and application in clinical trials based on automated processing pipelines. The strategy involves creating data products that facilitate the understanding of ctDNA levels, dynamics, and their implications in oncology drug discovery and development. The key objective is to provide a broad group of users with access to aggregated ctDNA data for hypothesis testing and generation. This is achieved through specialized user interfaces, ensuring data privacy and relevance, by exclusively referring to aggregated group-level knowledge based on groups of at least 10 patients. The initiative is designed to support extensive and flexible usage, allowing for the adaptation and inclusion of a broad range of use cases while maintaining strict adherence to data privacy and ethical guidelines. Access to patient-level data is in any case restricted to a limited group of Power Users involved in data enablement and product building, ensuring the integrity and security of sensitive information."
+
+Dayanidhi, Divya [Wednesday 11:29]:
+sorry I will come back and continue
+
+Dayanidhi, Divya [Wednesday 15:44]:
+we can pick couple of categories alone.. SDTM — Demographics (DM) AGE, SEX, RACE, ETHNIC, COUNTRY Subgroup analyses, bias checks, privacy-approved bands SDTM — Exposure (EX/SE) EXTRT, EXDOSE/EXDOSU, EXROUTE, EXSTDTC/EXENDTC, EXDUR Treatment context, dose intensity, time windows ADaM — Exposure (ADEXP) DOSE, DOSEDUR, Relative Dose Intensity Dose-response and modeling features RAW — Specimen Metadata Patient/Specimen ID, Collection/Receive times, Tube type, Volume, Time-to-processing Pre-analytical factors affecting cfDNA quality Omics/NGS — Variants CHROM, POS, REF/ALT, AF/VAF, DP/UMIDP, FILTER, annotation (consequence, COSMIC) Variant-level ctDNA tr
+
+Dayanidhi, Divya [Wednesday 15:47]:
+Then I add them to my collection and next I will be asked to confirm the "activities " or "intents" derived from the same passage Data engineering (Check all the applies) ETL/standardization: date unification to relative day; unit harmonization (VAF %, copies/mL); HGVS normalization; panel coverage mapping; LoD/LoQ capture; QC flag propagation. Variant harmonization: left-align/normalize, canonical transcript selection, COSMIC/ClinVar annotation, deduplication across runs/panels. Scientific Analysis - Secondary use of patient level data Early response classifier: features = baseline ctDNA, % drop by Week 4, max VAF, num variants > LoD, QC depth; label = BOR (CR/PR vs SD/PD) using AI/ML Multimodal fusion: late-fusion model combining ctDNA features + PET MTV/TLG + clinical covariates (ECOG, line, stage). Cohort builder: filters for cancer type/subtype, stage, line, regimen class, panel version, baseline ctDNA bands, imaging windows.
+
+Dayanidhi, Divya [Wednesday 15:52]:
+And then user will be prompted if they want to have or they want their project members to be added then we get criteria -- e.g., all Oncology biometrics (then you match it with All people from Renee's organisation from workday) And ask them to confirm if they want it to be open for all roles "Data scientists", "data engineers" (not reality but it's okay for protype ) they select all that applies.. We pull all PRIDs that qualify
+
+Dayanidhi, Divya [Wednesday 15:53]:
+now you get the "data collection created" with list of study IDs (DCodes) & user PRIDs and you can show --(based on already existing immuta policies ) how many users already have access to how many of these study combinations i.e., Divya has access to Study A, B, C, C clinical SDTM, Genomics already -- Keith has acess to all studies by only Clinical SDTM
+
+Dayanidhi, Divya [Wednesday 15:59]:
+and now the "Data Collections" DCM manager role comes into picture or maybe we could have agents executing things.. Which shows a summary first to users and also to DCM 20 % (already open for 50% of users) -- out of your collection 30% of data is ready to be granted (i.e., because their study status = closed, and database lock date is 6 months past) and no legal restrictions -- so post click of confirmation from DCM - it updates immuta policy (metadata updates) -- so it's instant access unlocked -- to 90 % of users -- 40% of data is blocked and needs approval for next steps, so DCM can auto create a authorisation / approva -- sent to across GPTs, or just one TALT person & they approve -- as soon as they approve we write immuta policy -- to 90 % of users -- 10 % we don't have location -- initiate find matching data assets, and catalogue action / manual work & a note that 10 % of users haven't completed critical trainings -- so as soon as they complete trainings they can qualifyfor anything unlocked above
+
+Dayanidhi, Divya [Wednesday 15:59]:
+a charts and bar diagrams to track progress
+
+Dayanidhi, Divya [Wednesday 15:59]:
+sorry I will shut up now
+
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 16:00]:
+no thanks Divya I actually appreciate it in text so I can keep going back to get a good understanding
+
+Hayes, Keith (20/15 Visioneers) [Wednesday 16:05]:
+Dayanidhi, Divya: from this message it looks like they haven't even finalised Acce... | Chat | Microsoft Teams "...Keith is there opportunity for him to start developing some type of Collectiod - collections management agent?" So when she says this does she mean the underlying Collectoid agent that she wants working on e.g. the background process first to prove an agentic concept, or does she mean the UX/UI flow side that she wants me to work on, with the expectation that the UX may help to define what the agentic solution's scope is?
+
+
+Dayanidhi, Divya [Thursday 07:35]:
+And will take forever for all of them to agree and align
+
+Dayanidhi, Divya [Thursday 07:36]:
+This pro type is based on how to we manage some of these process with agents (in order to unlock broad access to data , we still need to worry about metadata and data location things and we could propose how agents could help us on this areas compared to as is ways of working)
+
+Dayanidhi, Divya [Thursday 07:42]:
+How an ideal UI/UX could look like the goal is same but how do we do it efficiently removing manual steps and consolidate resources (documents data spread across systems platforms - maybe as user it shouldn’t be my concern if agents can handle this) E.g., clinical data will be in s3 and image DICoM in another s3 and genomics in solvebio or quartzBiO but as a user I don’t need to worry about all those things I just need how can I get data from each unlock. Coz I care about multimodal data of a study (even if it’s spread across systems) As a business we care about how can I automate those connections on fly despite of metadata and issues with even knowing what data is present in each systems (your proposal can be we need to run some scan on those systems like s3 at a bucket level or even data level to say this could be a data that belong to this study etc ) we don’t know how cost and performance intensive these things are
+
+Dayanidhi, Divya [Thursday 07:43]:
+But this protype could help us unpack things with AI at scale and practically.
+
+Dayanidhi, Divya [Thursday 07:44]:
+You can be optimistic (even though it can’t happen today we want to hear from you what you need us from process infrastructure perspective to change in next 2 years to drive AI adoption and AI based optimisation in order to provide the ideal user journey)
+
+
+Hayes, Keith (20/15 Visioneers) [Thursday 09:01]:
+Great thanks Divya - I'll spend some time focusing on a little generic theming while I think this UX through.
+
+
+Dayanidhi, Divya [Thursday 14:31]:
+We have small requirement I wanted to get your thoughts on to help our folks..
+
+Dayanidhi, Divya [Thursday 14:31]:
+We are looking for a module / part in our service derlivery portal. where I can bulk search PRID / email address / name, and it tell me the users & their country -- using the same APis we use for "access beneficiary" section of form -- how easy / diffficult it is ?
+
+
+Hayes, Keith (20/15 Visioneers) [Thursday 14:56]:
+hmm let me dig into the SSO api because I'm not sure if country is a simple thing to obtain
+
+Hayes, Keith (20/15 Visioneers) [Thursday 15:03]:
+yep this seems easy enough: https://adhoc.rd.astrazeneca.net/api/people?appid=123&mail=keith.hayes3@astrazeneca.com&att… The only issue is that in BPE we had to jump through silly hoops to be able to call the adhoc API with a non personal account, so I'll probably do something mocked or cheaty for now and then we'd deal with that complexity later
+
+Hayes, Keith (20/15 Visioneers) [Friday 15:23]:
+You can do wildcard searching e.g. here's all display names containing 'Hayes' https://adhoc.rd.astrazeneca.net/api/people?appid=123&displayName=*Hayes*&attrs=displayName…
+
+
+
+we need collaboration built in. discussion chat
+
+data exploration has multiple users - finders and DCM
+
+one click through to data platform - probably Domino (or SCP / aiBench / etc...)
