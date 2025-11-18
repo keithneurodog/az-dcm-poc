@@ -501,11 +501,11 @@ export default function DCMCategoriesPage() {
 
               <div className="space-y-3">
                 {categories.map((category) => (
-                  <button
+                  <div
                     key={category.id}
                     onClick={() => toggleCategory(category.id)}
                     className={cn(
-                      "w-full flex items-start gap-4 p-4 rounded-xl border transition-all text-left",
+                      "w-full flex items-start gap-4 p-4 rounded-xl border transition-all text-left cursor-pointer",
                       selectedCategoryIds.has(category.id)
                         ? cn(
                             scheme.from.replace("from-", "border-").replace("500", "200"),
@@ -519,6 +519,7 @@ export default function DCMCategoriesPage() {
                     <Checkbox
                       checked={selectedCategoryIds.has(category.id)}
                       className="mt-1"
+                      onClick={(e) => e.stopPropagation()}
                     />
 
                     <div className="flex-1 min-w-0">
@@ -565,7 +566,7 @@ export default function DCMCategoriesPage() {
                         )}
                       </div>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </CardContent>

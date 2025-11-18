@@ -803,7 +803,7 @@ May need to extend mock data to support:
 - [x] 3.1: User Status Panel Enhancement ✅ Completed (Core Features)
 - [x] 3.2: Enhanced Timeline Visualization ✅ Completed
 - [ ] 3.3: Real-Time Status Indicators
-- [ ] 3.4: Quick Actions Sidebar
+- [x] 3.4: Quick Actions Sidebar ✅ Completed
 
 **Note:** Phase 3.1 core features completed include:
 - Summary metrics cards (2x3 grid with Total, Immediate, In Progress, Pending, Blocked, Avg Days Waiting)
@@ -831,6 +831,25 @@ May need to extend mock data to support:
 - Color-coded status messages (green for completed, blue for in_progress, amber for pending)
 - Smart team detection from milestone names (GPT-Oncology, TALT-Legal, Immuta Platform, etc.)
 - Teams integration with deep links to channels
+
+**Phase 3.4 completed features:**
+- Sticky sidebar positioned on right side (width: 288px / w-72)
+- Quick Summary card with key metrics (progress %, users with access, datasets, pending approvals)
+- Dynamic Next Actions based on collection state:
+  - High priority (red): Blockers to resolve
+  - Medium priority (amber): Approvals to follow up, training-blocked users to contact
+  - Shows "No urgent actions required" when nothing pending
+- Contact Teams section (appears when approval requests exist):
+  - Quick email links to team leads
+  - Microsoft Teams deep links to channels
+  - Displays all teams with pending approvals
+- Quick Links for navigation:
+  - Jump to Dataset Status tab
+  - Jump to User Status tab
+  - Jump to Timeline tab
+  - Open Send Update modal
+- Responsive design: Sidebar stays sticky while scrolling
+- Zen aesthetic maintained: single-pixel borders, font-light, rounded-2xl cards
 
 ### Phase 4 - Nice-to-Haves
 - [ ] 4.1: Export Options Enhancement

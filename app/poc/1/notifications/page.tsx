@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useNotifications } from "@/components/notification-context"
 import { useColorScheme } from "@/components/ux12-color-context"
@@ -27,6 +27,7 @@ import {
   TrendingUp,
   Users,
   Loader2,
+  ChevronDown,
 } from "lucide-react"
 import { Notification, MOCK_COLLECTIONS } from "@/lib/dcm-mock-data"
 import {
@@ -69,6 +70,9 @@ export default function NotificationsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("detailed")
   const [sortBy, setSortBy] = useState<SortOption>("recent")
   const [groupBy, setGroupBy] = useState<GroupOption>("priority")
+  const [collectionDropdownOpen, setCollectionDropdownOpen] = useState(false)
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
+  const [groupDropdownOpen, setGroupDropdownOpen] = useState(false)
 
   // Selection state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -147,6 +151,20 @@ export default function NotificationsPage() {
     setIncludeArchived(false)
     setDateRange("all")
   }
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.custom-dropdown')) {
+        setCollectionDropdownOpen(false)
+        setSortDropdownOpen(false)
+        setGroupDropdownOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
 
   // Handle notification click
   const handleNotificationClick = (notification: Notification) => {
@@ -255,10 +273,10 @@ export default function NotificationsPage() {
 
     if (viewMode === "compact") {
       return (
-        <button
+        <div
           onClick={() => handleNotificationClick(notification)}
           className={cn(
-            "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left border",
+            "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left border cursor-pointer",
             notification.isRead ? "border-neutral-200 bg-white" : `${style.border} ${style.bg}`,
             isSelected && "ring-2 ring-offset-2 ring-blue-500"
           )}
@@ -287,7 +305,7 @@ export default function NotificationsPage() {
           <Badge variant="outline" className="text-xs font-light border-neutral-200 shrink-0">
             {notification.collectionName}
           </Badge>
-        </button>
+        </div>
       )
     }
 
@@ -518,18 +536,20 @@ export default function NotificationsPage() {
                 <h3 className="text-sm font-normal text-neutral-900 mb-3">Type</h3>
                 <div className="space-y-2">
                   {["blocker", "mention", "approval", "update", "completion"].map((type) => (
-                    <button
+                    <label
                       key={type}
-                      onClick={() => {
-                        setSelectedTypes((prev) =>
-                          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-                        )
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
                     >
-                      <Checkbox checked={selectedTypes.includes(type)} />
+                      <Checkbox
+                        checked={selectedTypes.includes(type)}
+                        onCheckedChange={() => {
+                          setSelectedTypes((prev) =>
+                            prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+                          )
+                        }}
+                      />
                       <span className="text-sm font-light text-neutral-700 capitalize">{type}</span>
-                    </button>
+                    </label>
                   ))}
                 </div>
               </CardContent>
@@ -541,22 +561,24 @@ export default function NotificationsPage() {
                 <h3 className="text-sm font-normal text-neutral-900 mb-3">Priority</h3>
                 <div className="space-y-2">
                   {["critical", "high", "medium", "low"].map((priority) => (
-                    <button
+                    <label
                       key={priority}
-                      onClick={() => {
-                        setSelectedPriorities((prev) =>
-                          prev.includes(priority)
-                            ? prev.filter((p) => p !== priority)
-                            : [...prev, priority]
-                        )
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
                     >
-                      <Checkbox checked={selectedPriorities.includes(priority)} />
+                      <Checkbox
+                        checked={selectedPriorities.includes(priority)}
+                        onCheckedChange={() => {
+                          setSelectedPriorities((prev) =>
+                            prev.includes(priority)
+                              ? prev.filter((p) => p !== priority)
+                              : [...prev, priority]
+                          )
+                        }}
+                      />
                       <span className="text-sm font-light text-neutral-700 capitalize">
                         {priority}
                       </span>
-                    </button>
+                    </label>
                   ))}
                 </div>
               </CardContent>
@@ -566,18 +588,64 @@ export default function NotificationsPage() {
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-4">
                 <h3 className="text-sm font-normal text-neutral-900 mb-3">Collection</h3>
-                <select
-                  value={selectedCollection}
-                  onChange={(e) => setSelectedCollection(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-neutral-200 text-sm font-light bg-white"
-                >
-                  <option value="all">All Collections</option>
-                  {uniqueCollections.map((collection) => (
-                    <option key={collection.id} value={collection.id}>
-                      {collection.name} ({collection.count})
-                    </option>
-                  ))}
-                </select>
+                <div className="relative custom-dropdown">
+                  <button
+                    onClick={() => {
+                      setSortDropdownOpen(false)
+                      setGroupDropdownOpen(false)
+                      setCollectionDropdownOpen(!collectionDropdownOpen)
+                    }}
+                    className={cn(
+                      "w-full h-10 pl-4 pr-10 rounded-xl border-2 font-light text-sm bg-white transition-all text-left",
+                      collectionDropdownOpen
+                        ? cn("border-current", scheme.from.replace("from-", "border-").replace("-500", "-400"))
+                        : "border-neutral-200 hover:border-neutral-300"
+                    )}
+                  >
+                    {selectedCollection === "all"
+                      ? "All Collections"
+                      : uniqueCollections.find((c) => c.id === selectedCollection)?.name || "All Collections"}
+                  </button>
+                  <ChevronDown className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none transition-transform",
+                    collectionDropdownOpen && "rotate-180"
+                  )} />
+                  {collectionDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 rounded-xl border-2 border-neutral-200 bg-white shadow-xl overflow-hidden max-h-64 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+                      <button
+                        onClick={() => {
+                          setSelectedCollection("all")
+                          setCollectionDropdownOpen(false)
+                        }}
+                        className={cn(
+                          "w-full px-4 py-2.5 text-left text-sm font-light transition-colors",
+                          selectedCollection === "all"
+                            ? cn("bg-neutral-100 text-neutral-900", scheme.from.replace("from-", "text-").replace("-500", "-700"))
+                            : "hover:bg-neutral-50"
+                        )}
+                      >
+                        All Collections
+                      </button>
+                      {uniqueCollections.map((collection) => (
+                        <button
+                          key={collection.id}
+                          onClick={() => {
+                            setSelectedCollection(collection.id)
+                            setCollectionDropdownOpen(false)
+                          }}
+                          className={cn(
+                            "w-full px-4 py-2.5 text-left text-sm font-light transition-colors",
+                            selectedCollection === collection.id
+                              ? cn("bg-neutral-100 text-neutral-900", scheme.from.replace("from-", "text-").replace("-500", "-700"))
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          {collection.name} ({collection.count})
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -639,13 +707,13 @@ export default function NotificationsPage() {
             {/* Include Archived Toggle */}
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-4">
-                <button
-                  onClick={() => setIncludeArchived(!includeArchived)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all"
-                >
-                  <Checkbox checked={includeArchived} />
+                <label className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer">
+                  <Checkbox
+                    checked={includeArchived}
+                    onCheckedChange={() => setIncludeArchived(!includeArchived)}
+                  />
                   <span className="text-sm font-light text-neutral-700">Show Archived</span>
-                </button>
+                </label>
               </CardContent>
             </Card>
           </div>
@@ -663,31 +731,105 @@ export default function NotificationsPage() {
               {/* Sort */}
               <div className="flex items-center gap-2">
                 <span className="text-sm font-light text-neutral-600">Sort:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="text-sm font-light border-neutral-200 rounded-lg px-3 py-1.5 bg-white"
-                >
-                  <option value="recent">Most Recent</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="priority">By Priority</option>
-                  <option value="collection">By Collection</option>
-                </select>
+                <div className="relative custom-dropdown">
+                  <button
+                    onClick={() => {
+                      setCollectionDropdownOpen(false)
+                      setGroupDropdownOpen(false)
+                      setSortDropdownOpen(!sortDropdownOpen)
+                    }}
+                    className={cn(
+                      "h-9 pl-4 pr-10 rounded-xl border-2 font-light text-sm bg-white transition-all min-w-[140px] text-left",
+                      sortDropdownOpen
+                        ? cn("border-current", scheme.from.replace("from-", "border-").replace("-500", "-400"))
+                        : "border-neutral-200 hover:border-neutral-300"
+                    )}
+                  >
+                    {sortBy === "recent" ? "Most Recent" : sortBy === "oldest" ? "Oldest First" : sortBy === "priority" ? "By Priority" : "By Collection"}
+                  </button>
+                  <ChevronDown className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none transition-transform",
+                    sortDropdownOpen && "rotate-180"
+                  )} />
+                  {sortDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 rounded-xl border-2 border-neutral-200 bg-white shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      {[
+                        { value: "recent", label: "Most Recent" },
+                        { value: "oldest", label: "Oldest First" },
+                        { value: "priority", label: "By Priority" },
+                        { value: "collection", label: "By Collection" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value as SortOption)
+                            setSortDropdownOpen(false)
+                          }}
+                          className={cn(
+                            "w-full px-4 py-2.5 text-left text-sm font-light transition-colors",
+                            sortBy === option.value
+                              ? cn("bg-neutral-100 text-neutral-900", scheme.from.replace("from-", "text-").replace("-500", "-700"))
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Group */}
               <div className="flex items-center gap-2">
                 <span className="text-sm font-light text-neutral-600">Group:</span>
-                <select
-                  value={groupBy}
-                  onChange={(e) => setGroupBy(e.target.value as GroupOption)}
-                  className="text-sm font-light border-neutral-200 rounded-lg px-3 py-1.5 bg-white"
-                >
-                  <option value="priority">By Priority</option>
-                  <option value="collection">By Collection</option>
-                  <option value="date">By Date</option>
-                  <option value="type">By Type</option>
-                </select>
+                <div className="relative custom-dropdown">
+                  <button
+                    onClick={() => {
+                      setCollectionDropdownOpen(false)
+                      setSortDropdownOpen(false)
+                      setGroupDropdownOpen(!groupDropdownOpen)
+                    }}
+                    className={cn(
+                      "h-9 pl-4 pr-10 rounded-xl border-2 font-light text-sm bg-white transition-all min-w-[140px] text-left",
+                      groupDropdownOpen
+                        ? cn("border-current", scheme.from.replace("from-", "border-").replace("-500", "-400"))
+                        : "border-neutral-200 hover:border-neutral-300"
+                    )}
+                  >
+                    {groupBy === "priority" ? "By Priority" : groupBy === "collection" ? "By Collection" : groupBy === "date" ? "By Date" : "By Type"}
+                  </button>
+                  <ChevronDown className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none transition-transform",
+                    groupDropdownOpen && "rotate-180"
+                  )} />
+                  {groupDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 rounded-xl border-2 border-neutral-200 bg-white shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      {[
+                        { value: "priority", label: "By Priority" },
+                        { value: "collection", label: "By Collection" },
+                        { value: "date", label: "By Date" },
+                        { value: "type", label: "By Type" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setGroupBy(option.value as GroupOption)
+                            setGroupDropdownOpen(false)
+                          }}
+                          className={cn(
+                            "w-full px-4 py-2.5 text-left text-sm font-light transition-colors",
+                            groupBy === option.value
+                              ? cn("bg-neutral-100 text-neutral-900", scheme.from.replace("from-", "text-").replace("-500", "-700"))
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

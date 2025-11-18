@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Collection, getCollectionById, User, getUsersByCollection, TEAM_CONTACTS, TeamContact } from "@/lib/dcm-mock-data"
 import { Button } from "@/components/ui/button"
@@ -164,9 +164,6 @@ export default function DCMProgressDashboard() {
   // Collection data
   const [collection, setCollection] = useState<Collection | null>(null)
   const [loading, setLoading] = useState(true)
-
-  // Help panel state
-  const [helpExpanded, setHelpExpanded] = useState(false)
 
   // Dataset Status filters
   const [datasetSearchFilter, setDatasetSearchFilter] = useState("")
@@ -630,6 +627,10 @@ ${currentUser.email}`
         </Card>
       </div>
 
+      {/* Main Content with Sidebar */}
+      <div className="flex gap-6">
+        {/* Main Content Area */}
+        <div className="flex-1 min-w-0">
       {/* Tabs */}
       <div className="flex gap-2 mb-6">
         {(() => {
@@ -709,6 +710,56 @@ ${currentUser.email}`
                 </div>
               </div>
 
+              {/* AI Summary */}
+              <div className="mb-4 p-4 rounded-xl bg-white border border-neutral-200">
+                <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                  {(() => {
+                    const blockerCount = comments.filter((c) => c.type === "blocker" && !c.isResolved).length
+                    const trainingBlockedUsers = getUsersByCollection(collection.id).filter(u => u.accessStatus === "blocked_training").length
+                    const totalApprovals = collection.approvalRequests.reduce((sum, req) => sum + req.count, 0)
+                    const usersWithAccess = collection.usersWithAccess
+                    const totalUsers = collection.totalUsers
+                    const progress = collection.progress
+
+                    // Generate contextual summary
+                    let summary = ""
+
+                    if (collection.status === "completed") {
+                      summary = `This collection has been fully provisioned with all ${totalUsers} users granted access. `
+                      summary += `All approval workflows completed successfully. The collection is now in active use.`
+                    } else if (collection.status === "provisioning") {
+                      summary = `Your collection is ${progress}% complete with ${usersWithAccess} of ${totalUsers} users currently having access. `
+
+                      if (blockerCount > 0) {
+                        summary += `There ${blockerCount === 1 ? 'is' : 'are'} ${blockerCount} active blocker${blockerCount > 1 ? 's' : ''} requiring immediate attention. `
+                      }
+
+                      if (totalApprovals > 0) {
+                        summary += `${totalApprovals} approval${totalApprovals > 1 ? 's are' : ' is'} pending from governance teams. `
+                      }
+
+                      if (trainingBlockedUsers > 0) {
+                        summary += `${trainingBlockedUsers} user${trainingBlockedUsers > 1 ? 's are' : ' is'} blocked due to incomplete training. `
+                      }
+
+                      if (blockerCount === 0 && collection.instantGrantProgress > 0) {
+                        summary += `Instant grant provisioning is progressing smoothly at ${collection.instantGrantProgress}% completion. `
+                      }
+
+                      if (blockerCount === 0 && totalApprovals === 0 && trainingBlockedUsers === 0) {
+                        summary += `All critical path items are on track with no blockers identified.`
+                      }
+                    } else if (collection.status === "pending_approval") {
+                      summary = `This collection is awaiting approval from governance teams before provisioning can begin. `
+                      summary += `${totalApprovals} approval${totalApprovals > 1 ? 's are' : ' is'} currently pending. `
+                      summary += `Expected review time is ${collection.approvalRequests[0]?.estimatedDays || '2-5 days'}.`
+                    }
+
+                    return summary
+                  })()}
+                </p>
+              </div>
+
               <div className="space-y-3">
                 {recommendations.map((rec, index) => (
                   <div
@@ -768,39 +819,102 @@ ${currentUser.email}`
           </Card>
         )}
 
+        {/* Recent Activity */}
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden animate-in fade-in duration-500">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-normal text-neutral-900 mb-4">Recent Activity</h3>
+
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
+                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">
+                      Immuta policy generation: 70% complete
+                    </p>
+                    <p className="text-xs font-light text-neutral-500">2 minutes ago</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 shrink-0">
+                    <Send className="size-4 text-amber-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">
+                      Authorization requests sent to GPT-Oncology
+                    </p>
+                    <p className="text-xs font-light text-neutral-500">5 minutes ago</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 shrink-0">
+                    <Send className="size-4 text-amber-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">
+                      Authorization requests sent to TALT-Legal
+                    </p>
+                    <p className="text-xs font-light text-neutral-500">5 minutes ago</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-blue-100 shrink-0">
+                    <Users className="size-4 text-blue-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">
+                      Training reminders sent to 12 users
+                    </p>
+                    <p className="text-xs font-light text-neutral-500">8 minutes ago</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
+                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">
+                      60 users granted immediate access
+                    </p>
+                    <p className="text-xs font-light text-neutral-500">10 minutes ago</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
+                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-normal text-neutral-900">Collection published</p>
+                    <p className="text-xs font-light text-neutral-500">10 minutes ago</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
         {/* Help & Guidance Panel */}
         <Card className="border-neutral-200 rounded-2xl overflow-hidden">
           <CardContent className="p-6">
-            <button
-              onClick={() => setHelpExpanded(!helpExpanded)}
-              className="w-full flex items-center justify-between mb-4"
-            >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "flex size-10 items-center justify-center rounded-full",
-                  scheme.bg.replace("500", "100")
-                )}>
-                  <Info className={cn("size-5", scheme.from.replace("from-", "text-"))} strokeWidth={1.5} />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-lg font-normal text-neutral-900">Need Help or Have Questions?</h3>
-                  <p className="text-sm font-light text-neutral-600">Resources and support for your collection</p>
-                </div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className={cn(
+                "flex size-10 items-center justify-center rounded-full",
+                scheme.bg.replace("500", "100")
+              )}>
+                <Info className={cn("size-5", scheme.from.replace("from-", "text-"))} strokeWidth={1.5} />
               </div>
-              {helpExpanded ? (
-                <ChevronUp className="size-5 text-neutral-400" strokeWidth={1.5} />
-              ) : (
-                <ChevronDown className="size-5 text-neutral-400" strokeWidth={1.5} />
-              )}
-            </button>
+              <div className="text-left">
+                <h3 className="text-lg font-normal text-neutral-900">Need Help or Have Questions?</h3>
+                <p className="text-sm font-light text-neutral-600">Resources and support for your collection</p>
+              </div>
+            </div>
 
-            <div
-              className={cn(
-                "overflow-hidden transition-all duration-500 ease-in-out",
-                helpExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-              )}
-            >
-              <div className="space-y-6 pt-2">
+            <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Status Meanings */}
                   <div>
@@ -932,143 +1046,8 @@ ${currentUser.email}`
                   </div>
                 </div>
               </div>
-            </div>
           </CardContent>
         </Card>
-
-        <div className="grid grid-cols-2 gap-6">
-          {/* Current Status */}
-          <Card className="border-neutral-200 rounded-2xl overflow-hidden animate-in slide-in-from-left duration-500" style={{ animationDelay: '100ms' }}>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Current Status</h3>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="size-5 text-green-600" strokeWidth={1.5} />
-                    <span className="text-sm font-normal text-green-900">Immediate Access</span>
-                  </div>
-                  <Badge variant="outline" className="font-light border-green-200 text-green-800">
-                    {collection.accessBreakdown.immediate} users
-                  </Badge>
-                </div>
-
-                {collection.status === "provisioning" && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100">
-                    <div className="flex items-center gap-3">
-                      <Loader2 className="size-5 text-blue-600 animate-spin" strokeWidth={1.5} />
-                      <span className="text-sm font-normal text-blue-900">Instant Grant (In Progress)</span>
-                    </div>
-                    <Badge variant="outline" className="font-light border-blue-200 text-blue-800">
-                      {collection.instantGrantProgress}% done
-                    </Badge>
-                  </div>
-                )}
-
-                {collection.approvalRequests.length > 0 && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-100">
-                    <div className="flex items-center gap-3">
-                      <Clock className="size-5 text-amber-600" strokeWidth={1.5} />
-                      <span className="text-sm font-normal text-amber-900">Pending Approvals</span>
-                    </div>
-                    <Badge variant="outline" className="font-light border-amber-200 text-amber-800">
-                      {collection.approvalRequests.reduce((sum, req) => sum + req.count, 0)} requests
-                    </Badge>
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-                  <div className="flex items-center gap-3">
-                    <HelpCircle className="size-5 text-neutral-600" strokeWidth={1.5} />
-                    <span className="text-sm font-normal text-neutral-900">Data Discovery</span>
-                  </div>
-                  <Badge variant="outline" className="font-light border-neutral-300">
-                    In progress
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="border-neutral-200 rounded-2xl overflow-hidden animate-in slide-in-from-right duration-500" style={{ animationDelay: '200ms' }}>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Recent Activity</h3>
-
-              <div className="space-y-3">
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
-                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">
-                      Immuta policy generation: 70% complete
-                    </p>
-                    <p className="text-xs font-light text-neutral-500">2 minutes ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 shrink-0">
-                    <Send className="size-4 text-amber-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">
-                      Authorization requests sent to GPT-Oncology
-                    </p>
-                    <p className="text-xs font-light text-neutral-500">5 minutes ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 shrink-0">
-                    <Send className="size-4 text-amber-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">
-                      Authorization requests sent to TALT-Legal
-                    </p>
-                    <p className="text-xs font-light text-neutral-500">5 minutes ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-blue-100 shrink-0">
-                    <Users className="size-4 text-blue-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">
-                      Training reminders sent to 12 users
-                    </p>
-                    <p className="text-xs font-light text-neutral-500">8 minutes ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
-                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">
-                      60 users granted immediate access
-                    </p>
-                    <p className="text-xs font-light text-neutral-500">10 minutes ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-green-100 shrink-0">
-                    <CheckCircle2 className="size-4 text-green-600" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-normal text-neutral-900">Collection published</p>
-                    <p className="text-xs font-light text-neutral-500">10 minutes ago</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
         </div>
       )}
 
@@ -1451,9 +1430,8 @@ ${currentUser.email}`
                           </tr>
                         ) : (
                           filteredUsers.map((user) => (
-                            <>
+                            <React.Fragment key={user.id}>
                               <tr
-                                key={user.id}
                                 className="hover:bg-neutral-50 transition-colors cursor-pointer"
                                 onClick={() => setExpandedUserId(expandedUserId === user.id ? null : user.id)}
                               >
@@ -1660,7 +1638,7 @@ ${currentUser.email}`
                                   </td>
                                 </tr>
                               )}
-                            </>
+                            </React.Fragment>
                           ))
                         )}
                       </tbody>
@@ -2209,6 +2187,184 @@ ${currentUser.email}`
           </div>
         </div>
       )}
+        </div>
+        {/* End Main Content Area */}
+
+        {/* Quick Actions Sidebar */}
+        <div className="w-72 shrink-0">
+          <div className="sticky top-8 space-y-4">
+            {/* Status Summary */}
+            <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-normal text-neutral-900 mb-3">Quick Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-light text-neutral-600">Progress</span>
+                    <span className="font-normal text-neutral-900">{collection.progress}%</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-light text-neutral-600">Users with Access</span>
+                    <span className="font-normal text-neutral-900">{collection.usersWithAccess}/{collection.totalUsers}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-light text-neutral-600">Datasets</span>
+                    <span className="font-normal text-neutral-900">{collection.totalDatasets}</span>
+                  </div>
+                  {collection.approvalRequests.length > 0 && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-light text-neutral-600">Pending Approvals</span>
+                      <span className="font-normal text-amber-700">
+                        {collection.approvalRequests.reduce((sum, req) => sum + req.count, 0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Next Actions */}
+            <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-normal text-neutral-900 mb-3">Next Actions</h3>
+                <div className="space-y-2">
+                  {(() => {
+                    const actions = []
+                    const blockerCount = comments.filter((c) => c.type === "blocker" && !c.isResolved).length
+                    const trainingBlockedUsers = getUsersByCollection(collection.id).filter(u => u.accessStatus === "blocked_training").length
+
+                    if (blockerCount > 0) {
+                      actions.push({
+                        label: `Resolve ${blockerCount} blocker${blockerCount > 1 ? 's' : ''}`,
+                        action: () => setActiveTab("discussion"),
+                        priority: "high"
+                      })
+                    }
+
+                    if (collection.approvalRequests.length > 0) {
+                      const totalApprovals = collection.approvalRequests.reduce((sum, req) => sum + req.count, 0)
+                      actions.push({
+                        label: `Follow up on ${totalApprovals} approval${totalApprovals > 1 ? 's' : ''}`,
+                        action: () => setActiveTab("timeline"),
+                        priority: "medium"
+                      })
+                    }
+
+                    if (trainingBlockedUsers > 0) {
+                      actions.push({
+                        label: `Email ${trainingBlockedUsers} user${trainingBlockedUsers > 1 ? 's' : ''} pending training`,
+                        action: () => setActiveTab("users"),
+                        priority: "medium"
+                      })
+                    }
+
+                    if (actions.length === 0) {
+                      return (
+                        <p className="text-xs font-light text-neutral-600 italic">
+                          No urgent actions required
+                        </p>
+                      )
+                    }
+
+                    return actions.map((action, idx) => (
+                      <button
+                        key={idx}
+                        onClick={action.action}
+                        className={cn(
+                          "w-full text-left px-3 py-2 rounded-xl text-xs font-light transition-all hover:scale-[1.02]",
+                          action.priority === "high" && "bg-red-50 text-red-700 hover:bg-red-100 border border-red-200",
+                          action.priority === "medium" && "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200"
+                        )}
+                      >
+                        {action.label}
+                      </button>
+                    ))
+                  })()}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Stakeholders */}
+            {collection.approvalRequests.length > 0 && (
+              <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-normal text-neutral-900 mb-3">Contact Teams</h3>
+                  <div className="space-y-2">
+                    {collection.approvalRequests.map((request, idx) => {
+                      const teamContact = TEAM_CONTACTS.find(tc => tc.team === request.team)
+                      if (!teamContact) return null
+
+                      return (
+                        <div key={idx} className="space-y-1">
+                          <p className="text-xs font-normal text-neutral-900">{request.team}</p>
+                          <div className="space-y-1">
+                            <a
+                              href={`mailto:${teamContact.email}`}
+                              className="flex items-center gap-1.5 text-xs font-light text-neutral-600 hover:text-neutral-900 transition-colors"
+                            >
+                              <Mail className="size-3" strokeWidth={1.5} />
+                              Email {teamContact.lead.split(' ')[0]}
+                            </a>
+                            {teamContact.teamsChannel && (
+                              <a
+                                href={`https://teams.microsoft.com/l/team/${encodeURIComponent(teamContact.teamsChannel)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-xs font-light text-neutral-600 hover:text-neutral-900 transition-colors"
+                              >
+                                <MessageSquare className="size-3" strokeWidth={1.5} />
+                                Open Teams
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quick Links */}
+            <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-normal text-neutral-900 mb-3">Quick Links</h3>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setActiveTab("datasets")}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-light text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+                  >
+                    <FileText className="size-3" strokeWidth={1.5} />
+                    View Dataset Status
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("users")}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-light text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+                  >
+                    <Users className="size-3" strokeWidth={1.5} />
+                    View User Status
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("timeline")}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-light text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+                  >
+                    <TrendingUp className="size-3" strokeWidth={1.5} />
+                    View Timeline
+                  </button>
+                  <button
+                    onClick={() => setSendUpdateOpen(true)}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-light text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center gap-2"
+                  >
+                    <Send className="size-3" strokeWidth={1.5} />
+                    Send Update
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        {/* End Quick Actions Sidebar */}
+      </div>
+      {/* End Main Content with Sidebar */}
 
       {/* Resolve Blocker Dialog */}
       <Dialog open={resolvingCommentId !== null} onOpenChange={(open) => !open && setResolvingCommentId(null)}>
@@ -2267,7 +2423,7 @@ ${currentUser.email}`
 
       {/* Send Update Modal */}
       <Dialog open={sendUpdateOpen} onOpenChange={setSendUpdateOpen}>
-        <DialogContent className="max-w-4xl rounded-2xl">
+        <DialogContent className="!max-w-5xl rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-extralight tracking-tight">
               Send Progress Update

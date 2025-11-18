@@ -137,11 +137,46 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Cursor pointer for all native interactive elements */
+  button:not(:disabled),
+  a[href],
+  label:has(input[type="checkbox"]),
+  label:has(input[type="radio"]),
+  select:not(:disabled),
+  [type="checkbox"]:not(:disabled),
+  [type="radio"]:not(:disabled),
+  summary {
+    @apply cursor-pointer;
+  }
+
+  /* Cursor not-allowed for disabled states */
+  button:disabled,
+  select:disabled,
+  [type="checkbox"]:disabled,
+  [type="radio"]:disabled {
+    @apply cursor-not-allowed;
+  }
 }
 
 @layer components {
   button:not(.unstyled) {
     @apply rounded-xl;
+  }
+
+  /* Cursor pointer for ARIA roles and interactive patterns */
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="menuitem"],
+  [role="option"],
+  [onclick]:not(button):not(a):not(select):not(input):not(textarea),
+  .clickable {
+    @apply cursor-pointer;
+  }
+
+  /* Cursor not-allowed for disabled ARIA elements */
+  [role="button"][aria-disabled="true"] {
+    @apply cursor-not-allowed;
   }
 }
 

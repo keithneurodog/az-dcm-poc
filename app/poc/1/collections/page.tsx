@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -39,6 +39,7 @@ export default function CollectionsBrowserPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState<"recent" | "name" | "users" | "progress">("recent")
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false)
 
   // Filter state
   const [selectedStatus, setSelectedStatus] = useState<string[]>([])
@@ -104,6 +105,18 @@ export default function CollectionsBrowserPage() {
 
   const hasActiveFilters =
     searchQuery || selectedStatus.length > 0 || selectedAreas.length > 0 || accessLevel !== "all"
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.sort-dropdown')) {
+        setSortDropdownOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
 
   // Navigate to collection
   const handleViewCollection = (collectionId: string) => {
@@ -228,8 +241,8 @@ export default function CollectionsBrowserPage() {
                       className={cn(
                         "w-full text-left px-3 py-2 rounded-lg text-sm font-light transition-all",
                         accessLevel === option.value
-                          ? cn("bg-gradient-to-r text-white", scheme.bg, scheme.bgHover)
-                          : "hover:bg-neutral-50"
+                          ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                          : "hover:bg-neutral-50 text-neutral-700"
                       )}
                     >
                       {option.label}
@@ -297,16 +310,49 @@ export default function CollectionsBrowserPage() {
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-light text-neutral-600">Sort:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="text-sm font-light border-neutral-200 rounded-lg px-3 py-1 bg-white"
-                >
-                  <option value="recent">Most Recent</option>
-                  <option value="name">Name (A-Z)</option>
-                  <option value="users">Most Users</option>
-                  <option value="progress">Progress</option>
-                </select>
+                <div className="relative sort-dropdown">
+                  <button
+                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                    className={cn(
+                      "h-9 pl-4 pr-10 rounded-xl border-2 font-light text-sm bg-white transition-all min-w-[140px] text-left",
+                      sortDropdownOpen
+                        ? cn("border-current", scheme.from.replace("from-", "border-").replace("-500", "-400"))
+                        : "border-neutral-200 hover:border-neutral-300"
+                    )}
+                  >
+                    {sortBy === "recent" ? "Most Recent" : sortBy === "name" ? "Name (A-Z)" : sortBy === "users" ? "Most Users" : "Progress"}
+                  </button>
+                  <ChevronDown className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 pointer-events-none transition-transform",
+                    sortDropdownOpen && "rotate-180"
+                  )} />
+                  {sortDropdownOpen && (
+                    <div className="absolute z-50 w-full mt-2 rounded-xl border-2 border-neutral-200 bg-white shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                      {[
+                        { value: "recent", label: "Most Recent" },
+                        { value: "name", label: "Name (A-Z)" },
+                        { value: "users", label: "Most Users" },
+                        { value: "progress", label: "Progress" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value as any)
+                            setSortDropdownOpen(false)
+                          }}
+                          className={cn(
+                            "w-full px-4 py-2.5 text-left text-sm font-light transition-colors",
+                            sortBy === option.value
+                              ? cn("bg-neutral-100 text-neutral-900", scheme.from.replace("from-", "text-").replace("-500", "-700"))
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -172,6 +172,7 @@ export default function DCMActivitiesPage() {
   }
 
   const recommendations = getRecommendations()
+  const recommendedActivityIds = new Set(recommendations.map(r => r.id))
 
   // Calculate data complexity metrics
   const getDataComplexity = () => {
@@ -728,7 +729,12 @@ export default function DCMActivitiesPage() {
                       scheme.bg,
                       scheme.bgHover
                     )
-                  : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm",
+                  : recommendedActivityIds.has(activity.id)
+                    ? cn(
+                        "bg-white hover:shadow-sm",
+                        scheme.from.replace("from-", "border-").replace("500", "100")
+                      )
+                    : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm",
                 highlightedActivity === activity.id && "ring-2 ring-offset-2",
                 highlightedActivity === activity.id && scheme.from.replace("from-", "ring-")
               )}
@@ -739,9 +745,14 @@ export default function DCMActivitiesPage() {
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <h3 className="text-base font-normal text-neutral-900 mb-2">
-                    {activity.name}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-base font-normal text-neutral-900">
+                      {activity.name}
+                    </h3>
+                    {recommendedActivityIds.has(activity.id) && (
+                      <Sparkles className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                    )}
+                  </div>
                   <p className="text-sm font-light text-neutral-600 leading-relaxed mb-3">
                     {activity.description}
                   </p>
@@ -785,7 +796,12 @@ export default function DCMActivitiesPage() {
                       scheme.bg,
                       scheme.bgHover
                     )
-                  : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm",
+                  : recommendedActivityIds.has(activity.id)
+                    ? cn(
+                        "bg-white hover:shadow-sm",
+                        scheme.from.replace("from-", "border-").replace("500", "100")
+                      )
+                    : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm",
                 highlightedActivity === activity.id && "ring-2 ring-offset-2",
                 highlightedActivity === activity.id && scheme.from.replace("from-", "ring-")
               )}
@@ -796,9 +812,14 @@ export default function DCMActivitiesPage() {
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <h3 className="text-base font-normal text-neutral-900 mb-2">
-                    {activity.name}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-base font-normal text-neutral-900">
+                      {activity.name}
+                    </h3>
+                    {recommendedActivityIds.has(activity.id) && (
+                      <Sparkles className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                    )}
+                  </div>
                   <p className="text-sm font-light text-neutral-600 leading-relaxed mb-3">
                     {activity.description}
                   </p>
