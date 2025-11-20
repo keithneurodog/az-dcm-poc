@@ -321,6 +321,26 @@ export function extractKeywordsAndSuggestCategories(intent: string): {
 }
 
 // Dataset interfaces
+// Approval workflow interfaces
+export interface DatasetApprovalRequirement {
+  id: string
+  team: "GPT-Oncology" | "TALT-Legal" | "Publication Lead" | "GSP" | "Alliance Manager" | "GCL" | "IA" | "GPT-Cardiovascular" | "GPT-Respiratory" | "GPT-Metabolic"
+  reason: string // Why this approval is needed
+  status: "pending" | "approved" | "rejected" | "aware"
+  requestedDate: Date
+  dueDate?: Date
+}
+
+export interface DatasetApprovalAction {
+  id: string
+  requirementId: string // Links to which requirement this addresses
+  action: "approved" | "rejected" | "aware"
+  actorName: string
+  actorEmail: string
+  comment: string // Mandatory
+  timestamp: Date
+}
+
 export interface Dataset {
   id: string
   code: string
@@ -356,6 +376,10 @@ export interface Dataset {
 
   // Frequently bundled with
   frequentlyBundledWith: string[] // Dataset codes
+
+  // Approval workflow (optional)
+  approvalRequirements?: DatasetApprovalRequirement[]
+  approvalActions?: DatasetApprovalAction[]
 }
 
 export const MOCK_DATASETS: Dataset[] = [
@@ -405,6 +429,25 @@ export const MOCK_DATASETS: Dataset[] = [
       genomics: "SolveBio",
     },
     frequentlyBundledWith: ["DCODE-001", "DCODE-088", "DCODE-102"],
+    approvalRequirements: [
+      {
+        id: "req-042-1",
+        team: "GPT-Oncology",
+        reason: "Active study data requires therapeutic area governance review for immunotherapy protocols",
+        status: "pending",
+        requestedDate: new Date("2025-11-15T10:30:00"),
+        dueDate: new Date("2025-11-20T17:00:00"),
+      },
+      {
+        id: "req-042-2",
+        team: "TALT-Legal",
+        reason: "Cross-geography data (US + EU + Asia) requires GDPR compliance review",
+        status: "pending",
+        requestedDate: new Date("2025-11-15T10:30:00"),
+        dueDate: new Date("2025-11-22T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-001",
@@ -453,6 +496,27 @@ export const MOCK_DATASETS: Dataset[] = [
       genomics: "SolveBio",
     },
     frequentlyBundledWith: ["DCODE-042", "DCODE-067", "DCODE-088"],
+    approvalRequirements: [
+      {
+        id: "req-001-1",
+        team: "GPT-Oncology",
+        reason: "Genomic data access requires domain review",
+        status: "approved",
+        requestedDate: new Date("2025-11-10T09:00:00"),
+        dueDate: new Date("2025-11-17T17:00:00"),
+      },
+    ],
+    approvalActions: [
+      {
+        id: "act-001-1",
+        requirementId: "req-001-1",
+        action: "approved",
+        actorName: "Dr. Sarah Martinez",
+        actorEmail: "sarah.martinez@astrazeneca.com",
+        comment: "All governance criteria met. Clinical data review complete. Study is closed and all documentation is in order for researcher access.",
+        timestamp: new Date("2025-11-12T14:23:00"),
+      },
+    ],
   },
   {
     id: "dcode-067",
@@ -495,6 +559,17 @@ export const MOCK_DATASETS: Dataset[] = [
       imaging: "DICOM Archives",
     },
     frequentlyBundledWith: ["DCODE-042", "DCODE-102"],
+    approvalRequirements: [
+      {
+        id: "req-067-1",
+        team: "Publication Lead",
+        reason: "Dataset includes data intended for publication in upcoming manuscript",
+        status: "pending",
+        requestedDate: new Date("2025-11-16T11:15:00"),
+        dueDate: new Date("2025-11-23T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-088",
@@ -534,6 +609,26 @@ export const MOCK_DATASETS: Dataset[] = [
       clinical: "S3",
     },
     frequentlyBundledWith: ["DCODE-001", "DCODE-042"],
+    approvalRequirements: [
+      {
+        id: "req-088-1",
+        team: "GPT-Oncology",
+        reason: "Standard review for historical study data access",
+        status: "aware",
+        requestedDate: new Date("2025-11-13T08:00:00"),
+      },
+    ],
+    approvalActions: [
+      {
+        id: "act-088-1",
+        requirementId: "req-088-1",
+        action: "aware",
+        actorName: "Dr. Michael Chen",
+        actorEmail: "michael.chen@astrazeneca.com",
+        comment: "Acknowledged. Study is closed and published. No restrictions on access for routine research activities.",
+        timestamp: new Date("2025-11-13T15:45:00"),
+      },
+    ],
   },
   {
     id: "dcode-102",
@@ -572,6 +667,35 @@ export const MOCK_DATASETS: Dataset[] = [
       imaging: "DICOM Archives",
     },
     frequentlyBundledWith: ["DCODE-042", "DCODE-067"],
+    approvalRequirements: [
+      {
+        id: "req-102-1",
+        team: "GPT-Oncology",
+        reason: "PET imaging data requires oncology domain review",
+        status: "approved",
+        requestedDate: new Date("2025-11-14T09:30:00"),
+        dueDate: new Date("2025-11-21T17:00:00"),
+      },
+      {
+        id: "req-102-2",
+        team: "TALT-Legal",
+        reason: "Cross-border imaging data transfer requires legal review",
+        status: "pending",
+        requestedDate: new Date("2025-11-14T09:30:00"),
+        dueDate: new Date("2025-11-25T17:00:00"),
+      },
+    ],
+    approvalActions: [
+      {
+        id: "act-102-1",
+        requirementId: "req-102-1",
+        action: "approved",
+        actorName: "Dr. Sarah Martinez",
+        actorEmail: "sarah.martinez@astrazeneca.com",
+        comment: "Imaging protocols reviewed. Quality metrics are acceptable for research use. Approved for access.",
+        timestamp: new Date("2025-11-15T10:15:00"),
+      },
+    ],
   },
   {
     id: "dcode-134",
@@ -608,6 +732,27 @@ export const MOCK_DATASETS: Dataset[] = [
       clinical: "S3",
     },
     frequentlyBundledWith: ["DCODE-042"],
+    approvalRequirements: [
+      {
+        id: "req-134-1",
+        team: "GSP",
+        reason: "Biomarker data requires safety representative review",
+        status: "rejected",
+        requestedDate: new Date("2025-11-11T14:00:00"),
+        dueDate: new Date("2025-11-18T17:00:00"),
+      },
+    ],
+    approvalActions: [
+      {
+        id: "act-134-1",
+        requirementId: "req-134-1",
+        action: "rejected",
+        actorName: "Dr. James Wilson",
+        actorEmail: "james.wilson@astrazeneca.com",
+        comment: "Rejected due to incomplete safety documentation. Requestor needs to provide updated AE coding dictionary and safety monitoring plan before data can be released.",
+        timestamp: new Date("2025-11-14T16:30:00"),
+      },
+    ],
   },
   {
     id: "dcode-156",
@@ -640,6 +785,43 @@ export const MOCK_DATASETS: Dataset[] = [
       clinical: "S3",
     },
     frequentlyBundledWith: [],
+    approvalRequirements: [
+      {
+        id: "req-156-1",
+        team: "GPT-Oncology",
+        reason: "Active study requires formal GPT review before data release",
+        status: "pending",
+        requestedDate: new Date("2025-11-12T10:00:00"),
+        dueDate: new Date("2025-11-19T17:00:00"),
+      },
+      {
+        id: "req-156-2",
+        team: "Alliance Manager",
+        reason: "Study involves product collaboration partner, requires partner approval",
+        status: "aware",
+        requestedDate: new Date("2025-11-12T10:00:00"),
+      },
+    ],
+    approvalActions: [
+      {
+        id: "act-156-1",
+        requirementId: "req-156-2",
+        action: "aware",
+        actorName: "Jennifer Brooks",
+        actorEmail: "jennifer.brooks@astrazeneca.com",
+        comment: "Alliance manager notified. Partner has been contacted for formal approval. Expect response within 5 business days.",
+        timestamp: new Date("2025-11-13T09:15:00"),
+      },
+      {
+        id: "act-156-2",
+        requirementId: "req-156-2",
+        action: "aware",
+        actorName: "Dr. Michael Chen",
+        actorEmail: "michael.chen@astrazeneca.com",
+        comment: "Also made aware. Coordinating with alliance team on partnership agreement terms.",
+        timestamp: new Date("2025-11-14T11:30:00"),
+      },
+    ],
   },
   {
     id: "dcode-178",
@@ -671,6 +853,17 @@ export const MOCK_DATASETS: Dataset[] = [
       clinical: "S3",
     },
     frequentlyBundledWith: [],
+    approvalRequirements: [
+      {
+        id: "req-178-1",
+        team: "GPT-Oncology",
+        reason: "Active immunotherapy study requires ongoing review",
+        status: "pending",
+        requestedDate: new Date("2025-11-17T08:45:00"),
+        dueDate: new Date("2025-11-24T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-203",
@@ -690,6 +883,17 @@ export const MOCK_DATASETS: Dataset[] = [
     accessBreakdown: { alreadyOpen: 60, readyToGrant: 30, needsApproval: 10, missingLocation: 0 },
     dataLocation: { clinical: "S3" },
     frequentlyBundledWith: ["DCODE-215", "DCODE-289"],
+    approvalRequirements: [
+      {
+        id: "req-203-1",
+        team: "GPT-Cardiovascular",
+        reason: "Cardiovascular outcomes data requires domain governance review",
+        status: "pending",
+        requestedDate: new Date("2025-11-16T13:20:00"),
+        dueDate: new Date("2025-11-23T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-215",
@@ -709,6 +913,25 @@ export const MOCK_DATASETS: Dataset[] = [
     accessBreakdown: { alreadyOpen: 40, readyToGrant: 40, needsApproval: 20, missingLocation: 0 },
     dataLocation: { clinical: "S3" },
     frequentlyBundledWith: ["DCODE-203"],
+    approvalRequirements: [
+      {
+        id: "req-215-1",
+        team: "GPT-Cardiovascular",
+        reason: "Biomarker data requires cardiovascular domain review",
+        status: "pending",
+        requestedDate: new Date("2025-11-17T10:00:00"),
+        dueDate: new Date("2025-11-24T17:00:00"),
+      },
+      {
+        id: "req-215-2",
+        team: "TALT-Legal",
+        reason: "Multi-region study with GDPR considerations",
+        status: "pending",
+        requestedDate: new Date("2025-11-17T10:00:00"),
+        dueDate: new Date("2025-11-26T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-227",
@@ -728,6 +951,17 @@ export const MOCK_DATASETS: Dataset[] = [
     accessBreakdown: { alreadyOpen: 30, readyToGrant: 30, needsApproval: 30, missingLocation: 10 },
     dataLocation: { clinical: "S3", imaging: "DICOM Archives" },
     frequentlyBundledWith: ["DCODE-239", "DCODE-251"],
+    approvalRequirements: [
+      {
+        id: "req-227-1",
+        team: "GCL",
+        reason: "Neuroimaging data requires clinical lead review for research use",
+        status: "pending",
+        requestedDate: new Date("2025-11-16T14:30:00"),
+        dueDate: new Date("2025-11-23T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-239",
@@ -747,6 +981,17 @@ export const MOCK_DATASETS: Dataset[] = [
     accessBreakdown: { alreadyOpen: 50, readyToGrant: 30, needsApproval: 20, missingLocation: 0 },
     dataLocation: { clinical: "S3", imaging: "DICOM Archives" },
     frequentlyBundledWith: ["DCODE-227"],
+    approvalRequirements: [
+      {
+        id: "req-239-1",
+        team: "IA",
+        reason: "Observational study data requires information advocate review",
+        status: "pending",
+        requestedDate: new Date("2025-11-18T09:00:00"),
+        dueDate: new Date("2025-11-25T17:00:00"),
+      },
+    ],
+    approvalActions: [],
   },
   {
     id: "dcode-251",

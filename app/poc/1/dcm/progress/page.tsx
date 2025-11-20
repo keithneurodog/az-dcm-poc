@@ -8,6 +8,15 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
@@ -32,6 +41,8 @@ import {
   TrendingUp,
   Mail,
   X,
+  XCircle,
+  Bell,
   MessageSquare,
   AlertCircle,
   Lightbulb,
@@ -43,9 +54,13 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Sparkles,
   Search,
   User as UserIcon,
+  UserCheck,
+  CheckSquare,
 } from "lucide-react"
 
 // Mock AD email suggestions
@@ -188,11 +203,25 @@ export default function DCMProgressDashboard() {
   const [sending, setSending] = useState(false)
   const [sendSuccess, setSendSuccess] = useState(false)
 
+  // Approval Modal State
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false)
+  const [selectedDatasets, setSelectedDatasets] = useState<string[]>([])
+  const [approvalComment, setApprovalComment] = useState("")
+  const [processing, setProcessing] = useState(false)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
+  const [filterTeam, setFilterTeam] = useState<string>("all")
+  const [filterTA, setFilterTA] = useState<string>("all")
+  const [filterApprovalStatus, setFilterApprovalStatus] = useState<string>("pending")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [expandedDatasetId, setExpandedDatasetId] = useState<string | null>(null)
+  const itemsPerPage = 10
+
   // Mock logged-in user
   const currentUser = {
     name: "Jennifer Martinez",
     email: "jennifer.martinez@astrazeneca.com",
-    role: "Data Collection Manager"
+    role: "Data Collection Manager",
+    approvalTeam: "TALT-Legal" // Team this user can approve for
   }
 
   // Handle blocker resolution
@@ -635,9 +664,16 @@ ${currentUser.email}`
       <div className="flex gap-2 mb-6">
         {(() => {
           const blockerCount = comments.filter((c) => c.type === "blocker" && !c.isResolved).length
+
+          // Calculate pending approval count
+          const pendingApprovalCount = collection.selectedDatasets.reduce(
+            (sum, d) => sum + (d.approvalRequirements?.filter(r => r.status === 'pending').length || 0),
+            0
+          )
+
           const tabs = [
             { id: "overview", label: "Overview", icon: Activity },
-            { id: "datasets", label: "Dataset Status", icon: FileText },
+            { id: "datasets", label: "Dataset Status", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
             { id: "users", label: "User Status", icon: Users },
             { id: "timeline", label: "Timeline", icon: TrendingUp },
             { id: "discussion", label: "Discussion", icon: MessageSquare, badge: comments.length, blockerCount },
@@ -646,6 +682,7 @@ ${currentUser.email}`
           return tabs.map((tab) => {
             const Icon = tab.icon
             const hasCritical = tab.id === "discussion" && tab.blockerCount && tab.blockerCount > 0
+            const isApprovalBadge = tab.id === "datasets" && tab.badgeColor === "amber"
 
             return (
               <button
@@ -663,9 +700,11 @@ ${currentUser.email}`
                 {tab.badge && (
                   <Badge
                     className={cn(
-                      "ml-1 font-light text-xs",
+                      "ml-1 rounded-full font-light text-xs",
                       hasCritical
                         ? "bg-gradient-to-r from-red-500 to-orange-400 text-white border-0"
+                        : isApprovalBadge
+                        ? "bg-amber-500 text-white border-0"
                         : activeTab === tab.id
                         ? "bg-white/80 text-neutral-900"
                         : scheme.from.replace("from-", "bg-") + " text-white"
@@ -1069,6 +1108,31 @@ ${currentUser.email}`
               }
             })
 
+            // Calculate datasets requiring approval
+            const datasetsRequiringApproval = collection.selectedDatasets.filter(d =>
+              d.approvalRequirements?.some(r => r.status === 'pending')
+            )
+
+            const pendingApprovalCount = datasetsRequiringApproval.reduce(
+              (sum, d) => sum + (d.approvalRequirements?.filter(r => r.status === 'pending').length || 0),
+              0
+            )
+
+            // Calculate team breakdown for pending approvals
+            const teamBreakdown = datasetsRequiringApproval.reduce((acc, dataset) => {
+              dataset.approvalRequirements?.forEach(req => {
+                if (req.status === 'pending') {
+                  const existingTeam = acc.find(t => t.name === req.team)
+                  if (existingTeam) {
+                    existingTeam.count++
+                  } else {
+                    acc.push({ name: req.team, count: 1 })
+                  }
+                }
+              })
+              return acc
+            }, [] as { name: string; count: number }[])
+
             const statusCounts = {
               accessible: datasetStatuses.filter(d => d.status.status === "accessible").length,
               provisioning: datasetStatuses.filter(d => d.status.status === "provisioning").length,
@@ -1084,6 +1148,45 @@ ${currentUser.email}`
 
             return (
               <>
+                {/* Approval Alert Panel */}
+                {datasetsRequiringApproval.length > 0 && (
+                  <Card className="border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-md">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-amber-100 rounded-xl">
+                            <AlertCircle className="size-8 text-amber-700" strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-normal text-amber-900 mb-1">
+                              {pendingApprovalCount} Approval{pendingApprovalCount !== 1 ? 's' : ''} Awaiting Decision
+                            </h3>
+                            <p className="text-sm font-light text-amber-700 mb-3">
+                              {datasetsRequiringApproval.length} dataset{datasetsRequiringApproval.length !== 1 ? 's' : ''} requiring approval from governance teams
+                            </p>
+                            {teamBreakdown.length > 0 && (
+                              <div className="flex gap-4 text-xs font-light text-amber-800">
+                                {teamBreakdown.map(team => (
+                                  <span key={team.name}>
+                                    {team.name}: {team.count}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => setApprovalModalOpen(true)}
+                          className="bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-700 hover:to-orange-700 rounded-full px-6"
+                        >
+                          <CheckCircle2 className="size-4 mr-2" strokeWidth={1.5} />
+                          Review Approvals
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Summary Cards */}
                 <div className="grid grid-cols-4 gap-4">
                   <Card className="border-neutral-200 rounded-xl">
@@ -2628,6 +2731,392 @@ ${currentUser.email}`
               </Button>
             </div>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Approval Modal */}
+      <Dialog open={approvalModalOpen} onOpenChange={setApprovalModalOpen}>
+        <DialogContent className="!max-w-7xl rounded-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-extralight tracking-tight text-neutral-900">
+              Review Dataset Approvals
+            </DialogTitle>
+            <DialogDescription className="text-sm font-light text-neutral-600">
+              Select datasets to approve, reject, or mark as aware. Comments are required for all actions.
+            </DialogDescription>
+          </DialogHeader>
+
+          {(() => {
+            // Filter datasets requiring approval
+            const datasetsForApproval = collection.selectedDatasets.filter(d =>
+              d.approvalRequirements?.some(r => r.status === 'pending' || (filterApprovalStatus !== 'pending' && r.status === filterApprovalStatus))
+            )
+
+            // Apply filters
+            const filtered = datasetsForApproval.filter(dataset => {
+              const matchesTeam = filterTeam === "all" || dataset.approvalRequirements?.some(r => r.team === filterTeam)
+              const matchesTA = filterTA === "all" || dataset.therapeuticArea.includes(filterTA)
+              return matchesTeam && matchesTA
+            })
+
+            // Pagination
+            const totalPages = Math.ceil(filtered.length / itemsPerPage)
+            const startIndex = (currentPage - 1) * itemsPerPage
+            const paginatedDatasets = filtered.slice(startIndex, startIndex + itemsPerPage)
+
+            const toggleDatasetSelection = (datasetId: string) => {
+              setSelectedDatasets(prev =>
+                prev.includes(datasetId)
+                  ? prev.filter(id => id !== datasetId)
+                  : [...prev, datasetId]
+              )
+            }
+
+            const selectAllOnPage = () => {
+              setSelectedDatasets(prev => {
+                const newSet = new Set(prev)
+                paginatedDatasets.forEach(d => newSet.add(d.id))
+                return Array.from(newSet)
+              })
+            }
+
+            const selectAllFiltered = () => {
+              setSelectedDatasets(filtered.map(d => d.id))
+            }
+
+            const clearSelection = () => setSelectedDatasets([])
+
+            const selectMyApprovals = () => {
+              // Filter to datasets where current user's team has pending approvals
+              const myDatasets = filtered.filter(d =>
+                d.approvalRequirements?.some(req =>
+                  req.team === currentUser.approvalTeam && req.status === 'pending'
+                )
+              )
+              setSelectedDatasets(myDatasets.map(d => d.id))
+            }
+
+            // Count how many datasets the current user can approve
+            const myApprovalsCount = filtered.filter(d =>
+              d.approvalRequirements?.some(req =>
+                req.team === currentUser.approvalTeam && req.status === 'pending'
+              )
+            ).length
+
+            const handleApprovalAction = async (action: 'approved' | 'rejected' | 'aware') => {
+              setAttemptedSubmit(true)
+
+              if (!approvalComment.trim()) {
+                return
+              }
+
+              if (selectedDatasets.length === 0) {
+                return
+              }
+
+              setProcessing(true)
+
+              // Simulate API call
+              await new Promise(resolve => setTimeout(resolve, 1500))
+
+              // In a real implementation, this would update the backend
+              // For now, we'll just close the modal and reset state
+              setProcessing(false)
+              setApprovalComment("")
+              setSelectedDatasets([])
+              setAttemptedSubmit(false)
+              setApprovalModalOpen(false)
+
+              // Show success feedback (could add a toast here)
+            }
+
+            return (
+              <>
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  {/* Filters & Selection Controls */}
+                  <div className="border-b border-neutral-200 pb-4 mb-4 space-y-3">
+                    <div className="flex gap-2 flex-wrap">
+                      <Select value={filterTeam} onValueChange={setFilterTeam}>
+                        <SelectTrigger className="w-48 rounded-xl font-light border-2 border-neutral-200 hover:border-neutral-300">
+                          <SelectValue placeholder="Filter by team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Teams</SelectItem>
+                          <SelectItem value="GPT-Oncology">GPT-Oncology</SelectItem>
+                          <SelectItem value="GPT-Cardiovascular">GPT-Cardiovascular</SelectItem>
+                          <SelectItem value="TALT-Legal">TALT-Legal</SelectItem>
+                          <SelectItem value="Publication Lead">Publication Lead</SelectItem>
+                          <SelectItem value="GSP">GSP</SelectItem>
+                          <SelectItem value="Alliance Manager">Alliance Manager</SelectItem>
+                          <SelectItem value="GCL">GCL</SelectItem>
+                          <SelectItem value="IA">IA</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={filterTA} onValueChange={setFilterTA}>
+                        <SelectTrigger className="w-48 rounded-xl font-light border-2 border-neutral-200 hover:border-neutral-300">
+                          <SelectValue placeholder="Therapeutic area" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Areas</SelectItem>
+                          <SelectItem value="ONC">Oncology</SelectItem>
+                          <SelectItem value="CARDIO">Cardiovascular</SelectItem>
+                          <SelectItem value="NEURO">Neurology</SelectItem>
+                          <SelectItem value="IMMUNONC">Immuno-Oncology</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={filterApprovalStatus} onValueChange={setFilterApprovalStatus}>
+                        <SelectTrigger className="w-40 rounded-xl font-light border-2 border-neutral-200 hover:border-neutral-300">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All</SelectItem>
+                          <SelectItem value="pending">Pending Only</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Smart Selection - My Approvals */}
+                    {myApprovalsCount > 0 && (
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <UserCheck className="size-5 text-blue-700" strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-normal text-blue-900">
+                              {myApprovalsCount} dataset{myApprovalsCount !== 1 ? 's' : ''} awaiting your approval
+                            </p>
+                            <p className="text-xs font-light text-blue-700">
+                              {currentUser.approvalTeam} team
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={selectMyApprovals}
+                          className={cn(
+                            "rounded-full font-light",
+                            "bg-gradient-to-r from-blue-600 to-indigo-600",
+                            "hover:from-blue-700 hover:to-indigo-700",
+                            "text-white shadow-md"
+                          )}
+                        >
+                          <CheckSquare className="size-4 mr-2" strokeWidth={1.5} />
+                          Select My Approvals
+                        </Button>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={selectAllOnPage}
+                          className="rounded-full font-light"
+                        >
+                          Select All on Page ({paginatedDatasets.length})
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={selectAllFiltered}
+                          className="rounded-full font-light"
+                        >
+                          Select All Filtered ({filtered.length})
+                        </Button>
+                        {selectedDatasets.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearSelection}
+                            className="rounded-full font-light"
+                          >
+                            Clear Selection
+                          </Button>
+                        )}
+                      </div>
+
+                      <span className="text-sm font-light text-neutral-600">
+                        {selectedDatasets.length} selected
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Scrollable Dataset List */}
+                  <div className="flex-1 overflow-y-auto pr-2">
+                    <div className="space-y-2">
+                      {paginatedDatasets.map(dataset => (
+                        <div
+                          key={dataset.id}
+                          className={cn(
+                            "border rounded-xl p-4 cursor-pointer transition-all",
+                            selectedDatasets.includes(dataset.id)
+                              ? "border-amber-400 bg-amber-50"
+                              : "border-neutral-200 hover:border-neutral-300"
+                          )}
+                          onClick={() => toggleDatasetSelection(dataset.id)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Checkbox
+                              checked={selectedDatasets.includes(dataset.id)}
+                              onCheckedChange={() => toggleDatasetSelection(dataset.id)}
+                              className="mt-1"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <Badge variant="outline" className="rounded-full font-mono font-light text-xs mb-1">
+                                    {dataset.code}
+                                  </Badge>
+                                  <h4 className="font-normal text-neutral-900">
+                                    {dataset.name}
+                                  </h4>
+                                </div>
+                                <div className="text-right text-xs text-neutral-500">
+                                  {dataset.therapeuticArea.join(", ")}
+                                </div>
+                              </div>
+
+                              {/* Approval requirements for this dataset */}
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {dataset.approvalRequirements
+                                  ?.filter(r => r.status === 'pending')
+                                  .map(req => (
+                                    <Badge
+                                      key={req.id}
+                                      className="rounded-full bg-amber-100 text-amber-800 border-amber-200 font-light text-xs"
+                                    >
+                                      {req.team} approval needed
+                                    </Badge>
+                                  ))}
+                              </div>
+
+                              <p className="text-xs font-light text-neutral-600 mt-2">
+                                {dataset.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="border-t border-neutral-200 pt-4 mt-4 flex items-center justify-between">
+                    <span className="text-sm font-light text-neutral-600">
+                      Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filtered.length)} of {filtered.length}
+                    </span>
+                    <div className="flex gap-2 items-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="rounded-full font-light"
+                      >
+                        <ChevronLeft className="size-4" strokeWidth={1.5} />
+                      </Button>
+                      <span className="px-3 py-1 text-sm font-light">
+                        Page {currentPage} of {totalPages || 1}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                        className="rounded-full font-light"
+                      >
+                        <ChevronRight className="size-4" strokeWidth={1.5} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Footer */}
+                <div className="border-t border-neutral-200 pt-6 space-y-4">
+                  {/* Comment Input - MANDATORY */}
+                  <div>
+                    <Label htmlFor="approval-comment" className="text-sm font-normal mb-2 block">
+                      Comment <span className="text-red-600">*</span>
+                    </Label>
+                    <Textarea
+                      id="approval-comment"
+                      value={approvalComment}
+                      onChange={(e) => setApprovalComment(e.target.value)}
+                      placeholder="Enter your comment (required for all actions)..."
+                      className={cn(
+                        "min-h-24 rounded-xl font-light resize-y border-2 border-neutral-200",
+                        "hover:border-neutral-300 focus-visible:border-current transition-colors",
+                        `focus-visible:${scheme.from.replace("from-", "border-").replace("-500", "-400")}`
+                      )}
+                    />
+                    {!approvalComment && attemptedSubmit && (
+                      <p className="text-xs text-red-600 mt-1">Comment is required</p>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <DialogFooter className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setApprovalModalOpen(false)}
+                      disabled={processing}
+                      className="rounded-full font-light"
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => handleApprovalAction('aware')}
+                      disabled={selectedDatasets.length === 0 || processing}
+                      className="rounded-full border-blue-300 text-blue-700 hover:bg-blue-50 font-light"
+                    >
+                      <Bell className="size-4 mr-2" strokeWidth={1.5} />
+                      Mark as Aware
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => handleApprovalAction('rejected')}
+                      disabled={selectedDatasets.length === 0 || processing}
+                      className="rounded-full border-red-300 text-red-700 hover:bg-red-50 font-light"
+                    >
+                      <XCircle className="size-4 mr-2" strokeWidth={1.5} />
+                      Reject
+                    </Button>
+
+                    <Button
+                      onClick={() => handleApprovalAction('approved')}
+                      disabled={selectedDatasets.length === 0 || processing}
+                      className={cn(
+                        "rounded-full font-light text-white",
+                        processing ? "bg-neutral-400" : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      )}
+                    >
+                      {processing ? (
+                        <>
+                          <Loader2 className="size-4 mr-2 animate-spin" strokeWidth={1.5} />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="size-4 mr-2" strokeWidth={1.5} />
+                          Approve
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </div>
+              </>
+            )
+          })()}
         </DialogContent>
       </Dialog>
     </div>
