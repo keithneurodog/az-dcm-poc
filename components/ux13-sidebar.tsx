@@ -16,18 +16,29 @@ import { useColorScheme } from "./ux12-color-context"
 import { useNotifications } from "./notification-context"
 import { Badge } from "@/components/ui/badge"
 
-const navigation = [
-  { name: "Dashboard", href: "/poc/1", icon: LayoutDashboard },
-  { name: "Browse Collections", href: "/poc/1/collections", icon: Database },
-  { name: "Notifications", href: "/poc/1/notifications", icon: Bell },
-  { name: "Create Collection", href: "/poc/2/dcm/create", icon: PlusCircle },
-  { name: "Settings", href: "#", icon: Settings },
-]
+// Determine base path from current route
+function getBasePath(pathname: string): string {
+  if (pathname.startsWith("/collectoid")) return "/collectoid"
+  if (pathname.startsWith("/poc/2")) return "/poc/2"
+  if (pathname.startsWith("/poc/1")) return "/poc/1"
+  return "/collectoid" // default to collectoid
+}
 
 export function UX13Sidebar() {
   const pathname = usePathname()
   const { scheme } = useColorScheme()
   const { criticalCount, unreadCount } = useNotifications()
+
+  // Dynamic base path based on current route
+  const basePath = getBasePath(pathname)
+
+  const navigation = [
+    { name: "Dashboard", href: basePath, icon: LayoutDashboard },
+    { name: "Browse Collections", href: `${basePath}/collections`, icon: Database },
+    { name: "Notifications", href: `${basePath}/notifications`, icon: Bell },
+    { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle },
+    { name: "Settings", href: "#", icon: Settings },
+  ]
 
   return (
     <div className="flex h-screen w-64 flex-col border-r border-neutral-200 bg-white">
@@ -54,11 +65,11 @@ export function UX13Sidebar() {
           if (item.name === "Dashboard") {
             // Highlight dashboard on exact match or progress pages (not during create flow)
             isActive =
-              pathname === "/poc/1" ||
-              (pathname.startsWith("/poc/1/dcm/progress") && !pathname.startsWith("/poc/2/dcm/create"))
+              pathname === basePath ||
+              (pathname.startsWith(`${basePath}/dcm/progress`) && !pathname.startsWith(`${basePath}/dcm/create`))
           } else if (item.name === "Create Collection") {
             // Highlight during the creation flow
-            isActive = pathname.startsWith("/poc/2/dcm/create")
+            isActive = pathname.startsWith(`${basePath}/dcm/create`)
           } else {
             // For other items, use exact match
             isActive = pathname === item.href
