@@ -341,6 +341,66 @@ export interface DatasetApprovalAction {
   timestamp: Date
 }
 
+// Agreement of Terms (AoT) interface
+export interface AgreementOfTerms {
+  id: string
+  version: string
+
+  // Primary use categories (IMI-guided protocol)
+  primaryUse: {
+    understandDrugMechanism: boolean    // Understand how drugs work in the body
+    understandDisease: boolean          // Better understand disease and health problems
+    developDiagnosticTests: boolean     // Develop diagnostic tests for disease
+    learnFromPastStudies: boolean       // Learn from past studies to plan new studies
+    improveAnalysisMethods: boolean     // Improve scientific analysis methods
+  }
+
+  // Beyond primary use
+  beyondPrimaryUse: {
+    aiResearch: boolean                 // AI research / AI model training
+    softwareDevelopment: boolean        // Software development and testing
+  }
+
+  // Publication
+  publication: {
+    internalCompanyRestricted: boolean  // Internal 'company restricted' findings
+    externalPublication: boolean | "by_exception" // External publication
+  }
+
+  // External sharing
+  externalSharing: {
+    allowed: boolean
+    process?: string                    // Description of external sharing process
+  }
+
+  // User scope (moved from Details step)
+  userScope: {
+    byDepartment?: string[]             // Workday org IDs
+    byRole?: string[]                   // Job roles (Data Scientist, Engineer, etc.)
+    explicitUsers?: string[]            // Individual PRIDs
+    totalUserCount: number              // Calculated total
+  }
+
+  // AI suggestion metadata
+  aiSuggested: boolean                  // Was this auto-suggested?
+  userModified: string[]                // Which fields user manually changed
+
+  // Conflict tracking
+  acknowledgedConflicts?: {
+    datasetId: string
+    datasetName: string
+    conflictDescription: string
+    acknowledgedAt: Date
+    acknowledgedBy: string
+  }[]
+
+  // Metadata
+  createdAt: Date
+  createdBy: string
+  effectiveDate?: Date
+  reviewDate?: Date
+}
+
 export interface Dataset {
   id: string
   code: string
@@ -380,6 +440,28 @@ export interface Dataset {
   // Approval workflow (optional)
   approvalRequirements?: DatasetApprovalRequirement[]
   approvalActions?: DatasetApprovalAction[]
+
+  // AoT metadata (restrictions required by this dataset)
+  aotMetadata?: {
+    // Restrictions (if true, collection AoT MUST enforce this)
+    restrictML?: boolean              // Must restrict AI/ML use
+    restrictPublication?: boolean     // Must restrict external publication
+    restrictSoftwareDev?: boolean     // Must restrict software development
+    requirePrimaryUseOnly?: boolean   // Only IMI-guided primary use allowed
+    requireLegalReview?: boolean      // Requires TALT legal review
+
+    // Geographic restrictions
+    geographicRestrictions?: string[] // e.g., ["EU only", "No Asia"]
+
+    // Time restrictions
+    embargoUntil?: Date               // Data cannot be used until this date
+
+    // Collaboration restrictions
+    externalSharingAllowed?: boolean  // Can be shared with 3rd parties
+
+    // Notes
+    restrictionReason?: string        // Why these restrictions exist
+  }
 }
 
 export const MOCK_DATASETS: Dataset[] = [
@@ -429,6 +511,11 @@ export const MOCK_DATASETS: Dataset[] = [
       genomics: "SolveBio",
     },
     frequentlyBundledWith: ["DCODE-001", "DCODE-088", "DCODE-102"],
+    aotMetadata: {
+      restrictML: true,
+      restrictPublication: true,
+      restrictionReason: "Ongoing trial with immunotherapy data; competitive sensitivity requires ML and external publication restrictions"
+    },
     approvalRequirements: [
       {
         id: "req-042-1",
@@ -496,6 +583,9 @@ export const MOCK_DATASETS: Dataset[] = [
       genomics: "SolveBio",
     },
     frequentlyBundledWith: ["DCODE-042", "DCODE-067", "DCODE-088"],
+    aotMetadata: {
+      // No restrictions - study is closed, >6 months post-DBL, all clear for open access
+    },
     approvalRequirements: [
       {
         id: "req-001-1",
@@ -559,6 +649,11 @@ export const MOCK_DATASETS: Dataset[] = [
       imaging: "DICOM Archives",
     },
     frequentlyBundledWith: ["DCODE-042", "DCODE-102"],
+    aotMetadata: {
+      restrictPublication: true,
+      restrictSoftwareDev: true,
+      restrictionReason: "Data intended for upcoming publication; external publication and software dev restricted until manuscript published"
+    },
     approvalRequirements: [
       {
         id: "req-067-1",
@@ -609,6 +704,9 @@ export const MOCK_DATASETS: Dataset[] = [
       clinical: "S3",
     },
     frequentlyBundledWith: ["DCODE-001", "DCODE-042"],
+    aotMetadata: {
+      // No restrictions - study is closed, published, all clear for open access
+    },
     approvalRequirements: [
       {
         id: "req-088-1",
@@ -1850,6 +1948,9 @@ export interface Collection {
     timestamp?: Date
     estimatedTime?: Date
   }[]
+
+  // Agreement of Terms
+  agreementOfTerms?: AgreementOfTerms
 }
 
 export const MOCK_COLLECTIONS: Collection[] = [
@@ -3084,4 +3185,180 @@ export const TEAM_CONTACTS: TeamContact[] = [
 
 export function getTeamContact(teamName: string): TeamContact | undefined {
   return TEAM_CONTACTS.find(tc => tc.team === teamName)
+}
+
+// ============================================================================
+// Agreement of Terms (AoT) Helper Functions
+// ============================================================================
+
+export interface Activity {
+  id: string
+  name: string
+  accessLevel?: string
+}
+
+export interface AoTConflict {
+  datasetId: string
+  datasetName: string
+  datasetCode: string
+  conflictType: 'ai_research' | 'software_development' | 'external_publication' | 'primary_use_only'
+  conflictDescription: string
+  requiredAction: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+}
+
+/**
+ * Suggests Agreement of Terms based on selected activities and datasets
+ */
+export function suggestAoT(
+  activities: Activity[],
+  datasets: Dataset[]
+): AgreementOfTerms {
+  // Analyze activities for intent
+  const hasMLActivity = activities.some(a =>
+    a.id?.includes('ml') ||
+    a.id?.includes('ai') ||
+    a.name?.toLowerCase().includes('classifier') ||
+    a.name?.toLowerCase().includes('machine learning')
+  )
+
+  const hasSoftwareDevActivity = activities.some(a =>
+    a.name?.toLowerCase().includes('software') ||
+    a.name?.toLowerCase().includes('development')
+  )
+
+  const hasAnalysisActivity = activities.some(a =>
+    a.accessLevel?.includes('patient-level')
+  )
+
+  // Analyze datasets for restrictions
+  const datasetsRestrictML = datasets.filter(d =>
+    d.aotMetadata?.restrictML
+  )
+
+  const datasetsRestrictPublication = datasets.filter(d =>
+    d.aotMetadata?.restrictPublication
+  )
+
+  const datasetsRestrictSoftwareDev = datasets.filter(d =>
+    d.aotMetadata?.restrictSoftwareDev
+  )
+
+  const requiresPrimaryUseOnly = datasets.some(d =>
+    d.aotMetadata?.requirePrimaryUseOnly
+  )
+
+  // Generate suggestions
+  return {
+    id: `aot-${Date.now()}`,
+    version: '1.0',
+
+    // Primary use - default to all allowed unless restricted
+    primaryUse: {
+      understandDrugMechanism: true,
+      understandDisease: true,
+      developDiagnosticTests: true,
+      learnFromPastStudies: true,
+      improveAnalysisMethods: true
+    },
+
+    // Beyond primary use - conditional on activities and restrictions
+    beyondPrimaryUse: {
+      aiResearch: hasMLActivity && datasetsRestrictML.length === 0,
+      softwareDevelopment: hasSoftwareDevActivity && datasetsRestrictSoftwareDev.length === 0
+    },
+
+    // Publication - conservative default, allow if no restrictions
+    publication: {
+      internalCompanyRestricted: true, // always allow internal
+      externalPublication: datasetsRestrictPublication.length === 0 ? true : 'by_exception'
+    },
+
+    // External sharing - default to allowed with process
+    externalSharing: {
+      allowed: true,
+      process: 'Standard External Sharing process applies. Must obtain approval from Alliance Manager and TALT-Legal team.'
+    },
+
+    // User scope - empty, user must define
+    userScope: {
+      totalUserCount: 0
+    },
+
+    // Metadata
+    aiSuggested: true,
+    userModified: [],
+    createdAt: new Date(),
+    createdBy: 'system'
+  }
+}
+
+/**
+ * Detects conflicts between defined AoT and dataset restrictions
+ */
+export function detectAoTConflicts(
+  aot: AgreementOfTerms,
+  datasets: Dataset[]
+): AoTConflict[] {
+  const conflicts: AoTConflict[] = []
+
+  for (const dataset of datasets) {
+    if (!dataset.aotMetadata) continue
+
+    // Check ML restriction
+    if (dataset.aotMetadata.restrictML && aot.beyondPrimaryUse.aiResearch) {
+      conflicts.push({
+        datasetId: dataset.id,
+        datasetName: dataset.name,
+        datasetCode: dataset.code,
+        conflictType: 'ai_research',
+        conflictDescription: `Dataset ${dataset.code} requires AI/ML restriction, but AoT allows AI research`,
+        requiredAction: 'Restrict AI/ML research in AoT or remove this dataset',
+        severity: 'high'
+      })
+    }
+
+    // Check software dev restriction
+    if (dataset.aotMetadata.restrictSoftwareDev && aot.beyondPrimaryUse.softwareDevelopment) {
+      conflicts.push({
+        datasetId: dataset.id,
+        datasetName: dataset.name,
+        datasetCode: dataset.code,
+        conflictType: 'software_development',
+        conflictDescription: `Dataset ${dataset.code} requires software development restriction, but AoT allows software dev`,
+        requiredAction: 'Restrict software development in AoT or remove this dataset',
+        severity: 'high'
+      })
+    }
+
+    // Check publication restriction
+    if (dataset.aotMetadata.restrictPublication && aot.publication.externalPublication === true) {
+      conflicts.push({
+        datasetId: dataset.id,
+        datasetName: dataset.name,
+        datasetCode: dataset.code,
+        conflictType: 'external_publication',
+        conflictDescription: `Dataset ${dataset.code} requires external publication restriction, but AoT allows external publication`,
+        requiredAction: 'Restrict external publication or set to "by exception", or remove this dataset',
+        severity: 'high'
+      })
+    }
+
+    // Check primary use only requirement
+    if (dataset.aotMetadata.requirePrimaryUseOnly) {
+      if (aot.beyondPrimaryUse.aiResearch || aot.beyondPrimaryUse.softwareDevelopment) {
+        conflicts.push({
+          datasetId: dataset.id,
+          datasetName: dataset.name,
+          datasetCode: dataset.code,
+          conflictType: 'primary_use_only',
+          conflictDescription: `Dataset ${dataset.code} allows only primary use, but AoT enables beyond-primary-use activities`,
+          requiredAction: 'Disable all beyond-primary-use options in AoT or remove this dataset',
+          severity: 'critical'
+        })
+      }
+    }
+  }
+
+  return conflicts
 }

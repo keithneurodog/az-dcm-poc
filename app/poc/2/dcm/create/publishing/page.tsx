@@ -43,7 +43,7 @@ export default function DCMPublishingPage() {
       const storedDatasets = sessionStorage.getItem("dcm_selected_datasets")
 
       if (!storedName) {
-        router.push("/poc/1/dcm/create")
+        router.push("/poc/2/dcm/create")
         return
       }
 
@@ -489,9 +489,7 @@ export default function DCMPublishingPage() {
           </Button>
         </div>
 
-      {/* Info Footer */}
-      <div className="mt-8 text-center">
-        <p className="text-sm font-light text-neutral-500">
+        <p className="text-sm font-light text-neutral-500 text-center">
           You can monitor collection progress, view detailed status, and track approvals from your DCM dashboard
         </p>
       </div>

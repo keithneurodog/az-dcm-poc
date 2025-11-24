@@ -27,8 +27,11 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Shield,
+  X,
+  FileText,
 } from "lucide-react"
-import { Dataset } from "@/lib/dcm-mock-data"
+import { Dataset, AgreementOfTerms } from "@/lib/dcm-mock-data"
 
 export default function DCMReviewPage() {
   const { scheme } = useColorScheme()
@@ -39,6 +42,7 @@ export default function DCMReviewPage() {
   const [description, setDescription] = useState("Curated collection of Phase III lung cancer studies with ctDNA biomarker monitoring and immunotherapy treatment arms. Suitable for outcomes research, biomarker analysis, and multimodal data fusion.")
   const [targetCommunity, setTargetCommunity] = useState("Oncology Data Scientists and Biostatisticians studying immunotherapy response and ctDNA dynamics")
   const [totalUsers, setTotalUsers] = useState(0)
+  const [aot, setAot] = useState<AgreementOfTerms | null>(null)
   const [trainingBreakdownExpanded, setTrainingBreakdownExpanded] = useState(false)
 
   const handleTrainingToggle = () => {
@@ -63,9 +67,10 @@ export default function DCMReviewPage() {
       const storedDescription = sessionStorage.getItem("dcm_collection_description")
       const storedCommunity = sessionStorage.getItem("dcm_target_community")
       const storedUsers = sessionStorage.getItem("dcm_total_users")
+      const storedAoT = sessionStorage.getItem("dcm_agreement_of_terms")
 
-      if (!storedDatasets || !storedName) {
-        router.push("/poc/1/dcm/create")
+      if (!storedDatasets) {
+        router.push("/poc/2/dcm/create")
         return
       }
 
@@ -75,6 +80,7 @@ export default function DCMReviewPage() {
       if (storedDescription) setDescription(storedDescription)
       if (storedCommunity) setTargetCommunity(storedCommunity)
       if (storedUsers) setTotalUsers(parseInt(storedUsers))
+      if (storedAoT) setAot(JSON.parse(storedAoT))
     }
   }, [router])
 
@@ -104,7 +110,7 @@ export default function DCMReviewPage() {
   }
 
   const handlePublish = () => {
-    router.push("/poc/1/dcm/create/publishing")
+    router.push("/poc/2/dcm/create/publishing")
   }
 
   if (selectedDatasets.length === 0) {

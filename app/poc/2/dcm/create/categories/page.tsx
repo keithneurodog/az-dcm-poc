@@ -49,7 +49,7 @@ export default function DCMCategoriesPage() {
     if (typeof window !== "undefined") {
       const storedIntent = sessionStorage.getItem("dcm_collection_intent")
       if (!storedIntent) {
-        router.push("/poc/1/dcm/create")
+        router.push("/poc/2/dcm/create")
         return
       }
 
@@ -124,7 +124,7 @@ export default function DCMCategoriesPage() {
       )
       sessionStorage.setItem("dcm_selected_categories", JSON.stringify(selectedCategories))
     }
-    router.push("/poc/1/dcm/create/filters")
+    router.push("/poc/2/dcm/create/filters")
   }
 
   const handleSelectAll = () => {
@@ -157,7 +157,7 @@ export default function DCMCategoriesPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/poc/1/dcm/create")}
+            onClick={() => router.push("/poc/2/dcm/create")}
             className="rounded-full font-light"
           >
             <ArrowLeft className="size-4 mr-2" />

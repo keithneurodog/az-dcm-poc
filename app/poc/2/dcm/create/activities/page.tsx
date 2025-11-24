@@ -95,7 +95,7 @@ export default function DCMActivitiesPage() {
     if (typeof window !== "undefined") {
       const storedDatasets = sessionStorage.getItem("dcm_selected_datasets")
       if (!storedDatasets) {
-        router.push("/poc/1/dcm/create")
+        router.push("/poc/2/dcm/create")
         return
       }
 
@@ -276,7 +276,7 @@ export default function DCMActivitiesPage() {
         .filter(Boolean)
       sessionStorage.setItem("dcm_selected_activities", JSON.stringify(selected))
     }
-    router.push("/poc/1/dcm/create/details")
+    router.push("/poc/2/dcm/create/agreements")
   }
 
   const engineeringActivities = ACTIVITIES.filter((a) => a.category === "engineering")
@@ -295,7 +295,7 @@ export default function DCMActivitiesPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/poc/1/dcm/create/filters")}
+          onClick={() => router.push("/poc/2/dcm/create/filters")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" />

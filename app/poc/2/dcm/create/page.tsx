@@ -33,7 +33,7 @@ export default function DCMCreateCollectionPage() {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("dcm_collection_intent", intent)
     }
-    router.push("/poc/1/dcm/create/categories")
+    router.push("/poc/2/dcm/create/categories")
   }
 
   const exampleIntents = [
