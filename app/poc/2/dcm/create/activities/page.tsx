@@ -302,6 +302,13 @@ export default function DCMActivitiesPage() {
           Back to Filters
         </Button>
 
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 4 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Define Activities</span>
+        </div>
+
         <div className="text-center mb-6">
           <div
             className={cn(
@@ -323,7 +330,7 @@ export default function DCMActivitiesPage() {
           <Sheet>
             <SheetTrigger asChild>
               <button className={cn(
-                "inline-flex items-center gap-2 text-sm font-light transition-colors",
+                "inline-flex items-center gap-2 text-sm font-light transition-colors cursor-pointer",
                 scheme.from.replace("from-", "text-"),
                 "hover:underline"
               )}>
@@ -853,29 +860,37 @@ export default function DCMActivitiesPage() {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/poc/1/dcm/create/filters")}
-          className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
-        >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Dataset Selection
-        </Button>
-        <Button
-          onClick={handleContinue}
-          disabled={selectedActivities.size === 0}
-          className={cn(
-            "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all",
-            selectedActivities.size > 0
-              ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
-              : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
-          )}
-        >
-          Continue to Collection Details
-          <ArrowRight className="size-4 ml-2" />
-        </Button>
+      {/* Footer */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 4 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Define Activities</span>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/poc/2/dcm/create/filters")}
+            className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
+          >
+            <ArrowLeft className="size-4 mr-2" />
+            Back to Dataset Selection
+          </Button>
+          <Button
+            onClick={handleContinue}
+            disabled={selectedActivities.size === 0}
+            className={cn(
+              "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all",
+              selectedActivities.size > 0
+                ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+            )}
+          >
+            Continue to Agreements
+            <ArrowRight className="size-4 ml-2" />
+          </Button>
+        </div>
       </div>
       </div>
 

@@ -367,10 +367,7 @@ export default function DCMCategoriesPage() {
                     onChange={(e) => setNewKeyword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addKeyword()}
                     placeholder="Add keyword..."
-                    className="flex-1 h-8 px-3 text-sm font-light border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0"
-                    style={{
-                      focusRing: scheme.from.replace("from-", "ring-").replace("500", "400")
-                    }}
+                    className="flex-1 h-8 px-3 text-sm font-light border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-400"
                   />
                   <Button
                     size="sm"
@@ -392,10 +389,7 @@ export default function DCMCategoriesPage() {
             <textarea
               value={editedIntent}
               onChange={(e) => setEditedIntent(e.target.value)}
-              className="w-full rounded-xl bg-white p-4 text-sm font-light text-neutral-700 border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[100px] resize-y"
-              style={{
-                focusRing: scheme.from.replace("from-", "ring-").replace("500", "400")
-              }}
+              className="w-full rounded-xl bg-white p-4 text-sm font-light text-neutral-700 border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-400 min-h-[100px] resize-y"
             />
           ) : (
             <div className="rounded-xl bg-white/50 p-4 text-sm font-light text-neutral-700 italic border border-white">

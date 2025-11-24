@@ -95,22 +95,29 @@ export default function DCMPublishingPage() {
   const usersAfterInstantGrant = Math.round((totalUsers * 90) / 100)
 
   return (
-    <div className="max-w-4xl mx-auto py-12">
+    <div className="max-w-5xl mx-auto py-8">
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-2 mb-6">
+        <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 7 of 7</span>
+        <span className="text-xs text-neutral-300">|</span>
+        <span className="text-xs font-light text-neutral-600">Published</span>
+      </div>
+
       {/* Success Header */}
       <div className="text-center mb-12">
         <div
           className={cn(
-            "inline-flex items-center justify-center size-20 rounded-full mb-6 bg-gradient-to-br shadow-lg animate-pulse",
+            "inline-flex items-center justify-center size-20 rounded-full mb-6 bg-gradient-to-br shadow-lg",
             scheme.from,
             scheme.to
           )}
         >
           <CheckCircle2 className="size-10 text-white" />
         </div>
-        <h1 className="text-4xl font-extralight text-neutral-900 mb-4 tracking-tight">
+        <h1 className="text-3xl font-extralight text-neutral-900 mb-4 tracking-tight">
           Collection Published!
         </h1>
-        <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto">
+        <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto">
           "{collectionName}" has been created and Collectoid is now executing your provisioning plan
         </p>
       </div>
@@ -452,28 +459,35 @@ export default function DCMPublishingPage() {
         </CardContent>
       </Card>
 
-      {/* Actions */}
-      <div className="flex gap-4">
-        <Button
-          onClick={() => router.push("/poc/1")}
-          variant="outline"
-          className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
-        >
-          Return to Dashboard
-        </Button>
-        <Button
-          onClick={() => router.push("/poc/1/dcm/progress")}
-          className={cn(
-            "flex-1 h-12 rounded-2xl font-light bg-gradient-to-r text-white shadow-lg hover:shadow-xl transition-all",
-            scheme.from,
-            scheme.to
-          )}
-        >
-          <ExternalLink className="size-4 mr-2" />
-          View Live Status Dashboard
-          <ArrowRight className="size-4 ml-2" />
-        </Button>
-      </div>
+      {/* Footer */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 7 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Published</span>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            onClick={() => router.push("/poc/2")}
+            variant="outline"
+            className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
+          >
+            Return to Dashboard
+          </Button>
+          <Button
+            onClick={() => router.push("/poc/2/dcm/progress")}
+            className={cn(
+              "flex-1 h-12 rounded-2xl font-light bg-gradient-to-r text-white shadow-lg hover:shadow-xl transition-all",
+              scheme.from,
+              scheme.to
+            )}
+          >
+            <ExternalLink className="size-4 mr-2" />
+            View Live Status Dashboard
+            <ArrowRight className="size-4 ml-2" />
+          </Button>
+        </div>
 
       {/* Info Footer */}
       <div className="mt-8 text-center">

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { useColorScheme } from "@/components/ux12-color-context"
 import { cn } from "@/lib/utils"
 import {
@@ -33,9 +35,9 @@ export default function DCMReviewPage() {
   const router = useRouter()
   const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([])
   const [selectedActivities, setSelectedActivities] = useState<any[]>([])
-  const [collectionName, setCollectionName] = useState("")
-  const [description, setDescription] = useState("")
-  const [targetCommunity, setTargetCommunity] = useState("")
+  const [collectionName, setCollectionName] = useState("Oncology ctDNA Outcomes Collection")
+  const [description, setDescription] = useState("Curated collection of Phase III lung cancer studies with ctDNA biomarker monitoring and immunotherapy treatment arms. Suitable for outcomes research, biomarker analysis, and multimodal data fusion.")
+  const [targetCommunity, setTargetCommunity] = useState("Oncology Data Scientists and Biostatisticians studying immunotherapy response and ctDNA dynamics")
   const [totalUsers, setTotalUsers] = useState(0)
   const [trainingBreakdownExpanded, setTrainingBreakdownExpanded] = useState(false)
 
@@ -122,12 +124,19 @@ export default function DCMReviewPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/poc/1/dcm/create/details")}
+          onClick={() => router.push("/poc/2/dcm/create/agreements")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" />
-          Back to Details
+          Back to Agreements
         </Button>
+
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 6 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Review & Publish</span>
+        </div>
 
         <div className="text-center mb-6">
           <div
@@ -148,26 +157,61 @@ export default function DCMReviewPage() {
         </div>
       </div>
 
-      {/* Collection Summary */}
+      {/* Collection Details - Editable */}
       <Card className="border-neutral-200 rounded-2xl overflow-hidden mb-6">
         <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <h2 className="text-xl font-normal text-neutral-900 mb-2">{collectionName}</h2>
-              <p className="text-sm font-light text-neutral-600 mb-3">{description}</p>
-              <p className="text-sm font-light text-neutral-500 italic">{targetCommunity}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push("/poc/1/dcm/create/details")}
-              className="rounded-full font-light"
-            >
-              Edit
-            </Button>
+          <div className="flex items-center gap-3 mb-6">
+            <FileText className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+            <h2 className="text-lg font-normal text-neutral-900">Collection Details</h2>
           </div>
 
-          <div className="flex items-center gap-4 pt-4 border-t border-neutral-100">
+          <div className="space-y-5">
+            {/* Collection Name */}
+            <div>
+              <label htmlFor="collectionName" className="block text-sm font-light text-neutral-700 mb-2">
+                Collection Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="collectionName"
+                value={collectionName}
+                onChange={(e) => setCollectionName(e.target.value)}
+                placeholder="Enter collection name..."
+                className="border-neutral-200 rounded-xl font-light"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-light text-neutral-700 mb-2">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe the purpose and scope of this collection..."
+                rows={3}
+                className="border-neutral-200 rounded-xl font-light resize-none"
+              />
+            </div>
+
+            {/* Target User Community */}
+            <div>
+              <label htmlFor="targetCommunity" className="block text-sm font-light text-neutral-700 mb-2">
+                Target User Community <span className="text-neutral-400">(optional)</span>
+              </label>
+              <Textarea
+                id="targetCommunity"
+                value={targetCommunity}
+                onChange={(e) => setTargetCommunity(e.target.value)}
+                placeholder="Describe the target audience for this collection..."
+                rows={2}
+                className="border-neutral-200 rounded-xl font-light resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 pt-5 mt-5 border-t border-neutral-100">
             <div className="flex items-center gap-2">
               <Database className="size-4 text-neutral-500" />
               <span className="text-sm font-light text-neutral-600">
@@ -187,6 +231,115 @@ export default function DCMReviewPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Agreement of Terms Summary */}
+      {aot && (
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-neutral-600" strokeWidth={1.5} />
+                <h2 className="text-xl font-normal text-neutral-900">Agreement of Terms</h2>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/poc/2/dcm/create/agreements")}
+                className="rounded-full font-light"
+              >
+                Edit
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Allowed Uses */}
+              <div>
+                <p className="text-sm font-normal text-neutral-700 mb-3">Allowed Uses:</p>
+                <div className="flex flex-wrap gap-2">
+                  {aot.beyondPrimaryUse.aiResearch && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 font-light">
+                      <CheckCircle2 className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      ML/AI Research
+                    </Badge>
+                  )}
+                  {aot.beyondPrimaryUse.aiResearch === false && (
+                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300 font-light">
+                      <X className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      ML/AI Research
+                    </Badge>
+                  )}
+
+                  {aot.beyondPrimaryUse.softwareDevelopment && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 font-light">
+                      <CheckCircle2 className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      Software Dev
+                    </Badge>
+                  )}
+                  {aot.beyondPrimaryUse.softwareDevelopment === false && (
+                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300 font-light">
+                      <X className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      Software Dev
+                    </Badge>
+                  )}
+
+                  {aot.publication.internalCompanyRestricted && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 font-light">
+                      <CheckCircle2 className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      Internal Pub
+                    </Badge>
+                  )}
+
+                  {aot.publication.externalPublication === true && (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 font-light">
+                      <CheckCircle2 className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      External Pub
+                    </Badge>
+                  )}
+                  {aot.publication.externalPublication === "by_exception" && (
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 font-light">
+                      External Pub (by exception)
+                    </Badge>
+                  )}
+                  {aot.publication.externalPublication === false && (
+                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300 font-light">
+                      <X className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                      External Pub
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* User Scope */}
+              <div className="pt-3 border-t border-neutral-100">
+                <p className="text-sm font-normal text-neutral-700 mb-2">User Scope:</p>
+                <div className="flex items-center gap-2 text-sm text-neutral-600 font-light">
+                  <Users className="h-4 w-4 text-neutral-500" strokeWidth={1.5} />
+                  <span>
+                    {aot.userScope.totalUserCount || 0} users
+                    {aot.userScope.byDepartment && aot.userScope.byDepartment.length > 0 && (
+                      <span> across {aot.userScope.byDepartment.length} organizations</span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Acknowledged Conflicts */}
+              {aot.acknowledgedConflicts && aot.acknowledgedConflicts.length > 0 && (
+                <div className="pt-3 border-t border-neutral-100">
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+                    <p className="text-sm font-normal text-amber-900 mb-1">
+                      ⚠️ {aot.acknowledgedConflicts.length} dataset conflict(s) acknowledged
+                    </p>
+                    <p className="text-xs font-light text-amber-700">
+                      Collection includes datasets with usage restrictions that conflict with the defined Agreement of Terms
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Access Provisioning Breakdown */}
       <div className="mb-8">
@@ -690,27 +843,35 @@ export default function DCMReviewPage() {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/poc/1/dcm/create/details")}
-          className="flex-1 h-14 rounded-2xl font-light border-neutral-200"
-        >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Details
-        </Button>
-        <Button
-          onClick={handlePublish}
-          className={cn(
-            "flex-1 h-14 rounded-2xl font-light text-lg shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
-            scheme.from,
-            scheme.to
-          )}
-        >
-          <Sparkles className="size-5 mr-2" />
-          Publish Collection & Execute
-        </Button>
+      {/* Footer */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 6 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Review & Publish</span>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/poc/2/dcm/create/agreements")}
+            className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
+          >
+            <ArrowLeft className="size-4 mr-2" />
+            Back to Agreements
+          </Button>
+          <Button
+            onClick={handlePublish}
+            className={cn(
+              "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
+              scheme.from,
+              scheme.to
+            )}
+          >
+            <Sparkles className="size-4 mr-2" />
+            Publish Collection & Execute
+          </Button>
+        </div>
       </div>
     </div>
   )

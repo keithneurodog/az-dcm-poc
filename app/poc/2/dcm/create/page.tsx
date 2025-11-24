@@ -43,27 +43,35 @@ export default function DCMCreateCollectionPage() {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto py-12">
+    <div className="max-w-5xl mx-auto py-8">
       {/* Header */}
-      <div className="text-center mb-12">
-        <div
-          className={cn(
-            "inline-flex items-center justify-center size-16 rounded-2xl mb-6 bg-gradient-to-br",
-            scheme.bg,
-            scheme.bgHover
-          )}
-        >
-          <Database className={cn("size-8", scheme.from.replace("from-", "text-"))} />
+      <div className="mb-8">
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 1 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Collection Purpose</span>
         </div>
-        <h1 className="text-4xl font-extralight text-neutral-900 mb-4 tracking-tight">
-          Create New Collection
-        </h1>
-        <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto mb-3">
-          Tell us what you're looking for and we'll help you find the right datasets
-        </p>
 
-        {/* Help Link */}
-        <Sheet>
+        <div className="text-center">
+          <div
+            className={cn(
+              "inline-flex items-center justify-center size-16 rounded-2xl mb-6 bg-gradient-to-br",
+              scheme.bg,
+              scheme.bgHover
+            )}
+          >
+            <Database className={cn("size-8", scheme.from.replace("from-", "text-"))} />
+          </div>
+          <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
+            Create New Collection
+          </h1>
+          <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
+            Tell us what you're looking for and we'll help you find the right datasets
+          </p>
+
+          {/* Help Link */}
+          <Sheet>
           <SheetTrigger asChild>
             <button className={cn(
               "inline-flex items-center gap-2 text-sm font-light transition-colors",
@@ -278,7 +286,8 @@ export default function DCMCreateCollectionPage() {
               </div>
             </div>
           </SheetContent>
-        </Sheet>
+          </Sheet>
+        </div>
       </div>
 
       {/* Main Intent Input Card */}
@@ -369,9 +378,14 @@ export default function DCMCreateCollectionPage() {
         ))}
       </div>
 
-      {/* Info Footer */}
-      <div className="mt-12 text-center">
-        <p className="text-sm font-light text-neutral-500">
+      {/* Footer */}
+      <div className="mt-12 space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 1 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Collection Purpose</span>
+        </div>
+        <p className="text-sm font-light text-neutral-500 text-center">
           Our AI will analyze your intent and suggest relevant data categories from our 30+ category taxonomy
         </p>
       </div>

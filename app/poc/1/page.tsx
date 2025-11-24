@@ -140,7 +140,7 @@ export default function UX15DCMDashboard() {
         {/* CTA */}
         <div className="flex items-center justify-center">
           <Button
-            onClick={() => router.push("/poc/1/dcm/create")}
+            onClick={() => router.push("/poc/2/dcm/create")}
             className={cn(
               "bg-gradient-to-r text-white rounded-full px-10 font-light h-14 text-base shadow-lg hover:shadow-xl transition-all",
               scheme.from,
@@ -661,7 +661,7 @@ export default function UX15DCMDashboard() {
           suggestions and smart bundling recommendations
         </p>
         <Button
-          onClick={() => router.push("/poc/1/dcm/create")}
+          onClick={() => router.push("/poc/2/dcm/create")}
           className={cn(
             "bg-gradient-to-r text-white rounded-full px-8 font-light shadow-lg hover:shadow-xl transition-all",
             scheme.from,

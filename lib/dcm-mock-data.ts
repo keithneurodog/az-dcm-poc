@@ -1909,6 +1909,48 @@ export const MOCK_COLLECTIONS: Collection[] = [
         estimatedTime: new Date(Date.now() + 432000000),
       },
     ],
+    agreementOfTerms: {
+      id: "aot-1",
+      version: "1.0",
+      primaryUse: {
+        understandDrugMechanism: true,
+        understandDisease: true,
+        developDiagnosticTests: false,
+        learnFromPastStudies: true,
+        improveAnalysisMethods: true,
+      },
+      beyondPrimaryUse: {
+        aiResearch: true,
+        softwareDevelopment: true,
+      },
+      publication: {
+        internalCompanyRestricted: true,
+        externalPublication: "by_exception",
+      },
+      externalSharing: {
+        allowed: false,
+      },
+      userScope: {
+        byDepartment: ["Oncology Biometrics", "Oncology Data Science"],
+        byRole: ["Data Scientist", "Biostatistician"],
+        totalUserCount: 35,
+      },
+      aiSuggested: true,
+      userModified: ["beyondPrimaryUse.softwareDevelopment"],
+      acknowledgedConflicts: [
+        {
+          datasetId: "ds-3",
+          datasetName: "DCODE-156",
+          conflictDescription: "Dataset restricts AI/ML use; AoT allows AI research",
+          acknowledgedAt: new Date("2025-11-11T10:25:00"),
+          acknowledgedBy: "Jennifer Martinez",
+        },
+      ],
+      createdAt: new Date("2025-11-11T10:25:00"),
+      createdBy: "Jennifer Martinez",
+      effectiveDate: new Date("2025-11-11"),
+      reviewDate: new Date("2026-11-11"),
+    },
   },
   {
     id: "col-2",

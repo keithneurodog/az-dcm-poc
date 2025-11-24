@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { useColorScheme } from "@/components/ux12-color-context"
 import { cn } from "@/lib/utils"
@@ -38,6 +39,7 @@ import {
   CheckCircle2,
   Info,
   Lightbulb,
+  Clock,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -114,7 +116,7 @@ export default function DCMFiltersPage() {
     if (typeof window !== "undefined") {
       const storedCategories = sessionStorage.getItem("dcm_selected_categories")
       if (!storedCategories) {
-        router.push("/poc/1/dcm/create")
+        router.push("/poc/2/dcm/create")
         return
       }
 
@@ -211,7 +213,7 @@ export default function DCMFiltersPage() {
         .filter(Boolean)
       sessionStorage.setItem("dcm_selected_datasets", JSON.stringify(selected))
     }
-    router.push("/poc/1/dcm/create/activities")
+    router.push("/poc/2/dcm/create/activities")
   }
 
   const addAllFilteredDatasets = () => {
@@ -265,26 +267,16 @@ export default function DCMFiltersPage() {
 
   const accessBreakdown = calculateAccessBreakdown()
 
+  // Sheet state for filters
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false)
+
   if (selectedCategories.length === 0) {
     return <div>Loading...</div>
   }
 
-  return (
-    <div className="flex gap-6 -mx-12 -my-8" style={{ height: "calc(100vh - 80px)" }}>
-      {/* Left Sidebar - Filters */}
-      <div className="w-80 bg-white border-r border-neutral-200 flex flex-col overflow-hidden">
-        <div className="p-6 border-b border-neutral-100">
-          <div className="flex items-center gap-2 mb-2">
-            <Sliders className={cn("size-5", scheme.from.replace("from-", "text-"))} />
-            <h2 className="text-lg font-light text-neutral-900">Filters</h2>
-          </div>
-          <p className="text-sm font-light text-neutral-500">
-            {selectedCategories.length} categories selected
-          </p>
-        </div>
-
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 space-y-3">
+  // Filter panel content (reusable in Sheet)
+  const FilterPanelContent = () => (
+    <div className="space-y-3">
             {/* Study Characteristics */}
             <div className="rounded-xl border border-neutral-200 overflow-hidden">
               <button
@@ -632,100 +624,81 @@ export default function DCMFiltersPage() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
+    </div>
+  )
 
-        <div className="p-4 border-t border-neutral-100">
+  // Reset all filters function
+  const resetAllFilters = () => {
+    clearSmartFilter()
+    setPhaseFilters([])
+    setStatusFilters([])
+    setGeographyFilters([])
+    setTherapeuticAreaFilters([])
+    setDataModalityFilters([])
+    setInternalReuseFilters([])
+    setExternalReuseFilters([])
+    setIndicationsFilters([])
+    setStudyRunByFilters([])
+    setStudyObjectivesFilters([])
+    setPatientPopulationFilters([])
+    setCrossoverFilter([])
+    setUsageFilter([])
+    setNctIdentifier("")
+    setEudraCTIdentifier("")
+  }
+
+  return (
+    <div className="flex gap-6 py-8">
+      {/* Main Content */}
+      <div className="flex-1 max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
           <Button
-            variant="outline"
-            className="w-full rounded-xl font-light"
-            onClick={() => {
-              // Clear smart filter
-              clearSmartFilter()
-              // Clear basic filters
-              setPhaseFilters([])
-              setStatusFilters([])
-              setGeographyFilters([])
-              setTherapeuticAreaFilters([])
-              setDataModalityFilters([])
-              // Clear data reuse              setInternalReuseFilters([])
-              setExternalReuseFilters([])
-              // Clear additional filters
-              setIndicationsFilters([])
-              setStudyRunByFilters([])
-              setStudyObjectivesFilters([])
-              setPatientPopulationFilters([])
-              // Clear collection context
-              setCrossoverFilter([])
-              setUsageFilter([])
-              // Clear advanced filters
-              setNctIdentifier("")
-              setEudraCTIdentifier("")
-            }}
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push("/poc/2/dcm/create/categories")}
+            className="rounded-full font-light mb-4"
           >
-            Reset All Filters
+            <ArrowLeft className="size-4 mr-2" />
+            Back to Categories
           </Button>
-        </div>
-      </div>
 
-      {/* Main Content - Dataset Results */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with live count */}
-        <div className="p-6 bg-white border-b border-neutral-100">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-extralight text-neutral-900 mb-2">
-                Refine Your Dataset Selection
-              </h1>
-              <div className="flex items-center gap-3 mb-2">
-                <Database className={cn("size-4", scheme.from.replace("from-", "text-"))} />
-                <p className="text-sm font-light text-neutral-600">
-                  <span className="font-normal text-neutral-900 text-lg">
-                    {filteredDatasets.length}
-                  </span>{" "}
-                  datasets match your criteria
-                </p>
-                {filteredDatasets.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      onClick={addAllFilteredDatasets}
-                      className={cn(
-                        "h-8 rounded-xl font-light text-xs bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
-                        scheme.from,
-                        scheme.to
-                      )}
-                    >
-                      <Check className="size-3.5 mr-1.5" />
-                      Add All {filteredDatasets.length} Datasets
-                    </Button>
-                    {filteredDatasets.some(d => selectedDatasets.has(d.id)) && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={removeAllFilteredDatasets}
-                        className="h-8 rounded-xl font-light text-xs border-neutral-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
-                      >
-                        <X className="size-3.5 mr-1" />
-                        Remove All Filtered
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
+          {/* Step Indicator */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 3 of 7</span>
+            <span className="text-xs text-neutral-300">|</span>
+            <span className="text-xs font-light text-neutral-600">Select Datasets</span>
+          </div>
 
-              {/* Help Link */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button className={cn(
-                    "inline-flex items-center gap-2 text-xs font-light transition-colors",
-                    scheme.from.replace("from-", "text-"),
-                    "hover:underline"
-                  )}>
-                    <HelpCircle className="size-3.5" />
-                    Learn about smart filtering
-                  </button>
-                </SheetTrigger>
+          <div className="text-center mb-6">
+            <div
+              className={cn(
+                "inline-flex items-center justify-center size-16 rounded-2xl mb-4 bg-gradient-to-br",
+                scheme.bg,
+                scheme.bgHover
+              )}
+            >
+              <Database className={cn("size-8", scheme.from.replace("from-", "text-"))} />
+            </div>
+            <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
+              Refine Your Dataset Selection
+            </h1>
+            <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
+              Filter and select the datasets you need for your collection
+            </p>
+
+            {/* Help Link */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className={cn(
+                  "inline-flex items-center gap-2 text-sm font-light transition-colors",
+                  scheme.from.replace("from-", "text-"),
+                  "hover:underline"
+                )}>
+                  <HelpCircle className="size-4" />
+                  Learn about smart filtering
+                </button>
+              </SheetTrigger>
                 <SheetContent className="w-[600px] sm:max-w-[600px] overflow-y-auto">
                   <div className="px-6 pb-6">
                     <SheetHeader>
@@ -943,19 +916,386 @@ export default function DCMFiltersPage() {
                   </div>
                 </SheetContent>
               </Sheet>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push("/poc/1/dcm/create/categories")}
-              className="rounded-full font-light"
-            >
-              <ArrowLeft className="size-4 mr-2" />
-              Back to Categories
-            </Button>
           </div>
+        </div>
 
-          {/* Active Filters Summary */}
+        {/* Compact Filter Panel - Always Visible */}
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-sm mb-6">
+          <CardContent className="p-4">
+            {/* Header Row */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Sliders className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                  <span className="text-sm font-normal text-neutral-900">Filters</span>
+                </div>
+                <Separator orientation="vertical" className="h-5" />
+                <div className="flex items-center gap-2">
+                  <Database className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                  <span className="text-2xl font-light text-neutral-900">{filteredDatasets.length}</span>
+                  <span className="text-sm font-light text-neutral-600">datasets match</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {(phaseFilters.length > 0 || statusFilters.length > 0 || geographyFilters.length > 0 ||
+                  therapeuticAreaFilters.length > 0 || dataModalityFilters.length > 0 || studyRunByFilters.length > 0) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetAllFilters}
+                    className="h-8 rounded-lg font-light text-xs text-neutral-500 hover:text-neutral-700"
+                  >
+                    <X className="size-3 mr-1" />
+                    Clear All
+                  </Button>
+                )}
+                {filteredDatasets.length > 0 && (
+                  <Button
+                    size="sm"
+                    onClick={addAllFilteredDatasets}
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
+                      scheme.from,
+                      scheme.to
+                    )}
+                  >
+                    <Check className="size-3.5 mr-1.5" />
+                    Add All {filteredDatasets.length}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Filter Dropdowns Row */}
+            <div className="flex flex-wrap gap-2">
+              {/* Phase Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      phaseFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    Phase
+                    {phaseFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {phaseFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-2" align="start">
+                  <div className="space-y-1">
+                    {["I", "II", "III", "IV"].map((phase) => (
+                      <label key={phase} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={phaseFilters.includes(phase)}
+                          onCheckedChange={() => toggleFilter(phaseFilters, setPhaseFilters, phase)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">Phase {phase}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Status Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      statusFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    Status
+                    {statusFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {statusFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-36 p-2" align="start">
+                  <div className="space-y-1">
+                    {["Active", "Closed"].map((status) => (
+                      <label key={status} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={statusFilters.includes(status)}
+                          onCheckedChange={() => toggleFilter(statusFilters, setStatusFilters, status)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">{status}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Geography Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      geographyFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <Globe className="size-3 mr-1" />
+                    Geography
+                    {geographyFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {geographyFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-44 p-2" align="start">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {["North America", "Europe", "Asia Pacific", "Latin America", "Middle East", "Africa", "Global"].map((geo) => (
+                      <label key={geo} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={geographyFilters.includes(geo)}
+                          onCheckedChange={() => toggleFilter(geographyFilters, setGeographyFilters, geo)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">{geo}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Therapeutic Area Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      therapeuticAreaFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <Target className="size-3 mr-1" />
+                    Therapeutic
+                    {therapeuticAreaFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {therapeuticAreaFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-2" align="start">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {["Oncology", "Cardiovascular", "Neurology", "Immunology", "Respiratory", "Rare Disease", "Infectious Disease"].map((area) => (
+                      <label key={area} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={therapeuticAreaFilters.includes(area)}
+                          onCheckedChange={() => toggleFilter(therapeuticAreaFilters, setTherapeuticAreaFilters, area)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">{area}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Data Modality Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      dataModalityFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <Microscope className="size-3 mr-1" />
+                    Modality
+                    {dataModalityFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {dataModalityFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-52 p-2" align="start">
+                  <div className="space-y-1">
+                    {["Clinical", "Genomic", "Imaging (DICOM)", "Biomarker", "Patient Reported Outcomes"].map((modality) => (
+                      <label key={modality} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={dataModalityFilters.includes(modality)}
+                          onCheckedChange={() => toggleFilter(dataModalityFilters, setDataModalityFilters, modality)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">{modality}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Study Run By Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      studyRunByFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <Building className="size-3 mr-1" />
+                    Sponsor
+                    {studyRunByFilters.length > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {studyRunByFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-2" align="start">
+                  <div className="space-y-1">
+                    {["Sponsor", "Investigator-Initiated", "Academic", "Government", "Consortium"].map((sponsor) => (
+                      <label key={sponsor} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                        <Checkbox
+                          checked={studyRunByFilters.includes(sponsor)}
+                          onCheckedChange={() => toggleFilter(studyRunByFilters, setStudyRunByFilters, sponsor)}
+                          className="size-3.5"
+                        />
+                        <span className="text-sm font-light text-neutral-700">{sponsor}</span>
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* Data Sharing Filter */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      (internalReuseFilters.length > 0 || externalReuseFilters.length > 0) && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <Shield className="size-3 mr-1" />
+                    Sharing
+                    {(internalReuseFilters.length + externalReuseFilters.length) > 0 && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {internalReuseFilters.length + externalReuseFilters.length}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="start">
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500 px-2 mb-1">Internal Reuse</p>
+                      <div className="space-y-1">
+                        {["Research allowed", "Research not allowed", "Research with restriction"].map((option) => (
+                          <label key={`int-${option}`} className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-neutral-50 cursor-pointer">
+                            <Checkbox
+                              checked={internalReuseFilters.includes(option)}
+                              onCheckedChange={() => toggleFilter(internalReuseFilters, setInternalReuseFilters, option)}
+                              className="size-3.5"
+                            />
+                            <span className="text-xs font-light text-neutral-700">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <Separator />
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500 px-2 mb-1">External Reuse</p>
+                      <div className="space-y-1">
+                        {["Research allowed", "Research not allowed", "Research with restriction"].map((option) => (
+                          <label key={`ext-${option}`} className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-neutral-50 cursor-pointer">
+                            <Checkbox
+                              checked={externalReuseFilters.includes(option)}
+                              onCheckedChange={() => toggleFilter(externalReuseFilters, setExternalReuseFilters, option)}
+                              className="size-3.5"
+                            />
+                            <span className="text-xs font-light text-neutral-700">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* More Filters (Identifiers) */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-8 rounded-lg font-light text-xs border-neutral-200",
+                      (nctIdentifier || eudraCTIdentifier) && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                    )}
+                  >
+                    <FileText className="size-3 mr-1" />
+                    IDs
+                    {(nctIdentifier || eudraCTIdentifier) && (
+                      <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                        {(nctIdentifier ? 1 : 0) + (eudraCTIdentifier ? 1 : 0)}
+                      </Badge>
+                    )}
+                    <ChevronDown className="size-3 ml-1 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-3" align="start">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 mb-1.5 block">NCT Identifier</label>
+                      <Input
+                        value={nctIdentifier}
+                        onChange={(e) => setNctIdentifier(e.target.value)}
+                        placeholder="e.g., NCT03456789"
+                        className="h-8 text-xs font-light"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-neutral-500 mb-1.5 block">EudraCT Identifier</label>
+                      <Input
+                        value={eudraCTIdentifier}
+                        onChange={(e) => setEudraCTIdentifier(e.target.value)}
+                        placeholder="e.g., 2019-001234-56"
+                        className="h-8 text-xs font-light"
+                      />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Active Filters Summary */}
           {(phaseFilters.length > 0 ||
             statusFilters.length > 0 ||
             geographyFilters.length > 0 ||
@@ -1177,7 +1517,6 @@ export default function DCMFiltersPage() {
               </div>
             </div>
           )}
-        </div>
 
         {/* Smart Filter - Central Component */}
         <div className="px-6 pt-4 pb-4">
@@ -1652,210 +1991,232 @@ export default function DCMFiltersPage() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Right Sidebar - Selected Studies */}
-      {selectedDatasets.size > 0 && (
-        <div className="w-80 bg-white border-l border-neutral-200 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
-          <div className="p-6 border-b border-neutral-100">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Database className={cn("size-5", scheme.from.replace("from-", "text-"))} />
-                <h2 className="text-lg font-light text-neutral-900">Selected Studies</h2>
-              </div>
-              <Badge variant="outline" className="font-light">
-                {selectedDatasets.size}
-              </Badge>
-            </div>
-            <p className="text-sm font-light text-neutral-500">
-              Quick access to your collection
-            </p>
+        {/* Footer */}
+        <div className="space-y-4 mt-8">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 3 of 7</span>
+            <span className="text-xs text-neutral-300">|</span>
+            <span className="text-xs font-light text-neutral-600">Select Datasets</span>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 space-y-2">
-              {Array.from(selectedDatasets).map((datasetId) => {
-                const dataset = MOCK_DATASETS.find(d => d.id === datasetId)
-                if (!dataset) return null
-
-                return (
-                  <div
-                    key={dataset.id}
-                    className={cn(
-                      "rounded-xl border-2 p-3 transition-all group hover:shadow-md",
-                      scheme.from.replace("from-", "border-").replace("500", "100"),
-                      "bg-white"
-                    )}
-                  >
-                    <div className="flex items-start gap-2 mb-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-xs font-light">
-                            {dataset.code}
-                          </Badge>
-                          <Badge
-                            className={cn(
-                              "text-xs font-light",
-                              dataset.status === "Closed"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-amber-100 text-amber-800"
-                            )}
-                          >
-                            {dataset.status}
-                          </Badge>
-                        </div>
-                        <h4 className="text-sm font-normal text-neutral-900 mb-1 line-clamp-2">
-                          {dataset.name}
-                        </h4>
-                        <div className="flex items-center gap-2 text-xs font-light text-neutral-500">
-                          <span>{dataset.patientCount} pts</span>
-                          <span>•</span>
-                          <span>Phase {dataset.phase}</span>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleDataset(dataset.id)}
-                        className="rounded-lg font-light h-7 w-7 p-0 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="size-4 text-neutral-500 hover:text-red-600" />
-                      </Button>
-                    </div>
-
-                    {/* Mini Access Breakdown */}
-                    <div className="flex gap-1 h-1.5 rounded-full overflow-hidden bg-neutral-100">
-                      <div
-                        className="bg-green-500"
-                        style={{ width: `${dataset.accessBreakdown.alreadyOpen}%` }}
-                      />
-                      <div
-                        className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
-                        style={{ width: `${dataset.accessBreakdown.readyToGrant}%` }}
-                      />
-                      <div
-                        className="bg-amber-500"
-                        style={{ width: `${dataset.accessBreakdown.needsApproval}%` }}
-                      />
-                      <div
-                        className="bg-neutral-400"
-                        style={{ width: `${dataset.accessBreakdown.missingLocation}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="p-4 border-t border-neutral-100">
+          <div className="flex gap-4">
             <Button
               variant="outline"
-              onClick={() => setSelectedDatasets(new Set())}
-              className="w-full rounded-xl font-light border-neutral-200"
+              onClick={() => router.push("/poc/2/dcm/create/categories")}
+              className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
             >
-              Clear All
+              <ArrowLeft className="size-4 mr-2" />
+              Back to Categories
+            </Button>
+            <Button
+              onClick={handleContinue}
+              disabled={selectedDatasets.size === 0}
+              className={cn(
+                "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all",
+                selectedDatasets.size > 0
+                  ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                  : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+              )}
+            >
+              Continue with {selectedDatasets.size} Datasets
+              <ArrowRight className="size-4 ml-2" />
             </Button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Floating Selection Cart */}
-      {selectedDatasets.size > 0 && (
-        <div className="fixed bottom-0 right-0 left-0 z-50 pointer-events-none animate-in slide-in-from-bottom duration-300">
-          <div className="max-w-7xl mx-auto px-12 pb-6 pointer-events-auto">
-            <Card
-              className={cn(
-                "border-2 rounded-3xl overflow-hidden shadow-2xl bg-white",
-                scheme.from.replace("from-", "border-")
-              )}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start gap-6">
-                  {/* Left: Selection Info */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className={cn(
-                          "flex size-10 items-center justify-center rounded-full bg-gradient-to-r text-white",
-                          scheme.from,
-                          scheme.to
-                        )}
-                      >
-                        {selectedDatasets.size}
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-normal text-neutral-900">
-                          {selectedDatasets.size} Dataset{selectedDatasets.size !== 1 ? "s" : ""}{" "}
-                          Selected
-                        </h3>
-                        <p className="text-sm font-light text-neutral-600">
-                          Review access matrix and continue
-                        </p>
-                      </div>
-                    </div>
+      {/* Right Sticky Panel - Selected Datasets */}
+      <div className="w-80 sticky top-8 h-fit">
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-lg">
+          <CardContent className="p-6">
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className={cn(
+                  "flex size-10 items-center justify-center rounded-full bg-gradient-to-r text-white",
+                  scheme.from,
+                  scheme.to
+                )}
+              >
+                <Database className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-normal text-neutral-900">Selected Datasets</h3>
+                <p className="text-2xl font-light text-neutral-900">{selectedDatasets.size}</p>
+              </div>
+            </div>
 
-                    {/* Access Matrix */}
-                    {accessBreakdown && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-light text-neutral-600 uppercase tracking-wider mb-2">
-                          Access Provisioning Breakdown
-                        </p>
-                        <div className="flex gap-2 h-3">
-                          <div
-                            className="bg-green-500 rounded-full transition-all"
-                            style={{ width: `${accessBreakdown.alreadyOpen}%` }}
-                          />
-                          <div
-                            className={cn("bg-gradient-to-r rounded-full transition-all", scheme.from, scheme.to)}
-                            style={{ width: `${accessBreakdown.readyToGrant}%` }}
-                          />
-                          <div
-                            className="bg-amber-500 rounded-full transition-all"
-                            style={{ width: `${accessBreakdown.needsApproval}%` }}
-                          />
-                          <div
-                            className="bg-neutral-400 rounded-full transition-all"
-                            style={{ width: `${accessBreakdown.missingLocation}%` }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between text-xs font-light text-neutral-600">
-                          <span>{accessBreakdown.alreadyOpen}% already open</span>
-                          <span>{accessBreakdown.readyToGrant}% ready to grant</span>
-                          <span>{accessBreakdown.needsApproval}% needs approval</span>
-                          <span>{accessBreakdown.missingLocation}% missing</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Right: Actions */}
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={handleContinue}
-                      className={cn(
-                        "rounded-2xl font-light h-12 px-8 bg-gradient-to-r text-white shadow-lg hover:shadow-xl transition-all",
-                        scheme.from,
-                        scheme.to
-                      )}
-                    >
-                      Continue to Activities
-                      <ArrowRight className="ml-2 size-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedDatasets(new Set())}
-                      className="rounded-2xl font-light h-10 px-8 border-neutral-200"
-                    >
-                      Clear Selection
-                    </Button>
+            {/* Average Access Eligibility RAG Bar */}
+            {accessBreakdown && selectedDatasets.size > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Access Eligibility</p>
+                  <p className="text-xs font-medium text-green-600">{accessBreakdown.alreadyOpen + accessBreakdown.readyToGrant}% ready</p>
+                </div>
+                <div className="flex gap-0.5 h-3 rounded-full overflow-hidden bg-neutral-100">
+                  <div
+                    className="bg-green-500 transition-all duration-500"
+                    style={{ width: `${accessBreakdown.alreadyOpen}%` }}
+                    title={`Already Open: ${accessBreakdown.alreadyOpen}%`}
+                  />
+                  <div
+                    className={cn("bg-gradient-to-r transition-all duration-500", scheme.from, scheme.to)}
+                    style={{ width: `${accessBreakdown.readyToGrant}%` }}
+                    title={`Ready to Grant: ${accessBreakdown.readyToGrant}%`}
+                  />
+                  <div
+                    className="bg-amber-500 transition-all duration-500"
+                    style={{ width: `${accessBreakdown.needsApproval}%` }}
+                    title={`Needs Approval: ${accessBreakdown.needsApproval}%`}
+                  />
+                  <div
+                    className="bg-neutral-400 transition-all duration-500"
+                    style={{ width: `${accessBreakdown.missingLocation}%` }}
+                    title={`Missing Location: ${accessBreakdown.missingLocation}%`}
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  <div className="flex items-center gap-3 text-xs font-light text-neutral-500">
+                    <span className="flex items-center gap-1">
+                      <span className="size-2 rounded-full bg-green-500" /> Open
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className={cn("size-2 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} /> Ready
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="size-2 rounded-full bg-amber-500" /> Review
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
+              </div>
+            )}
+
+            <Separator className="mb-6" />
+
+            {/* Access Breakdown */}
+            {accessBreakdown && selectedDatasets.size > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100">
+                    <CheckCircle2 className="size-4 text-green-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-normal text-neutral-900">Already Open</p>
+                      <Badge className="bg-green-100 text-green-800 font-light text-xs">{accessBreakdown.alreadyOpen}%</Badge>
+                    </div>
+                    <p className="text-xs font-light text-neutral-600">Instant access</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
+                    <Zap className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-normal text-neutral-900">Ready to Grant</p>
+                      <Badge className={cn("font-light text-xs", scheme.from.replace("from-", "bg-").replace("500", "100"), scheme.from.replace("from-", "text-"))}>{accessBreakdown.readyToGrant}%</Badge>
+                    </div>
+                    <p className="text-xs font-light text-neutral-600">Auto-provisioned</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                    <Clock className="size-4 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-normal text-neutral-900">Needs Approval</p>
+                      <Badge className="bg-amber-100 text-amber-800 font-light text-xs">{accessBreakdown.needsApproval}%</Badge>
+                    </div>
+                    <p className="text-xs font-light text-neutral-600">Requires review</p>
+                  </div>
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Selected datasets list (scrollable) */}
+                <div className="max-h-[300px] overflow-y-auto space-y-2">
+                  {Array.from(selectedDatasets).slice(0, 5).map((datasetId) => {
+                    const dataset = MOCK_DATASETS.find(d => d.id === datasetId)
+                    if (!dataset) return null
+                    return (
+                      <div
+                        key={dataset.id}
+                        className="flex items-center justify-between p-2 rounded-lg bg-neutral-50 group"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-normal text-neutral-900 truncate">{dataset.code}</p>
+                          <p className="text-xs font-light text-neutral-500 truncate">{dataset.name}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleDataset(dataset.id)}
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="size-3 text-neutral-500 hover:text-red-600" />
+                        </Button>
+                      </div>
+                    )
+                  })}
+                  {selectedDatasets.size > 5 && (
+                    <p className="text-xs font-light text-neutral-500 text-center py-2">
+                      +{selectedDatasets.size - 5} more datasets
+                    </p>
+                  )}
+                </div>
+
+                <Separator className="my-4" />
+
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedDatasets(new Set())}
+                  className="w-full rounded-xl font-light border-neutral-200"
+                >
+                  Clear All
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Database className="size-12 text-neutral-200 mx-auto mb-3" />
+                <p className="text-sm font-light text-neutral-500">No datasets selected yet</p>
+                <p className="text-xs font-light text-neutral-400 mt-1">Click on datasets to add them</p>
+              </div>
+            )}
+
+            <Separator className="my-6" />
+
+            {/* Info box */}
+            <div className="rounded-xl bg-blue-50 border border-blue-100 p-3 mb-4">
+              <div className="flex gap-2">
+                <Info className="size-4 shrink-0 text-blue-600 mt-0.5" />
+                <p className="text-xs font-light text-blue-700 leading-relaxed">
+                  Selected datasets will be included in your collection. Access provisioning times vary based on approval requirements.
+                </p>
+              </div>
+            </div>
+
+            {/* Continue Button */}
+            <Button
+              onClick={handleContinue}
+              disabled={selectedDatasets.size === 0}
+              className={cn(
+                "w-full h-12 rounded-xl font-light shadow-lg hover:shadow-xl transition-all",
+                selectedDatasets.size > 0
+                  ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                  : "bg-neutral-200 text-neutral-500"
+              )}
+            >
+              Continue with {selectedDatasets.size} dataset{selectedDatasets.size !== 1 ? 's' : ''}
+              <ArrowRight className="size-4 ml-2" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

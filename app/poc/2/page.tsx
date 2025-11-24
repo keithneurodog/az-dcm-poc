@@ -101,7 +101,7 @@ export default function UX15DCMDashboard() {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("dcm_current_collection_id", collectionId)
     }
-    router.push("/poc/1/dcm/progress")
+    router.push("/poc/2/dcm/progress")
   }
 
   const getStatusInfo = (status: string) => {
@@ -140,7 +140,7 @@ export default function UX15DCMDashboard() {
         {/* CTA */}
         <div className="flex items-center justify-center">
           <Button
-            onClick={() => router.push("/poc/1/dcm/create")}
+            onClick={() => router.push("/poc/2/dcm/create")}
             className={cn(
               "bg-gradient-to-r text-white rounded-full px-10 font-light h-14 text-base shadow-lg hover:shadow-xl transition-all",
               scheme.from,
@@ -158,7 +158,7 @@ export default function UX15DCMDashboard() {
         {/* Critical Blockers */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/poc/1/notifications?filter=blocker")}
+          onClick={() => router.push("/poc/2/notifications?filter=blocker")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -211,7 +211,7 @@ export default function UX15DCMDashboard() {
         {/* Pending Mentions */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/poc/1/notifications?filter=mention")}
+          onClick={() => router.push("/poc/2/notifications?filter=mention")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -264,7 +264,7 @@ export default function UX15DCMDashboard() {
         {/* Nearing SLA */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/poc/1/collections?status=pending_approval")}
+          onClick={() => router.push("/poc/2/collections?status=pending_approval")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -320,7 +320,7 @@ export default function UX15DCMDashboard() {
         {/* Ready for Review */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/poc/1/collections?status=completed")}
+          onClick={() => router.push("/poc/2/collections?status=completed")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -495,7 +495,7 @@ export default function UX15DCMDashboard() {
                       if (typeof window !== "undefined") {
                         sessionStorage.setItem("dcm_current_collection_id", notification.collectionId)
                       }
-                      router.push("/poc/1/notifications")
+                      router.push("/poc/2/notifications")
                     }}
                     className={cn(
                       "p-3 rounded-xl border cursor-pointer hover:shadow-md transition-all",
@@ -529,7 +529,7 @@ export default function UX15DCMDashboard() {
 
             <Button
               variant="outline"
-              onClick={() => router.push("/poc/1/notifications")}
+              onClick={() => router.push("/poc/2/notifications")}
               className="w-full rounded-xl font-light border-neutral-200"
             >
               View All Notifications
@@ -549,7 +549,7 @@ export default function UX15DCMDashboard() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => router.push("/poc/1/notifications")}
+              onClick={() => router.push("/poc/2/notifications")}
               className="rounded-xl font-light border-neutral-200"
             >
               View All
@@ -661,7 +661,7 @@ export default function UX15DCMDashboard() {
           suggestions and smart bundling recommendations
         </p>
         <Button
-          onClick={() => router.push("/poc/1/dcm/create")}
+          onClick={() => router.push("/poc/2/dcm/create")}
           className={cn(
             "bg-gradient-to-r text-white rounded-full px-8 font-light shadow-lg hover:shadow-xl transition-all",
             scheme.from,

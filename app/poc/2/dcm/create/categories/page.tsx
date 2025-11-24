@@ -165,6 +165,13 @@ export default function DCMCategoriesPage() {
           </Button>
         </div>
 
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 2 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Select Categories</span>
+        </div>
+
         <div className="text-center mb-6">
           <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
             AI-Suggested Data Categories
@@ -367,10 +374,7 @@ export default function DCMCategoriesPage() {
                     onChange={(e) => setNewKeyword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && addKeyword()}
                     placeholder="Add keyword..."
-                    className="flex-1 h-8 px-3 text-sm font-light border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0"
-                    style={{
-                      focusRing: scheme.from.replace("from-", "ring-").replace("500", "400")
-                    }}
+                    className="flex-1 h-8 px-3 text-sm font-light border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-400"
                   />
                   <Button
                     size="sm"
@@ -392,10 +396,7 @@ export default function DCMCategoriesPage() {
             <textarea
               value={editedIntent}
               onChange={(e) => setEditedIntent(e.target.value)}
-              className="w-full rounded-xl bg-white p-4 text-sm font-light text-neutral-700 border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[100px] resize-y"
-              style={{
-                focusRing: scheme.from.replace("from-", "ring-").replace("500", "400")
-              }}
+              className="w-full rounded-xl bg-white p-4 text-sm font-light text-neutral-700 border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-400 min-h-[100px] resize-y"
             />
           ) : (
             <div className="rounded-xl bg-white/50 p-4 text-sm font-light text-neutral-700 italic border border-white">
@@ -590,29 +591,37 @@ export default function DCMCategoriesPage() {
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/poc/1/dcm/create")}
-          className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
-        >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Intent
-        </Button>
-        <Button
-          onClick={handleContinue}
-          disabled={selectedCategoryIds.size === 0}
-          className={cn(
-            "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all",
-            selectedCategoryIds.size > 0
-              ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
-              : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
-          )}
-        >
-          Continue with {selectedCategoryIds.size} Categories
-          <ArrowRight className="size-4 ml-2" />
-        </Button>
+      {/* Footer */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 2 of 7</span>
+          <span className="text-xs text-neutral-300">|</span>
+          <span className="text-xs font-light text-neutral-600">Select Categories</span>
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/poc/2/dcm/create")}
+            className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
+          >
+            <ArrowLeft className="size-4 mr-2" />
+            Back to Intent
+          </Button>
+          <Button
+            onClick={handleContinue}
+            disabled={selectedCategoryIds.size === 0}
+            className={cn(
+              "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all",
+              selectedCategoryIds.size > 0
+                ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                : "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+            )}
+          >
+            Continue with {selectedCategoryIds.size} Categories
+            <ArrowRight className="size-4 ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   )

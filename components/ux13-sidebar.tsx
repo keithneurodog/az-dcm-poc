@@ -20,7 +20,7 @@ const navigation = [
   { name: "Dashboard", href: "/poc/1", icon: LayoutDashboard },
   { name: "Browse Collections", href: "/poc/1/collections", icon: Database },
   { name: "Notifications", href: "/poc/1/notifications", icon: Bell },
-  { name: "Create Collection", href: "/poc/1/dcm/create", icon: PlusCircle },
+  { name: "Create Collection", href: "/poc/2/dcm/create", icon: PlusCircle },
   { name: "Settings", href: "#", icon: Settings },
 ]
 
@@ -55,10 +55,10 @@ export function UX13Sidebar() {
             // Highlight dashboard on exact match or progress pages (not during create flow)
             isActive =
               pathname === "/poc/1" ||
-              (pathname.startsWith("/poc/1/dcm/progress") && !pathname.startsWith("/poc/1/dcm/create"))
+              (pathname.startsWith("/poc/1/dcm/progress") && !pathname.startsWith("/poc/2/dcm/create"))
           } else if (item.name === "Create Collection") {
             // Highlight during the creation flow
-            isActive = pathname.startsWith("/poc/1/dcm/create")
+            isActive = pathname.startsWith("/poc/2/dcm/create")
           } else {
             // For other items, use exact match
             isActive = pathname === item.href

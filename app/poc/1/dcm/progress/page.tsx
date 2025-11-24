@@ -1797,7 +1797,7 @@ ${currentUser.email}`
                       // Calculate duration if we have a timestamp
                       let durationText = "Completed successfully"
                       if (milestone.timestamp && index > 0 && collection.milestones[index - 1].timestamp) {
-                        const prevTimestamp = collection.milestones[index - 1].timestamp
+                        const prevTimestamp = collection.milestones[index - 1].timestamp!
                         const duration = milestone.timestamp.getTime() - prevTimestamp.getTime()
                         const minutes = Math.floor(duration / 60000)
                         const hours = Math.floor(duration / 3600000)

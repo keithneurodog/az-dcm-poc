@@ -170,7 +170,7 @@ export default function CollectionsBrowserPage() {
             </p>
           </div>
           <Button
-            onClick={() => router.push("/poc/1/dcm/create")}
+            onClick={() => router.push("/poc/2/dcm/create")}
             className={cn(
               "h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
               scheme.from,

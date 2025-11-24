@@ -61,6 +61,12 @@ import {
   User as UserIcon,
   UserCheck,
   CheckSquare,
+  Shield,
+  Brain,
+  Code,
+  Globe,
+  Lock,
+  Zap,
 } from "lucide-react"
 
 // Mock AD email suggestions
@@ -161,7 +167,7 @@ export default function DCMProgressDashboard() {
   const { scheme } = useColorScheme()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<
-    "overview" | "datasets" | "users" | "timeline" | "discussion"
+    "overview" | "agreement" | "datasets" | "users" | "timeline" | "discussion"
   >("overview")
 
   // Discussion state
@@ -253,11 +259,11 @@ export default function DCMProgressDashboard() {
           setCollection(loadedCollection)
         } else {
           // Collection not found, redirect to dashboard
-          router.push("/poc/1")
+          router.push("/poc/2")
         }
       } else {
         // No collection ID, redirect to dashboard
-        router.push("/poc/1")
+        router.push("/poc/2")
       }
       setLoading(false)
     }
@@ -495,7 +501,7 @@ ${currentUser.email}`
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/poc/1")}
+          onClick={() => router.push("/poc/2")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" strokeWidth={1.5} />
@@ -673,6 +679,7 @@ ${currentUser.email}`
 
           const tabs = [
             { id: "overview", label: "Overview", icon: Activity },
+            { id: "agreement", label: "Agreement of Terms", icon: Shield },
             { id: "datasets", label: "Dataset Status", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
             { id: "users", label: "User Status", icon: Users },
             { id: "timeline", label: "Timeline", icon: TrendingUp },
@@ -1087,6 +1094,382 @@ ${currentUser.email}`
               </div>
           </CardContent>
         </Card>
+        </div>
+      )}
+
+      {/* Agreement of Terms Tab */}
+      {activeTab === "agreement" && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {collection.agreementOfTerms ? (
+            <>
+              {/* AoT Header Card */}
+              <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br",
+                        scheme.from,
+                        scheme.to
+                      )}>
+                        <Shield className="size-7 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-light text-neutral-900 mb-1">Agreement of Terms</h2>
+                        <p className="text-sm font-light text-neutral-500">
+                          Version {collection.agreementOfTerms.version} • Created {collection.agreementOfTerms.createdAt.toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-light"
+                      >
+                        <FileText className="size-4 mr-2" />
+                        Export PDF
+                      </Button>
+                      <Button
+                        size="sm"
+                        className={cn(
+                          "rounded-xl font-light bg-gradient-to-r text-white shadow-lg hover:shadow-xl transition-all",
+                          scheme.from,
+                          scheme.to
+                        )}
+                      >
+                        <AlertCircle className="size-4 mr-2" />
+                        Request Modification
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Metadata */}
+                  <div className="grid grid-cols-4 gap-4 p-4 bg-neutral-50 rounded-xl">
+                    <div>
+                      <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-1">Created By</p>
+                      <p className="text-sm font-normal text-neutral-900">{collection.agreementOfTerms.createdBy}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-1">Effective Date</p>
+                      <p className="text-sm font-normal text-neutral-900">
+                        {collection.agreementOfTerms.effectiveDate?.toLocaleDateString() || "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-1">Review Date</p>
+                      <p className="text-sm font-normal text-neutral-900">
+                        {collection.agreementOfTerms.reviewDate?.toLocaleDateString() || "—"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-1">Target Users</p>
+                      <p className="text-sm font-normal text-neutral-900">{collection.agreementOfTerms.userScope.totalUserCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Primary Use & Beyond Primary Use */}
+              <div className="grid grid-cols-2 gap-6">
+                {/* Primary Use */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={cn(
+                        "flex size-10 items-center justify-center rounded-xl bg-gradient-to-br",
+                        scheme.bg
+                      )}>
+                        <Shield className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-neutral-900">Primary Use</h3>
+                        <p className="text-xs text-neutral-500 font-light">IMI-Guided Protocol</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { key: "understandDrugMechanism", label: "Understand how drugs work in the body", icon: Zap },
+                        { key: "understandDisease", label: "Better understand disease and health problems", icon: BookOpen },
+                        { key: "developDiagnosticTests", label: "Develop diagnostic tests for disease", icon: FileText },
+                        { key: "learnFromPastStudies", label: "Learn from past studies to plan new studies", icon: Brain },
+                        { key: "improveAnalysisMethods", label: "Improve scientific analysis methods", icon: Code },
+                      ].map(({ key, label, icon: Icon }) => {
+                        const isEnabled = collection.agreementOfTerms?.primaryUse[key as keyof typeof collection.agreementOfTerms.primaryUse]
+                        return (
+                          <div
+                            key={key}
+                            className={cn(
+                              "flex items-center gap-3 p-3 rounded-xl border",
+                              isEnabled
+                                ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                                : "border-neutral-200 bg-neutral-50 opacity-60"
+                            )}
+                          >
+                            {isEnabled ? (
+                              <CheckCircle2 className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                            ) : (
+                              <X className="size-4 text-neutral-400" />
+                            )}
+                            <Icon className={cn(
+                              "size-4",
+                              isEnabled ? scheme.from.replace("from-", "text-") : "text-neutral-400"
+                            )} />
+                            <span className={cn(
+                              "text-sm font-light",
+                              isEnabled ? "text-neutral-700" : "text-neutral-500"
+                            )}>
+                              {label}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Beyond Primary Use */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={cn(
+                        "flex size-10 items-center justify-center rounded-xl bg-gradient-to-br",
+                        scheme.bg
+                      )}>
+                        <Zap className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-neutral-900">Beyond Primary Use</h3>
+                        <p className="text-xs text-neutral-500 font-light">Advanced capabilities</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {/* AI Research */}
+                      <div
+                        className={cn(
+                          "flex items-center gap-3 p-4 rounded-xl border",
+                          collection.agreementOfTerms.beyondPrimaryUse.aiResearch
+                            ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                            : "border-neutral-200 bg-neutral-50 opacity-60"
+                        )}
+                      >
+                        {collection.agreementOfTerms.beyondPrimaryUse.aiResearch ? (
+                          <CheckCircle2 className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                        ) : (
+                          <X className="size-5 text-neutral-400" />
+                        )}
+                        <Brain className={cn(
+                          "size-5",
+                          collection.agreementOfTerms.beyondPrimaryUse.aiResearch ? scheme.from.replace("from-", "text-") : "text-neutral-400"
+                        )} />
+                        <span className="font-light text-neutral-700">AI research / AI model training</span>
+                      </div>
+
+                      {/* Software Development */}
+                      <div
+                        className={cn(
+                          "flex items-center gap-3 p-4 rounded-xl border",
+                          collection.agreementOfTerms.beyondPrimaryUse.softwareDevelopment
+                            ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                            : "border-neutral-200 bg-neutral-50 opacity-60"
+                        )}
+                      >
+                        {collection.agreementOfTerms.beyondPrimaryUse.softwareDevelopment ? (
+                          <CheckCircle2 className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                        ) : (
+                          <X className="size-5 text-neutral-400" />
+                        )}
+                        <Code className={cn(
+                          "size-5",
+                          collection.agreementOfTerms.beyondPrimaryUse.softwareDevelopment ? scheme.from.replace("from-", "text-") : "text-neutral-400"
+                        )} />
+                        <span className="font-light text-neutral-700">Software development and testing</span>
+                      </div>
+                    </div>
+
+                    {/* Publication Rights */}
+                    <div className="mt-6 pt-6 border-t border-neutral-100">
+                      <h4 className="text-sm font-normal text-neutral-900 mb-3 flex items-center gap-2">
+                        <FileText className="size-4 text-neutral-500" />
+                        Publication Rights
+                      </h4>
+                      <div className="space-y-2">
+                        <div className={cn(
+                          "flex items-center gap-3 p-3 rounded-xl border",
+                          collection.agreementOfTerms.publication.internalCompanyRestricted
+                            ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                            : "border-neutral-200 bg-neutral-50 opacity-60"
+                        )}>
+                          {collection.agreementOfTerms.publication.internalCompanyRestricted ? (
+                            <CheckCircle2 className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                          ) : (
+                            <X className="size-4 text-neutral-400" />
+                          )}
+                          <Lock className="size-4 text-neutral-500" />
+                          <span className="text-sm font-light text-neutral-700">Internal company-restricted findings</span>
+                        </div>
+                        <div className={cn(
+                          "flex items-center gap-3 p-3 rounded-xl border",
+                          collection.agreementOfTerms.publication.externalPublication
+                            ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                            : "border-neutral-200 bg-neutral-50 opacity-60"
+                        )}>
+                          {collection.agreementOfTerms.publication.externalPublication ? (
+                            <CheckCircle2 className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                          ) : (
+                            <X className="size-4 text-neutral-400" />
+                          )}
+                          <Globe className="size-4 text-neutral-500" />
+                          <span className="text-sm font-light text-neutral-700">
+                            External publication
+                            {collection.agreementOfTerms.publication.externalPublication === "by_exception" && (
+                              <Badge variant="outline" className="ml-2 text-xs font-light">by exception</Badge>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* External Sharing */}
+                    <div className="mt-6 pt-6 border-t border-neutral-100">
+                      <h4 className="text-sm font-normal text-neutral-900 mb-3 flex items-center gap-2">
+                        <Globe className="size-4 text-neutral-500" />
+                        External Sharing
+                      </h4>
+                      <div className={cn(
+                        "flex items-center gap-3 p-3 rounded-xl border",
+                        collection.agreementOfTerms.externalSharing.allowed
+                          ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                          : "border-neutral-200 bg-neutral-50"
+                      )}>
+                        {collection.agreementOfTerms.externalSharing.allowed ? (
+                          <CheckCircle2 className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                        ) : (
+                          <X className="size-4 text-neutral-400" />
+                        )}
+                        <span className="text-sm font-light text-neutral-700">
+                          {collection.agreementOfTerms.externalSharing.allowed ? "External sharing allowed" : "External sharing not allowed"}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* User Scope */}
+              <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "flex size-10 items-center justify-center rounded-xl bg-gradient-to-br",
+                        scheme.bg
+                      )}>
+                        <Users className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-neutral-900">User Scope</h3>
+                        <p className="text-xs text-neutral-500 font-light">{collection.agreementOfTerms.userScope.totalUserCount} target users</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("users")}
+                      className={cn(
+                        "rounded-xl font-light border-2 transition-all hover:shadow-md",
+                        scheme.from.replace("from-", "border-"),
+                        scheme.from.replace("from-", "text-"),
+                        "hover:bg-gradient-to-r",
+                        scheme.bg
+                      )}
+                    >
+                      <Users className="size-4 mr-2" />
+                      View All Users
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    {collection.agreementOfTerms.userScope.byDepartment && collection.agreementOfTerms.userScope.byDepartment.length > 0 && (
+                      <div className="p-4 bg-neutral-50 rounded-xl">
+                        <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-2">Departments</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {collection.agreementOfTerms.userScope.byDepartment.map((dept) => (
+                            <Badge key={dept} variant="outline" className="font-light text-xs">
+                              {dept}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {collection.agreementOfTerms.userScope.byRole && collection.agreementOfTerms.userScope.byRole.length > 0 && (
+                      <div className="p-4 bg-neutral-50 rounded-xl">
+                        <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-2">Roles</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {collection.agreementOfTerms.userScope.byRole.map((role) => (
+                            <Badge key={role} variant="outline" className="font-light text-xs">
+                              {role}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-4 bg-neutral-50 rounded-xl">
+                      <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-2">Total Users</p>
+                      <p className="text-2xl font-light text-neutral-900">{collection.agreementOfTerms.userScope.totalUserCount}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Acknowledged Conflicts */}
+              {collection.agreementOfTerms.acknowledgedConflicts && collection.agreementOfTerms.acknowledgedConflicts.length > 0 && (
+                <Card className="border-2 border-amber-200 rounded-2xl overflow-hidden bg-amber-50/30">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex size-10 items-center justify-center rounded-xl bg-amber-100">
+                        <AlertCircle className="size-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-amber-900">Acknowledged Conflicts</h3>
+                        <p className="text-xs text-amber-700 font-light">
+                          {collection.agreementOfTerms.acknowledgedConflicts.length} dataset conflict(s) acknowledged
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {collection.agreementOfTerms.acknowledgedConflicts.map((conflict, idx) => (
+                        <div key={idx} className="p-4 bg-white rounded-xl border border-amber-200">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="text-sm font-normal text-neutral-900">{conflict.datasetName}</p>
+                              <p className="text-xs font-light text-neutral-600 mt-1">{conflict.conflictDescription}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-light text-neutral-500">Acknowledged by</p>
+                              <p className="text-xs font-normal text-neutral-700">{conflict.acknowledgedBy}</p>
+                              <p className="text-xs font-light text-neutral-500">{conflict.acknowledgedAt.toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          ) : (
+            <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+              <CardContent className="p-12 text-center">
+                <div className="flex size-16 items-center justify-center rounded-2xl bg-neutral-100 mx-auto mb-4">
+                  <Shield className="size-8 text-neutral-400" />
+                </div>
+                <h3 className="text-xl font-light text-neutral-900 mb-2">No Agreement of Terms</h3>
+                <p className="text-sm font-light text-neutral-600 max-w-md mx-auto">
+                  This collection does not have an Agreement of Terms defined. This may be because it was created before the AoT feature was available.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
 
@@ -1797,7 +2180,7 @@ ${currentUser.email}`
                       // Calculate duration if we have a timestamp
                       let durationText = "Completed successfully"
                       if (milestone.timestamp && index > 0 && collection.milestones[index - 1].timestamp) {
-                        const prevTimestamp = collection.milestones[index - 1].timestamp
+                        const prevTimestamp = collection.milestones[index - 1].timestamp!
                         const duration = milestone.timestamp.getTime() - prevTimestamp.getTime()
                         const minutes = Math.floor(duration / 60000)
                         const hours = Math.floor(duration / 3600000)
