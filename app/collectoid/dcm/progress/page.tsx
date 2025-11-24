@@ -61,6 +61,7 @@ import {
   Search,
   User as UserIcon,
   UserCheck,
+  UserPlus,
   CheckSquare,
   Shield,
   Brain,
@@ -196,6 +197,8 @@ export default function DCMProgressDashboard() {
   const [userStatusFilter, setUserStatusFilter] = useState<"all" | "immediate" | "instant_grant" | "pending_approval" | "blocked_training">("all")
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null)
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set())
+  const [userCurrentPage, setUserCurrentPage] = useState(1)
+  const usersPerPage = 10
 
   // Send Update Modal State
   const [sendUpdateOpen, setSendUpdateOpen] = useState(false)
@@ -1854,6 +1857,13 @@ ${currentUser.email}`
               return matchesSearch && matchesStatus
             })
 
+            // Pagination
+            const totalUserPages = Math.ceil(filteredUsers.length / usersPerPage)
+            const paginatedUsers = filteredUsers.slice(
+              (userCurrentPage - 1) * usersPerPage,
+              userCurrentPage * usersPerPage
+            )
+
             // Helper function to get status info
             const getStatusInfo = (status: User["accessStatus"]) => {
               switch (status) {
@@ -1868,47 +1878,166 @@ ${currentUser.email}`
               }
             }
 
+            // Mock user groups for this collection
+            const userGroups = [
+              {
+                id: "grp-1",
+                name: "GPT-Oncology Research Team",
+                userCount: 24,
+                status: "active" as const,
+                lead: "Dr. Sarah Martinez",
+                email: "gpt-oncology@astrazeneca.com",
+                teamsChannel: "GPT-Oncology-DataAccess",
+                addedDate: new Date(Date.now() - 86400000 * 5),
+              },
+              {
+                id: "grp-2",
+                name: "Biostatistics Unit",
+                userCount: 18,
+                status: "active" as const,
+                lead: "Emily Rodriguez",
+                email: "biostat-team@astrazeneca.com",
+                teamsChannel: "Biostat-Central",
+                addedDate: new Date(Date.now() - 86400000 * 3),
+              },
+              {
+                id: "grp-3",
+                name: "TALT-Legal Reviewers",
+                userCount: 6,
+                status: "pending" as const,
+                lead: "Jane Smith",
+                email: "talt-legal@astrazeneca.com",
+                teamsChannel: "TALT-Legal-Reviews",
+                addedDate: new Date(Date.now() - 86400000 * 1),
+              },
+            ]
+
             return (
               <>
-                {/* Summary Metrics Cards */}
-                <div className="grid grid-cols-3 gap-4">
-                  <Card className="border-neutral-200 rounded-xl">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-neutral-900 mb-1">{statusCounts.total}</p>
-                      <p className="text-xs font-light text-neutral-600">Total Users</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-green-200 rounded-xl bg-green-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-green-900 mb-1">{statusCounts.immediate}</p>
-                      <p className="text-xs font-light text-green-700">Immediate Access</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-blue-200 rounded-xl bg-blue-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-blue-900 mb-1">{statusCounts.instant_grant}</p>
-                      <p className="text-xs font-light text-blue-700">In Progress</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-amber-200 rounded-xl bg-amber-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-amber-900 mb-1">{statusCounts.pending_approval}</p>
-                      <p className="text-xs font-light text-amber-700">Pending Approval</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-red-200 rounded-xl bg-red-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-red-900 mb-1">{statusCounts.blocked_training}</p>
-                      <p className="text-xs font-light text-red-700">Training Blocked</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-neutral-200 rounded-xl bg-neutral-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-neutral-900 mb-1">{avgDaysWaiting}</p>
-                      <p className="text-xs font-light text-neutral-600">Avg Days Waiting</p>
-                    </CardContent>
-                  </Card>
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between">
+                  <Button
+                    className={cn("rounded-xl font-light bg-gradient-to-r text-white border-0", scheme.from, scheme.to)}
+                    onClick={() => {
+                      // TODO: Open request users modification modal
+                    }}
+                  >
+                    <UserPlus className="size-4 mr-2" strokeWidth={1.5} />
+                    Request Users Modification
+                  </Button>
+                  <p className="text-xs font-light text-neutral-500">
+                    Last updated: {new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
+
+                {/* Compact Stat Bar */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 border border-neutral-200">
+                    <span className="text-sm font-normal text-neutral-900">{statusCounts.total}</span>
+                    <span className="text-xs font-light text-neutral-500">Total</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 border border-green-200">
+                    <span className="text-sm font-normal text-green-700">{statusCounts.immediate}</span>
+                    <span className="text-xs font-light text-green-600">Immediate</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200">
+                    <span className="text-sm font-normal text-blue-700">{statusCounts.instant_grant}</span>
+                    <span className="text-xs font-light text-blue-600">In Progress</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200">
+                    <span className="text-sm font-normal text-amber-700">{statusCounts.pending_approval}</span>
+                    <span className="text-xs font-light text-amber-600">Pending</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-200">
+                    <span className="text-sm font-normal text-red-700">{statusCounts.blocked_training}</span>
+                    <span className="text-xs font-light text-red-600">Blocked</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-50 border border-neutral-200">
+                    <Clock className="size-3.5 text-neutral-400" strokeWidth={1.5} />
+                    <span className="text-sm font-normal text-neutral-700">{avgDaysWaiting}</span>
+                    <span className="text-xs font-light text-neutral-500">Avg Wait</span>
+                  </div>
+                </div>
+
+                {/* User Groups Panel */}
+                <Card className="border-neutral-200 rounded-2xl">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Users className={cn("size-4", scheme.from.replace("from-", "text-"))} strokeWidth={1.5} />
+                        <h4 className="text-sm font-normal text-neutral-900">User Groups</h4>
+                        <Badge className="bg-neutral-100 text-neutral-600 border-neutral-200 text-xs font-light">
+                          {userGroups.length}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {userGroups.map((group) => (
+                        <div
+                          key={group.id}
+                          className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100 hover:bg-neutral-100 transition-colors"
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className={cn(
+                              "flex size-8 items-center justify-center rounded-full shrink-0",
+                              group.status === "active" ? "bg-green-100" : "bg-amber-100"
+                            )}>
+                              <Users className={cn(
+                                "size-4",
+                                group.status === "active" ? "text-green-600" : "text-amber-600"
+                              )} strokeWidth={1.5} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-normal text-neutral-900 truncate">{group.name}</p>
+                                <Badge className={cn(
+                                  "text-xs font-light shrink-0",
+                                  group.status === "active"
+                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    : "bg-amber-50 text-amber-700 border-amber-200"
+                                )}>
+                                  {group.status === "active" ? "Active" : "Pending"}
+                                </Badge>
+                              </div>
+                              <p className="text-xs font-light text-neutral-500">{group.userCount} users</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 shrink-0">
+                            <div className="text-right hidden sm:block">
+                              <p className="text-xs font-normal text-neutral-700">{group.lead}</p>
+                              <a
+                                href={`mailto:${group.email}`}
+                                className="text-xs font-light text-neutral-500 hover:text-neutral-700 transition-colors"
+                              >
+                                {group.email}
+                              </a>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <a
+                                href={`mailto:${group.email}`}
+                                className="p-1.5 rounded-lg hover:bg-neutral-200 transition-colors"
+                                title="Email group"
+                              >
+                                <Mail className="size-4 text-neutral-400" strokeWidth={1.5} />
+                              </a>
+                              {group.teamsChannel && (
+                                <a
+                                  href={`https://teams.microsoft.com/l/team/${encodeURIComponent(group.teamsChannel)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-1.5 rounded-lg hover:bg-neutral-200 transition-colors"
+                                  title="Open Teams channel"
+                                >
+                                  <MessageSquare className="size-4 text-neutral-400" strokeWidth={1.5} />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
                 {/* Filters */}
                 <Card className="border-neutral-200 rounded-2xl">
@@ -1999,14 +2128,14 @@ ${currentUser.email}`
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-neutral-100">
-                        {filteredUsers.length === 0 ? (
+                        {paginatedUsers.length === 0 ? (
                           <tr>
                             <td colSpan={7} className="px-4 py-8 text-center text-sm font-light text-neutral-500">
                               No users match your filters
                             </td>
                           </tr>
                         ) : (
-                          filteredUsers.map((user) => (
+                          paginatedUsers.map((user) => (
                             <React.Fragment key={user.id}>
                               <tr
                                 className="hover:bg-neutral-50 transition-colors cursor-pointer"
@@ -2078,7 +2207,18 @@ ${currentUser.email}`
                                             Access Details
                                           </h4>
                                           <div className="text-xs font-light text-neutral-700 space-y-1">
-                                            <p className="font-normal">Accessible Datasets:</p>
+                                            <p className="font-normal">
+                                              Accessible Datasets:
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation()
+                                                  // TODO: Open datasets modal
+                                                }}
+                                                className={cn("ml-2 font-light hover:underline", scheme.from.replace("from-", "text-"))}
+                                              >
+                                                see all
+                                              </button>
+                                            </p>
                                             {user.datasetsAccessible.length > 0 ? (
                                               user.datasetsAccessible.map(code => (
                                                 <Badge key={code} variant="outline" className="mr-1 font-light text-xs">
@@ -2222,10 +2362,82 @@ ${currentUser.email}`
                     </table>
                   </div>
 
-                  {/* User count footer */}
+                  {/* Pagination Footer */}
                   {filteredUsers.length > 0 && (
-                    <div className="px-4 py-3 bg-neutral-50 border-t border-neutral-200 text-xs font-light text-neutral-600 text-center">
-                      Showing {filteredUsers.length} of {statusCounts.total} users
+                    <div className="px-4 py-3 bg-neutral-50 border-t border-neutral-200 flex items-center justify-between">
+                      <p className="text-xs font-light text-neutral-600">
+                        Showing {((userCurrentPage - 1) * usersPerPage) + 1}-{Math.min(userCurrentPage * usersPerPage, filteredUsers.length)} of {filteredUsers.length} users
+                      </p>
+                      {totalUserPages > 1 && (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserCurrentPage(1)}
+                            disabled={userCurrentPage === 1}
+                            className="rounded-lg font-light text-xs h-7 px-2"
+                          >
+                            <ChevronLeft className="size-3" strokeWidth={1.5} />
+                            <ChevronLeft className="size-3 -ml-2" strokeWidth={1.5} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={userCurrentPage === 1}
+                            className="rounded-lg font-light text-xs h-7 px-2"
+                          >
+                            <ChevronLeft className="size-3" strokeWidth={1.5} />
+                          </Button>
+                          <div className="flex items-center gap-1 px-2">
+                            {Array.from({ length: Math.min(5, totalUserPages) }, (_, i) => {
+                              let pageNum: number
+                              if (totalUserPages <= 5) {
+                                pageNum = i + 1
+                              } else if (userCurrentPage <= 3) {
+                                pageNum = i + 1
+                              } else if (userCurrentPage >= totalUserPages - 2) {
+                                pageNum = totalUserPages - 4 + i
+                              } else {
+                                pageNum = userCurrentPage - 2 + i
+                              }
+                              return (
+                                <button
+                                  key={pageNum}
+                                  onClick={() => setUserCurrentPage(pageNum)}
+                                  className={cn(
+                                    "size-7 rounded-lg text-xs font-light transition-colors",
+                                    userCurrentPage === pageNum
+                                      ? cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
+                                      : "text-neutral-600 hover:bg-neutral-100"
+                                  )}
+                                >
+                                  {pageNum}
+                                </button>
+                              )
+                            })}
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserCurrentPage(p => Math.min(totalUserPages, p + 1))}
+                            disabled={userCurrentPage === totalUserPages}
+                            className="rounded-lg font-light text-xs h-7 px-2"
+                          >
+                            <ChevronRight className="size-3" strokeWidth={1.5} />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setUserCurrentPage(totalUserPages)}
+                            disabled={userCurrentPage === totalUserPages}
+                            className="rounded-lg font-light text-xs h-7 px-2"
+                          >
+                            <ChevronRight className="size-3" strokeWidth={1.5} />
+                            <ChevronRight className="size-3 -ml-2" strokeWidth={1.5} />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </Card>
@@ -2237,36 +2449,337 @@ ${currentUser.email}`
 
       {/* Timeline Tab */}
       {activeTab === "timeline" && (
-        <Card className="border-neutral-200 rounded-2xl overflow-hidden animate-in fade-in duration-300">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-normal text-neutral-900 mb-4">Provisioning Timeline</h3>
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {/* ETA Summary Panel */}
+          {(() => {
+            const completedMilestones = collection.milestones.filter(m => m.status === "completed").length
+            const totalMilestones = collection.milestones.length
+            const progressPercent = Math.round((completedMilestones / totalMilestones) * 100)
 
-            <div className="space-y-4 relative">
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-neutral-200" />
+            // Calculate final ETA from last milestone
+            const lastMilestone = collection.milestones[collection.milestones.length - 1]
+            const finalEta = lastMilestone?.estimatedTime || lastMilestone?.timestamp || new Date(Date.now() + 86400000 * 7)
+            const now = new Date()
+            const daysRemaining = Math.max(0, Math.ceil((finalEta.getTime() - now.getTime()) / 86400000))
 
-              {collection.milestones.map((milestone, index) => (
-                <div key={index} className="flex gap-4 relative">
-                  <div
-                    className={cn(
-                      "flex size-8 items-center justify-center rounded-full shrink-0 z-10",
-                      milestone.status === "completed" && "bg-green-500 text-white",
-                      milestone.status === "in_progress" &&
-                        cn("bg-gradient-to-r text-white", scheme.from, scheme.to),
-                      milestone.status === "pending" && "bg-neutral-200 text-neutral-600"
-                    )}
-                  >
-                    {milestone.status === "completed" && <CheckCircle2 className="size-4" strokeWidth={1.5} />}
-                    {milestone.status === "in_progress" && <Loader2 className="size-4 animate-spin" strokeWidth={1.5} />}
-                    {milestone.status === "pending" && <Clock className="size-4" strokeWidth={1.5} />}
+            // Calculate elapsed time from first milestone
+            const firstMilestone = collection.milestones[0]
+            const startDate = firstMilestone?.timestamp || new Date(Date.now() - 86400000 * 3)
+            const daysElapsed = Math.ceil((now.getTime() - startDate.getTime()) / 86400000)
+
+            // Check for blockers affecting ETA
+            const unresolvedBlockers = comments.filter(c => c.type === "blocker" && !c.isResolved)
+            const blockerDelayDays = unresolvedBlockers.length * 2 // Estimate 2 days per blocker
+            const isDelayed = unresolvedBlockers.length > 0
+
+            return (
+              <Card className={cn(
+                "rounded-2xl overflow-hidden border-2",
+                isDelayed
+                  ? "border-amber-200 bg-gradient-to-br from-amber-50 to-white"
+                  : scheme.from.replace("from-", "border-").replace("500", "200")
+              )}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-normal text-neutral-900">Estimated Completion</h3>
+                        {isDelayed && (
+                          <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs font-light">
+                            Delayed
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-3xl font-light text-neutral-900 mb-1">
+                        {finalEta.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                      <p className={cn(
+                        "text-sm font-light",
+                        isDelayed ? "text-amber-600" : "text-neutral-500"
+                      )}>
+                        {daysRemaining} days remaining {isDelayed && `(+${blockerDelayDays} days due to blockers)`}
+                      </p>
+
+                      {/* Quick Stats */}
+                      <div className="flex items-center gap-6 mt-4 pt-4 border-t border-neutral-100">
+                        <div>
+                          <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Elapsed</p>
+                          <p className="text-sm font-normal text-neutral-900">{daysElapsed} days</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Remaining</p>
+                          <p className="text-sm font-normal text-neutral-900">{daysRemaining} days</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Status</p>
+                          <p className={cn(
+                            "text-sm font-normal",
+                            isDelayed ? "text-amber-600" : "text-green-600"
+                          )}>
+                            {isDelayed ? "At Risk" : "On Track"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Ring */}
+                    <div className="relative size-24">
+                      <svg className="size-24 -rotate-90" viewBox="0 0 36 36">
+                        <circle
+                          cx="18" cy="18" r="15.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-neutral-100"
+                        />
+                        <circle
+                          cx="18" cy="18" r="15.5"
+                          fill="none"
+                          stroke="url(#progressGradient)"
+                          strokeWidth="2"
+                          strokeDasharray={`${progressPercent} 100`}
+                          strokeLinecap="round"
+                        />
+                        <defs>
+                          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" className={scheme.from.replace("from-", "stop-color: ").replace("-500", "-500;")} style={{ stopColor: isDelayed ? '#f59e0b' : undefined }} />
+                            <stop offset="100%" className={scheme.to.replace("to-", "stop-color: ").replace("-500", "-500;")} style={{ stopColor: isDelayed ? '#d97706' : undefined }} />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-lg font-normal text-neutral-900">{progressPercent}%</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className={cn("flex-1", index < collection.milestones.length - 1 && "pb-4")}>
-                    <p className="text-sm font-normal text-neutral-900 mb-1">
-                      {milestone.timestamp
-                        ? `${milestone.timestamp.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} - ${milestone.name}`
-                        : milestone.estimatedTime
-                        ? `Est. ${milestone.estimatedTime.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} - ${milestone.name}`
-                        : milestone.name}
-                    </p>
+                </CardContent>
+              </Card>
+            )
+          })()}
+
+          {/* ETA Complexity Breakdown */}
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={cn("flex size-10 items-center justify-center rounded-full", scheme.bg)}>
+                  <Brain className={cn("size-5", scheme.from.replace("from-", "text-"))} strokeWidth={1.5} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-normal text-neutral-900">ETA Complexity Breakdown</h3>
+                  <p className="text-xs font-light text-neutral-500">Factors affecting your timeline</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Approval Teams Factor */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div className="flex items-center gap-3">
+                    <Users className="size-5 text-neutral-400" strokeWidth={1.5} />
+                    <div>
+                      <p className="text-sm font-normal text-neutral-900">Approval Teams Required</p>
+                      <p className="text-xs font-light text-neutral-500">{collection.approvalRequests.length} teams need to review</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn("text-sm font-normal", scheme.from.replace("from-", "text-"))}>+{collection.approvalRequests.length * 2} days</p>
+                    <p className="text-xs font-light text-neutral-500">~2 days per team</p>
+                  </div>
+                </div>
+
+                {/* Data Sensitivity Factor */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div className="flex items-center gap-3">
+                    <Shield className="size-5 text-neutral-400" strokeWidth={1.5} />
+                    <div>
+                      <p className="text-sm font-normal text-neutral-900">Data Sensitivity Level</p>
+                      <p className="text-xs font-light text-neutral-500">High sensitivity requires extended review</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn("text-sm font-normal", scheme.from.replace("from-", "text-"))}>+2 days</p>
+                    <p className="text-xs font-light text-neutral-500">Legal buffer</p>
+                  </div>
+                </div>
+
+                {/* User Volume Factor */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div className="flex items-center gap-3">
+                    <UserCheck className="size-5 text-neutral-400" strokeWidth={1.5} />
+                    <div>
+                      <p className="text-sm font-normal text-neutral-900">User Volume</p>
+                      <p className="text-xs font-light text-neutral-500">{collection.totalUsers} users to provision</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-normal text-green-600">Standard</p>
+                    <p className="text-xs font-light text-neutral-500">No additional time</p>
+                  </div>
+                </div>
+
+                {/* Agreement Complexity */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div className="flex items-center gap-3">
+                    <FileText className="size-5 text-neutral-400" strokeWidth={1.5} />
+                    <div>
+                      <p className="text-sm font-normal text-neutral-900">Agreement Complexity</p>
+                      <p className="text-xs font-light text-neutral-500">2 terms pending acceptance</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={cn("text-sm font-normal", scheme.from.replace("from-", "text-"))}>+1 day</p>
+                    <p className="text-xs font-light text-neutral-500">Legal review</p>
+                  </div>
+                </div>
+
+                {/* Historical Benchmark */}
+                <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-neutral-50 to-neutral-100 border border-neutral-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="size-5 text-neutral-400" strokeWidth={1.5} />
+                      <div>
+                        <p className="text-sm font-normal text-neutral-900">Historical Benchmark</p>
+                        <p className="text-xs font-light text-neutral-500">Based on similar collections</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-normal text-neutral-900">Avg: 8.2 days</p>
+                      <p className="text-xs font-light text-green-600">You: On pace</p>
+                    </div>
+                  </div>
+
+                  {/* Confidence Level */}
+                  <div className="mt-3 pt-3 border-t border-neutral-200">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-light text-neutral-500">Estimate Confidence</span>
+                      <span className="text-xs font-normal text-neutral-700">78%</span>
+                    </div>
+                    <div className="w-full bg-neutral-200 rounded-full h-1.5">
+                      <div className={cn("h-1.5 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: '78%' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Blocker Impact Panel */}
+          {(() => {
+            const unresolvedBlockers = comments.filter(c => c.type === "blocker" && !c.isResolved)
+            const totalDelayDays = unresolvedBlockers.length * 2
+
+            if (unresolvedBlockers.length === 0) return null
+
+            return (
+              <Card className="border-2 border-red-200 rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 items-center justify-center rounded-full bg-red-100">
+                        <AlertCircle className="size-5 text-red-600" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-neutral-900">Blocker Impact</h3>
+                        <p className="text-xs font-light text-red-600">{unresolvedBlockers.length} active {unresolvedBlockers.length === 1 ? 'blocker' : 'blockers'} affecting timeline</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-light text-red-600">+{totalDelayDays} days</p>
+                      <p className="text-xs font-light text-neutral-500">Total delay impact</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {unresolvedBlockers.map((blocker) => (
+                      <div key={blocker.id} className="p-3 rounded-xl bg-white border border-red-100">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-normal text-neutral-900 truncate">{blocker.content.slice(0, 80)}...</p>
+                            <p className="text-xs font-light text-neutral-500 mt-1">
+                              Raised by {blocker.author.name} ({blocker.author.role})
+                            </p>
+                          </div>
+                          <Badge className="bg-red-100 text-red-700 border-red-200 text-xs font-light shrink-0">
+                            +2 days
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setActiveTab("discussion")}
+                    className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-100 text-red-700 text-sm font-light hover:bg-red-200 transition-colors"
+                  >
+                    <MessageSquare className="size-4" strokeWidth={1.5} />
+                    View & Resolve Blockers
+                  </button>
+                </CardContent>
+              </Card>
+            )
+          })()}
+
+          {/* Provisioning Timeline */}
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-normal text-neutral-900 mb-4">Provisioning Timeline</h3>
+
+              <div className="space-y-4 relative">
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-neutral-200" />
+
+              {(() => {
+                const unresolvedBlockers = comments.filter(c => c.type === "blocker" && !c.isResolved)
+                const hasBlockers = unresolvedBlockers.length > 0
+
+                return collection.milestones.map((milestone, index) => {
+                  // Check if this milestone is affected by blockers (pending or in_progress milestones)
+                  const isAffectedByBlocker = hasBlockers && (milestone.status === "pending" || milestone.status === "in_progress")
+
+                  return (
+                    <div key={index} className="flex gap-4 relative">
+                      <div className="relative">
+                        <div
+                          className={cn(
+                            "flex size-8 items-center justify-center rounded-full shrink-0 z-10",
+                            milestone.status === "completed" && "bg-green-500 text-white",
+                            milestone.status === "in_progress" &&
+                              cn("bg-gradient-to-r text-white", scheme.from, scheme.to),
+                            milestone.status === "pending" && "bg-neutral-200 text-neutral-600"
+                          )}
+                        >
+                          {milestone.status === "completed" && <CheckCircle2 className="size-4" strokeWidth={1.5} />}
+                          {milestone.status === "in_progress" && <Loader2 className="size-4 animate-spin" strokeWidth={1.5} />}
+                          {milestone.status === "pending" && <Clock className="size-4" strokeWidth={1.5} />}
+                        </div>
+                        {/* Blocker Warning Indicator */}
+                        {isAffectedByBlocker && (
+                          <div className="absolute -top-1 -right-1 size-4 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center z-20">
+                            <AlertCircle className="size-2.5 text-white" strokeWidth={2} />
+                          </div>
+                        )}
+                      </div>
+                      <div className={cn("flex-1", index < collection.milestones.length - 1 && "pb-4")}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-normal text-neutral-900">
+                            {milestone.timestamp
+                              ? `${milestone.timestamp.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} - ${milestone.name}`
+                              : milestone.estimatedTime
+                              ? `Est. ${milestone.estimatedTime.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} - ${milestone.name}`
+                              : milestone.name}
+                          </p>
+                          {isAffectedByBlocker && (
+                            <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs font-light">
+                              Blocked
+                            </Badge>
+                          )}
+                        </div>
+                        {/* Blocker Impact Notice */}
+                        {isAffectedByBlocker && (
+                          <div className="mb-2 p-2 rounded-lg bg-amber-50 border border-amber-100">
+                            <p className="text-xs font-light text-amber-700">
+                              +{unresolvedBlockers.length * 2} days delay due to {unresolvedBlockers.length} active {unresolvedBlockers.length === 1 ? 'blocker' : 'blockers'}
+                            </p>
+                          </div>
+                        )}
                     {milestone.status === "completed" && (() => {
                       // Calculate duration if we have a timestamp
                       let durationText = "Completed successfully"
@@ -2446,12 +2959,15 @@ ${currentUser.email}`
                         </>
                       )
                     })()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                      </div>
+                    </div>
+                  )
+                })
+              })()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Discussion Tab */}
