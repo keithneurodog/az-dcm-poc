@@ -200,7 +200,12 @@ export default function CustomizeCollectionPage() {
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => router.push(`/collectoid/collections/${params.id}`)}
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem("dcm_current_collection_id", params.id)
+            }
+            router.push("/collectoid/dcm/progress")
+          }}
           className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
         >
           <ArrowLeft className="size-4" />
@@ -734,7 +739,12 @@ export default function CustomizeCollectionPage() {
 
                 <Button
                   variant="ghost"
-                  onClick={() => router.push(`/collectoid/collections/${params.id}`)}
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      sessionStorage.setItem("dcm_current_collection_id", params.id)
+                    }
+                    router.push("/collectoid/dcm/progress")
+                  }}
                   className="w-full font-light text-neutral-500"
                 >
                   Cancel

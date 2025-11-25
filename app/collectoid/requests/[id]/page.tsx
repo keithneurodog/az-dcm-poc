@@ -247,14 +247,30 @@ export default function RequestConfirmationPage() {
         {/* Collection Added */}
         <Card className="border-neutral-200 rounded-2xl mb-8">
           <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-neutral-100">
-                <Database className="size-5 text-neutral-600" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-neutral-100">
+                  <Database className="size-5 text-neutral-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-light text-neutral-600">You've been added to</p>
+                  <p className="text-base font-normal text-neutral-900">{simpleRequest.collectionName}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-light text-neutral-600">You've been added to</p>
-                <p className="text-base font-normal text-neutral-900">{simpleRequest.collectionName}</p>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    sessionStorage.setItem("dcm_current_collection_id", simpleRequest.collectionId)
+                  }
+                  router.push("/collectoid/dcm/progress")
+                }}
+                className="rounded-lg font-light border-neutral-200"
+              >
+                View Collection
+                <ExternalLink className="size-3 ml-2" />
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -301,13 +317,6 @@ export default function RequestConfirmationPage() {
     <div className="py-8 max-w-3xl mx-auto">
       {/* Success Header */}
       <div className="text-center mb-8">
-        <div className={cn(
-          "flex size-20 items-center justify-center rounded-full mx-auto mb-6 bg-gradient-to-br",
-          scheme.from,
-          scheme.to
-        )}>
-          <Sparkles className="size-10 text-white" />
-        </div>
         <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight mb-2">
           Proposition Submitted
         </h1>
@@ -350,9 +359,26 @@ export default function RequestConfirmationPage() {
               <h3 className="text-lg font-normal text-neutral-900 mb-1">
                 {proposition.propositionName}
               </h3>
-              <p className="text-sm font-light text-neutral-500 mb-4">
-                Based on {proposition.parentCollectionName}
-              </p>
+              <div className="flex items-center gap-2 mb-4">
+                <p className="text-sm font-light text-neutral-500">
+                  Based on
+                </p>
+                <button
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      sessionStorage.setItem("dcm_current_collection_id", proposition.collectionId)
+                    }
+                    router.push("/collectoid/dcm/progress")
+                  }}
+                  className={cn(
+                    "text-sm font-normal hover:underline transition-colors",
+                    scheme.from.replace("from-", "text-")
+                  )}
+                >
+                  {proposition.parentCollectionName}
+                </button>
+                <ExternalLink className="size-3 text-neutral-400" />
+              </div>
 
               {/* Changes Summary */}
               <div className="space-y-2 mb-4">

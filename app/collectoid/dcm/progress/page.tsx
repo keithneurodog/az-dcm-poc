@@ -591,6 +591,27 @@ ${currentUser.email}`
               <Send className="size-4 mr-2" strokeWidth={1.5} />
               Send Update
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/collectoid/collections/${collection.id}/customize`)}
+              className="rounded-full font-light"
+            >
+              <Sparkles className="size-4 mr-2" strokeWidth={1.5} />
+              Create Derivation
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => router.push(`/collectoid/collections/${collection.id}/request`)}
+              className={cn(
+                "rounded-full font-light bg-gradient-to-r text-white shadow-lg hover:shadow-xl transition-all",
+                scheme.from,
+                scheme.to
+              )}
+            >
+              <Zap className="size-4 mr-2" strokeWidth={1.5} />
+              Request Access
+            </Button>
           </div>
         </div>
 
@@ -682,6 +703,60 @@ ${currentUser.email}`
                   </div>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Your Access Status - Personalized for End Users */}
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden mt-6">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <UserCheck className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+              <h3 className="text-base font-normal text-neutral-900">Your Access Status</h3>
+            </div>
+            <p className="text-sm font-light text-neutral-600 mb-4">
+              How you can access datasets in this collection
+            </p>
+
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-light text-neutral-700">Your access breakdown</span>
+                <span className="text-sm font-normal text-neutral-900">
+                  {collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired} datasets
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-neutral-100 rounded-full h-3 overflow-hidden">
+                  <div className="flex h-full">
+                    <div
+                      className="bg-green-500 transition-all"
+                      style={{ width: `${(collection.accessBreakdown.instant / (collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired)) * 100}%` }}
+                    />
+                    <div
+                      className="bg-amber-500 transition-all"
+                      style={{ width: `${(collection.accessBreakdown.approvalRequired / (collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6 text-sm font-light mb-4">
+              <div className="flex items-center gap-2">
+                <div className="size-3 rounded-full bg-green-500" />
+                <span className="text-neutral-700">⚡ {collection.accessBreakdown.instant} datasets: Instant Access</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="size-3 rounded-full bg-amber-500" />
+                <span className="text-neutral-700">⏳ {collection.accessBreakdown.approvalRequired} datasets: Approval Required</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <Clock className="size-4 text-blue-600 shrink-0" />
+              <span className="text-sm font-light text-blue-800">
+                Estimated time to full access: <span className="font-normal">{collection.accessBreakdown.estimatedDays} business days</span>
+              </span>
             </div>
           </CardContent>
         </Card>

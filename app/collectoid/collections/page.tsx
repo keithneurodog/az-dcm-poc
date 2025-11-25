@@ -282,7 +282,10 @@ export default function CollectionsBrowserPage() {
 
   // Navigate to collection
   const handleViewCollection = (collectionId: string) => {
-    router.push(`/collectoid/collections/${collectionId}`)
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("dcm_current_collection_id", collectionId)
+    }
+    router.push("/collectoid/dcm/progress")
   }
 
   // Get intent match badge display

@@ -23,7 +23,7 @@ import {
   Clock,
   Users,
   Database,
-  Sparkles,
+  FileText,
   MessageSquare,
   Send,
   Loader2,
@@ -38,6 +38,7 @@ import {
   ExternalLink,
   Mail,
   Building,
+  Layers,
 } from "lucide-react"
 
 // Mock proposition data
@@ -182,53 +183,62 @@ export default function DCMPropositionReviewPage() {
     <div className="py-8">
       {/* Header */}
       <div className="mb-8">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => router.push("/collectoid/dcm/propositions")}
-          className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
+          className="rounded-full font-light mb-4"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft className="size-4 mr-2" strokeWidth={1.5} />
           Back to Propositions
-        </button>
+        </Button>
 
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-4">
-            <div className={cn(
-              "flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br shrink-0",
-              scheme.from,
-              scheme.to
-            )}>
-              <Sparkles className="size-7 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline" className="font-mono text-sm">
-                  {proposition.id.toUpperCase()}
-                </Badge>
-                <Badge className="bg-amber-100 text-amber-700 font-light text-xs">
-                  <Clock className="size-3 mr-1" />
-                  Pending Review
-                </Badge>
-                <Badge className="bg-red-100 text-red-700 font-light text-xs">
-                  High Priority
-                </Badge>
-              </div>
-              <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight mb-1">
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight">
                 {proposition.name}
               </h1>
-              <p className="text-sm font-light text-neutral-500">
-                Based on {proposition.parentCollection.name}
-              </p>
+              <Badge variant="outline" className="font-mono text-xs">
+                {proposition.id.toUpperCase()}
+              </Badge>
+              <Badge className="bg-amber-100 text-amber-700 font-light text-xs">
+                <Clock className="size-3 mr-1" strokeWidth={1.5} />
+                Pending Review
+              </Badge>
+              <Badge className="bg-red-100 text-red-700 font-light text-xs">
+                High Priority
+              </Badge>
+            </div>
+            <p className="text-sm font-light text-neutral-600 mb-2">
+              Custom collection request based on {proposition.parentCollection.name}
+            </p>
+            <div className="flex items-center gap-4 text-sm font-light text-neutral-500">
+              <span className="flex items-center gap-1.5">
+                <Users className="size-4" strokeWidth={1.5} />
+                {proposition.requester.name}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <Clock className="size-4" strokeWidth={1.5} />
+                Submitted 2 hours ago
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <Layers className="size-4" strokeWidth={1.5} />
+                {proposition.changes.datasetsAdded.length} datasets added
+              </span>
             </div>
           </div>
 
           {/* Recommendation Badge */}
-          <Card className="border-green-200 bg-green-50 rounded-2xl">
+          <Card className="border-green-200 bg-green-50 rounded-2xl shrink-0">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-1">
-                <ThumbsUp className="size-4 text-green-600" />
+                <ThumbsUp className="size-4 text-green-600" strokeWidth={1.5} />
                 <span className="text-sm font-normal text-green-900">Recommended: Auto-Approve</span>
               </div>
-              <p className="text-xs font-light text-green-700">
+              <p className="text-xs font-light text-green-700 max-w-xs">
                 {proposition.recommendationReason}
               </p>
             </CardContent>
@@ -240,13 +250,13 @@ export default function DCMPropositionReviewPage() {
         {/* Main Content - 2 columns */}
         <div className="col-span-2 space-y-6">
           {/* Requester Info */}
-          <Card className="border-neutral-200 rounded-2xl">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Requester Information</h3>
+              <h3 className="text-base font-normal text-neutral-900 mb-4">Requester Information</h3>
 
               <div className="flex items-start gap-6">
-                <div className="flex size-16 items-center justify-center rounded-full bg-neutral-100 shrink-0">
-                  <Users className="size-8 text-neutral-400" />
+                <div className="flex size-14 items-center justify-center rounded-full bg-neutral-50 border border-neutral-200 shrink-0">
+                  <Users className="size-6 text-neutral-400" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-4">
                   <div>
@@ -254,17 +264,17 @@ export default function DCMPropositionReviewPage() {
                     <p className="text-sm font-light text-neutral-600">{proposition.requester.role}</p>
                   </div>
                   <div className="text-right">
-                    <Button variant="outline" size="sm" className="rounded-lg font-light border-neutral-200">
-                      <Mail className="size-4 mr-2" />
+                    <Button variant="outline" size="sm" className="rounded-full font-light border-neutral-200">
+                      <Mail className="size-4 mr-2" strokeWidth={1.5} />
                       Contact
                     </Button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Building className="size-4 text-neutral-400" />
+                    <Building className="size-4 text-neutral-400" strokeWidth={1.5} />
                     <span className="text-sm font-light text-neutral-600">{proposition.requester.department}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Mail className="size-4 text-neutral-400" />
+                    <Mail className="size-4 text-neutral-400" strokeWidth={1.5} />
                     <span className="text-sm font-light text-neutral-600">{proposition.requester.email}</span>
                   </div>
                 </div>
@@ -289,14 +299,14 @@ export default function DCMPropositionReviewPage() {
           </Card>
 
           {/* Rationale */}
-          <Card className="border-neutral-200 rounded-2xl">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Request Rationale</h3>
+              <h3 className="text-base font-normal text-neutral-900 mb-4">Request Rationale</h3>
               <p className="text-sm font-light text-neutral-700 leading-relaxed mb-4">
                 "{proposition.rationale}"
               </p>
               <div className="flex items-center gap-2">
-                <Clock className="size-4 text-neutral-400" />
+                <Clock className="size-4 text-neutral-400" strokeWidth={1.5} />
                 <span className="text-sm font-light text-neutral-600">
                   Expected duration: <span className="font-normal">{proposition.expectedDuration}</span>
                 </span>
@@ -305,9 +315,9 @@ export default function DCMPropositionReviewPage() {
           </Card>
 
           {/* Changes Summary */}
-          <Card className="border-neutral-200 rounded-2xl">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Requested Changes</h3>
+              <h3 className="text-base font-normal text-neutral-900 mb-4">Requested Changes</h3>
 
               {/* Datasets Added */}
               {proposition.changes.datasetsAdded.length > 0 && (
@@ -319,7 +329,7 @@ export default function DCMPropositionReviewPage() {
                     {proposition.changes.datasetsAdded.map((dataset) => (
                       <div
                         key={dataset.code}
-                        className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-200"
+                        className="flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100"
                       >
                         <div className="flex items-center gap-3">
                           <Badge className="bg-green-100 text-green-700 font-mono text-xs">
@@ -332,8 +342,8 @@ export default function DCMPropositionReviewPage() {
                             </p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" className="rounded-lg text-neutral-500">
-                          <ExternalLink className="size-4" />
+                        <Button variant="ghost" size="sm" className="rounded-full text-neutral-400 hover:text-neutral-600">
+                          <ExternalLink className="size-4" strokeWidth={1.5} />
                         </Button>
                       </div>
                     ))}
@@ -351,9 +361,9 @@ export default function DCMPropositionReviewPage() {
                     {proposition.changes.intentChanges.added.map((intent, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200"
+                        className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200"
                       >
-                        <Shield className="size-4 text-amber-600" />
+                        <Shield className="size-4 text-amber-600" strokeWidth={1.5} />
                         <span className="text-sm font-light text-amber-800">
                           <span className="font-normal">{intent}</span> - requesting access
                         </span>
@@ -366,11 +376,11 @@ export default function DCMPropositionReviewPage() {
           </Card>
 
           {/* AoT Comparison */}
-          <Card className="border-neutral-200 rounded-2xl">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="size-5 text-neutral-700" />
-                <h3 className="text-lg font-normal text-neutral-900">Agreement of Terms Comparison</h3>
+                <Shield className="size-4 text-neutral-500" strokeWidth={1.5} />
+                <h3 className="text-base font-normal text-neutral-900">Agreement of Terms Comparison</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-6">
@@ -448,11 +458,11 @@ export default function DCMPropositionReviewPage() {
           </Card>
 
           {/* Discussion */}
-          <Card className="border-neutral-200 rounded-2xl">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <MessageSquare className="size-5 text-neutral-700" />
-                <h3 className="text-lg font-normal text-neutral-900">Discussion</h3>
+                <MessageSquare className="size-4 text-neutral-500" strokeWidth={1.5} />
+                <h3 className="text-base font-normal text-neutral-900">Discussion</h3>
               </div>
 
               <div className="space-y-4 mb-4">
@@ -490,12 +500,12 @@ export default function DCMPropositionReviewPage() {
                 <Button
                   onClick={handleSendMessage}
                   className={cn(
-                    "h-auto rounded-xl font-light bg-gradient-to-r text-white",
+                    "h-auto px-4 rounded-xl font-light bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
                     scheme.from,
                     scheme.to
                   )}
                 >
-                  <Send className="size-4" />
+                  <Send className="size-4" strokeWidth={1.5} />
                 </Button>
               </div>
             </CardContent>
@@ -504,30 +514,30 @@ export default function DCMPropositionReviewPage() {
 
         {/* Decision Panel - 1 column */}
         <div className="space-y-6">
-          <Card className="border-neutral-200 rounded-2xl sticky top-8">
+          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
-              <h3 className="text-lg font-normal text-neutral-900 mb-4">Decision</h3>
+              <h3 className="text-base font-normal text-neutral-900 mb-4">Decision</h3>
 
-              <div className="space-y-3 mb-6">
+              <div className="space-y-2 mb-6">
                 {/* Approve */}
                 <button
                   onClick={() => setDecision("approve")}
                   className={cn(
-                    "w-full p-4 rounded-xl border-2 text-left transition-all",
+                    "w-full p-3 rounded-xl border text-left transition-all",
                     decision === "approve"
-                      ? "border-green-500 bg-green-50"
+                      ? "border-green-300 bg-green-50"
                       : "border-neutral-200 hover:border-green-200 hover:bg-green-50/50"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "flex size-10 items-center justify-center rounded-lg",
+                      "flex size-9 items-center justify-center rounded-lg",
                       decision === "approve" ? "bg-green-100" : "bg-neutral-100"
                     )}>
                       <ThumbsUp className={cn(
-                        "size-5",
+                        "size-4",
                         decision === "approve" ? "text-green-600" : "text-neutral-500"
-                      )} />
+                      )} strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-normal text-neutral-900">Approve</p>
@@ -540,21 +550,21 @@ export default function DCMPropositionReviewPage() {
                 <button
                   onClick={() => setDecision("request_changes")}
                   className={cn(
-                    "w-full p-4 rounded-xl border-2 text-left transition-all",
+                    "w-full p-3 rounded-xl border text-left transition-all",
                     decision === "request_changes"
-                      ? "border-amber-500 bg-amber-50"
+                      ? "border-amber-300 bg-amber-50"
                       : "border-neutral-200 hover:border-amber-200 hover:bg-amber-50/50"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "flex size-10 items-center justify-center rounded-lg",
+                      "flex size-9 items-center justify-center rounded-lg",
                       decision === "request_changes" ? "bg-amber-100" : "bg-neutral-100"
                     )}>
                       <FileEdit className={cn(
-                        "size-5",
+                        "size-4",
                         decision === "request_changes" ? "text-amber-600" : "text-neutral-500"
-                      )} />
+                      )} strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-normal text-neutral-900">Request Changes</p>
@@ -567,21 +577,21 @@ export default function DCMPropositionReviewPage() {
                 <button
                   onClick={() => setDecision("merge")}
                   className={cn(
-                    "w-full p-4 rounded-xl border-2 text-left transition-all",
+                    "w-full p-3 rounded-xl border text-left transition-all",
                     decision === "merge"
-                      ? "border-purple-500 bg-purple-50"
+                      ? "border-purple-300 bg-purple-50"
                       : "border-neutral-200 hover:border-purple-200 hover:bg-purple-50/50"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "flex size-10 items-center justify-center rounded-lg",
+                      "flex size-9 items-center justify-center rounded-lg",
                       decision === "merge" ? "bg-purple-100" : "bg-neutral-100"
                     )}>
                       <GitMerge className={cn(
-                        "size-5",
+                        "size-4",
                         decision === "merge" ? "text-purple-600" : "text-neutral-500"
-                      )} />
+                      )} strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-normal text-neutral-900">Merge</p>
@@ -594,21 +604,21 @@ export default function DCMPropositionReviewPage() {
                 <button
                   onClick={() => setDecision("reject")}
                   className={cn(
-                    "w-full p-4 rounded-xl border-2 text-left transition-all",
+                    "w-full p-3 rounded-xl border text-left transition-all",
                     decision === "reject"
-                      ? "border-red-500 bg-red-50"
+                      ? "border-red-300 bg-red-50"
                       : "border-neutral-200 hover:border-red-200 hover:bg-red-50/50"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "flex size-10 items-center justify-center rounded-lg",
+                      "flex size-9 items-center justify-center rounded-lg",
                       decision === "reject" ? "bg-red-100" : "bg-neutral-100"
                     )}>
                       <ThumbsDown className={cn(
-                        "size-5",
+                        "size-4",
                         decision === "reject" ? "text-red-600" : "text-neutral-500"
-                      )} />
+                      )} strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="text-sm font-normal text-neutral-900">Reject</p>
@@ -661,16 +671,16 @@ export default function DCMPropositionReviewPage() {
                   <Button
                     onClick={handleApprove}
                     disabled={isSubmitting}
-                    className="w-full h-12 rounded-xl font-light bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full h-11 rounded-full font-light bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
+                        <Loader2 className="size-4 mr-2 animate-spin" strokeWidth={1.5} />
                         Approving...
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="size-4 mr-2" />
+                        <CheckCircle2 className="size-4 mr-2" strokeWidth={1.5} />
                         Approve Proposition
                       </>
                     )}
@@ -681,16 +691,16 @@ export default function DCMPropositionReviewPage() {
                   <Button
                     onClick={handleRequestChanges}
                     disabled={isSubmitting || !feedback.trim()}
-                    className="w-full h-12 rounded-xl font-light bg-amber-600 hover:bg-amber-700 text-white"
+                    className="w-full h-11 rounded-full font-light bg-amber-600 hover:bg-amber-700 text-white shadow-md hover:shadow-lg transition-all"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
+                        <Loader2 className="size-4 mr-2 animate-spin" strokeWidth={1.5} />
                         Sending...
                       </>
                     ) : (
                       <>
-                        <FileEdit className="size-4 mr-2" />
+                        <FileEdit className="size-4 mr-2" strokeWidth={1.5} />
                         Request Changes
                       </>
                     )}
@@ -701,16 +711,16 @@ export default function DCMPropositionReviewPage() {
                   <Button
                     onClick={handleMerge}
                     disabled={isSubmitting || !mergeTarget}
-                    className="w-full h-12 rounded-xl font-light bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full h-11 rounded-full font-light bg-purple-600 hover:bg-purple-700 text-white shadow-md hover:shadow-lg transition-all"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
+                        <Loader2 className="size-4 mr-2 animate-spin" strokeWidth={1.5} />
                         Merging...
                       </>
                     ) : (
                       <>
-                        <GitMerge className="size-4 mr-2" />
+                        <GitMerge className="size-4 mr-2" strokeWidth={1.5} />
                         Merge Collections
                       </>
                     )}
@@ -721,16 +731,16 @@ export default function DCMPropositionReviewPage() {
                   <Button
                     onClick={handleReject}
                     disabled={isSubmitting || !feedback.trim()}
-                    className="w-full h-12 rounded-xl font-light bg-red-600 hover:bg-red-700 text-white"
+                    className="w-full h-11 rounded-full font-light bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg transition-all"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="size-4 mr-2 animate-spin" />
+                        <Loader2 className="size-4 mr-2 animate-spin" strokeWidth={1.5} />
                         Rejecting...
                       </>
                     ) : (
                       <>
-                        <ThumbsDown className="size-4 mr-2" />
+                        <ThumbsDown className="size-4 mr-2" strokeWidth={1.5} />
                         Reject Proposition
                       </>
                     )}
@@ -738,8 +748,8 @@ export default function DCMPropositionReviewPage() {
                 )}
 
                 {!decision && (
-                  <p className="text-sm font-light text-neutral-500 text-center">
-                    Select a decision above
+                  <p className="text-xs font-light text-neutral-500 text-center py-2">
+                    Select a decision above to continue
                   </p>
                 )}
               </div>
@@ -748,14 +758,17 @@ export default function DCMPropositionReviewPage() {
 
           {/* Similar Collections */}
           {proposition.similarCollections.length > 0 && (
-            <Card className="border-neutral-200 rounded-2xl">
+            <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-6">
-                <h3 className="text-base font-normal text-neutral-900 mb-4">Similar Collections</h3>
+                <div className="flex items-center gap-2 mb-4">
+                  <Layers className="size-4 text-neutral-500" strokeWidth={1.5} />
+                  <h3 className="text-base font-normal text-neutral-900">Similar Collections</h3>
+                </div>
                 <div className="space-y-3">
                   {proposition.similarCollections.map((col) => (
                     <div
                       key={col.name}
-                      className="p-3 rounded-xl bg-neutral-50 border border-neutral-200"
+                      className="p-3 rounded-xl bg-neutral-50 border border-neutral-100 hover:border-neutral-200 transition-colors"
                     >
                       <p className="text-sm font-normal text-neutral-900 mb-1">{col.name}</p>
                       <div className="flex items-center gap-3 text-xs font-light text-neutral-500">
