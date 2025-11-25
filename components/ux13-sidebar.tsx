@@ -10,6 +10,9 @@ import {
   Sparkles,
   Database,
   Bell,
+  Search,
+  FileText,
+  Inbox,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useColorScheme } from "./ux12-color-context"
@@ -34,9 +37,12 @@ export function UX13Sidebar() {
 
   const navigation = [
     { name: "Dashboard", href: basePath, icon: LayoutDashboard },
+    { name: "Discover Data", href: `${basePath}/discover`, icon: Search, section: "end-user" },
     { name: "Browse Collections", href: `${basePath}/collections`, icon: Database },
+    { name: "My Requests", href: `${basePath}/my-requests`, icon: FileText, section: "end-user" },
     { name: "Notifications", href: `${basePath}/notifications`, icon: Bell },
-    { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle },
+    { name: "DCM Propositions", href: `${basePath}/dcm/propositions`, icon: Inbox, section: "dcm" },
+    { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle, section: "dcm" },
     { name: "Settings", href: "#", icon: Settings },
   ]
 
@@ -70,6 +76,18 @@ export function UX13Sidebar() {
           } else if (item.name === "Create Collection") {
             // Highlight during the creation flow
             isActive = pathname.startsWith(`${basePath}/dcm/create`)
+          } else if (item.name === "Discover Data") {
+            // Highlight for discover and discover/ai
+            isActive = pathname.startsWith(`${basePath}/discover`)
+          } else if (item.name === "My Requests") {
+            // Highlight for my-requests and individual request pages
+            isActive = pathname.startsWith(`${basePath}/my-requests`) || pathname.startsWith(`${basePath}/requests`)
+          } else if (item.name === "DCM Propositions") {
+            // Highlight for DCM propositions
+            isActive = pathname.startsWith(`${basePath}/dcm/propositions`)
+          } else if (item.name === "Browse Collections") {
+            // Highlight for collections but not when viewing individual collection
+            isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`)
           } else {
             // For other items, use exact match
             isActive = pathname === item.href
