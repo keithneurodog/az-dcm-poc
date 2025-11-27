@@ -110,6 +110,12 @@ export default function DCMReviewPage() {
   }
 
   const handlePublish = () => {
+    // Save current values to sessionStorage before navigating
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("dcm_collection_name", collectionName)
+      sessionStorage.setItem("dcm_collection_description", description)
+      sessionStorage.setItem("dcm_target_community", targetCommunity)
+    }
     router.push("/collectoid/dcm/create/publishing")
   }
 

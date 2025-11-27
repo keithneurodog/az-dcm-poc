@@ -722,7 +722,7 @@ ${currentUser.email}`
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-light text-neutral-700">Your access breakdown</span>
                 <span className="text-sm font-normal text-neutral-900">
-                  {collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired} datasets
+                  {collection.totalDatasets} datasets
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -730,11 +730,11 @@ ${currentUser.email}`
                   <div className="flex h-full">
                     <div
                       className="bg-green-500 transition-all"
-                      style={{ width: `${(collection.accessBreakdown.instant / (collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired)) * 100}%` }}
+                      style={{ width: `${collection.accessBreakdown.immediate + collection.accessBreakdown.instantGrant}%` }}
                     />
                     <div
                       className="bg-amber-500 transition-all"
-                      style={{ width: `${(collection.accessBreakdown.approvalRequired / (collection.accessBreakdown.instant + collection.accessBreakdown.approvalRequired)) * 100}%` }}
+                      style={{ width: `${collection.accessBreakdown.pendingApproval}%` }}
                     />
                   </div>
                 </div>
@@ -744,18 +744,18 @@ ${currentUser.email}`
             <div className="flex items-center gap-6 text-sm font-light mb-4">
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-green-500" />
-                <span className="text-neutral-700">⚡ {collection.accessBreakdown.instant} datasets: Instant Access</span>
+                <span className="text-neutral-700">⚡ {Math.round(collection.totalDatasets * (collection.accessBreakdown.immediate + collection.accessBreakdown.instantGrant) / 100)} datasets: Instant Access</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="size-3 rounded-full bg-amber-500" />
-                <span className="text-neutral-700">⏳ {collection.accessBreakdown.approvalRequired} datasets: Approval Required</span>
+                <span className="text-neutral-700">⏳ {Math.round(collection.totalDatasets * collection.accessBreakdown.pendingApproval / 100)} datasets: Approval Required</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
               <Clock className="size-4 text-blue-600 shrink-0" />
               <span className="text-sm font-light text-blue-800">
-                Estimated time to full access: <span className="font-normal">{collection.accessBreakdown.estimatedDays} business days</span>
+                Estimated time to full access: <span className="font-normal">2-5 business days</span>
               </span>
             </div>
           </CardContent>
