@@ -2027,9 +2027,10 @@ export default function DCMFiltersPage() {
       </div>
 
       {/* Right Sticky Panel - Selected Datasets */}
-      <div className="w-80 sticky top-8 h-fit">
-        <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-lg">
-          <CardContent className="p-6">
+      <div className="w-80 sticky top-8 max-h-[calc(100vh-6rem)] flex flex-col">
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-lg flex flex-col max-h-full">
+          {/* Scrollable content area */}
+          <CardContent className="p-6 overflow-y-auto flex-1 min-h-0">
             {/* Header with icon */}
             <div className="flex items-center gap-3 mb-4">
               <div
@@ -2139,7 +2140,7 @@ export default function DCMFiltersPage() {
                 <Separator className="my-4" />
 
                 {/* Selected datasets list (scrollable) */}
-                <div className="max-h-[300px] overflow-y-auto space-y-2">
+                <div className="max-h-[200px] overflow-y-auto space-y-2">
                   {Array.from(selectedDatasets).slice(0, 5).map((datasetId) => {
                     const dataset = MOCK_DATASETS.find(d => d.id === datasetId)
                     if (!dataset) return null
@@ -2187,18 +2188,14 @@ export default function DCMFiltersPage() {
                 <p className="text-xs font-light text-neutral-400 mt-1">Click on datasets to add them</p>
               </div>
             )}
+          </CardContent>
 
-            <Separator className="my-6" />
-
-            {/* Info box */}
-            <div className="rounded-xl bg-blue-50 border border-blue-100 p-3 mb-4">
-              <div className="flex gap-2">
-                <Info className="size-4 shrink-0 text-blue-600 mt-0.5" />
-                <p className="text-xs font-light text-blue-700 leading-relaxed">
-                  Selected datasets will be included in your collection. Access provisioning times vary based on approval requirements.
-                </p>
-              </div>
-            </div>
+          {/* Fixed footer with Continue Button - always visible */}
+          <div className="p-4 border-t border-neutral-100 bg-white shrink-0">
+            {/* Info box - compact version */}
+            <p className="text-xs font-light text-neutral-500 mb-3 text-center">
+              Access provisioning times vary based on approval requirements.
+            </p>
 
             {/* Continue Button */}
             <Button
@@ -2214,7 +2211,7 @@ export default function DCMFiltersPage() {
               Continue with {selectedDatasets.size} dataset{selectedDatasets.size !== 1 ? 's' : ''}
               <ArrowRight className="size-4 ml-2" />
             </Button>
-          </CardContent>
+          </div>
         </Card>
       </div>
     </div>
