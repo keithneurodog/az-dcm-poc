@@ -246,9 +246,9 @@ export default function DCMPropositionReviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6">
         {/* Main Content - 2 columns */}
-        <div className="col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Requester Info */}
           <Card className="border-neutral-200 rounded-2xl overflow-hidden">
             <CardContent className="p-6">
@@ -258,7 +258,7 @@ export default function DCMPropositionReviewPage() {
                 <div className="flex size-14 items-center justify-center rounded-full bg-neutral-50 border border-neutral-200 shrink-0">
                   <Users className="size-6 text-neutral-400" strokeWidth={1.5} />
                 </div>
-                <div className="flex-1 grid grid-cols-2 gap-4">
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div>
                     <p className="text-lg font-normal text-neutral-900">{proposition.requester.name}</p>
                     <p className="text-sm font-light text-neutral-600">{proposition.requester.role}</p>
@@ -281,7 +281,7 @@ export default function DCMPropositionReviewPage() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-neutral-100">
+              <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-neutral-100 text-center">
                 <div className="text-center">
                   <p className="text-2xl font-light text-neutral-900">{proposition.requester.previousRequests}</p>
                   <p className="text-xs font-light text-neutral-500">Previous Requests</p>
@@ -383,7 +383,7 @@ export default function DCMPropositionReviewPage() {
                 <h3 className="text-base font-normal text-neutral-900">Agreement of Terms Comparison</h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
                 {/* Current */}
                 <div>
                   <h4 className="text-sm font-normal text-neutral-700 mb-3">Current (Parent Collection)</h4>

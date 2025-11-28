@@ -199,7 +199,7 @@ export default function MyRequestsPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Active Requests", value: activeRequests.length, icon: Clock, color: "text-blue-600", bg: "bg-blue-50" },
           { label: "Action Required", value: actionRequiredCount, icon: AlertCircle, color: "text-red-600", bg: "bg-red-50" },
@@ -225,9 +225,9 @@ export default function MyRequestsPage() {
         })}
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6">
         {/* Main Requests List - 2 columns */}
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="flex items-center justify-between">

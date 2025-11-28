@@ -8,6 +8,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
@@ -98,6 +105,7 @@ export default function CollectionsBrowserPage() {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([])
   const [accessLevel, setAccessLevel] = useState<"all" | "mine" | "public" | "restricted">("all")
   const [showFilters, setShowFilters] = useState(true)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   // My Access filter
   const [myAccessFilter, setMyAccessFilter] = useState<"all" | "have_access" | "need_request">("all")
@@ -384,10 +392,11 @@ export default function CollectionsBrowserPage() {
               </button>
             )}
           </div>
+          {/* Desktop Filter Toggle */}
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
+            className="hidden xl:flex h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
           >
             <Filter className="size-4 mr-2" />
             Filters
@@ -405,13 +414,173 @@ export default function CollectionsBrowserPage() {
               </Badge>
             )}
           </Button>
+
+          {/* Mobile Filter Sheet */}
+          <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="xl:hidden h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
+              >
+                <Filter className="size-4 mr-2" />
+                Filters
+                {hasActiveFilters && (
+                  <Badge className={cn("ml-2 font-light", scheme.from.replace("from-", "bg-"), "text-white")}>
+                    {[
+                      selectedStatus.length,
+                      selectedAreas.length,
+                      accessLevel !== "all" ? 1 : 0,
+                      myAccessFilter !== "all" ? 1 : 0,
+                      userGroupFilter.length,
+                      pridFilter.trim() ? 1 : 0,
+                      hasActiveIntents ? Object.values(selectedIntents).filter(Boolean).length : 0,
+                    ].reduce((a, b) => a + b, 0)}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-light">Filters</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-6 mt-6">
+                {/* Intent Filter */}
+                <Card className={cn(
+                  "border-2 rounded-2xl overflow-hidden",
+                  hasActiveIntents
+                    ? scheme.from.replace("from-", "border-").replace("-500", "-200")
+                    : "border-neutral-200"
+                )}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Shield className={cn("size-4", hasActiveIntents ? scheme.from.replace("from-", "text-") : "text-neutral-600")} />
+                      <h3 className="text-sm font-normal text-neutral-900">My Intended Use</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { key: "aiResearch", label: "AI research / ML training" },
+                        { key: "softwareDevelopment", label: "Software development" },
+                        { key: "externalPublication", label: "External publication" },
+                        { key: "internalPublication", label: "Internal publication" },
+                      ].map((intent) => (
+                        <label
+                          key={intent.key}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedIntents[intent.key as keyof typeof selectedIntents]}
+                            onCheckedChange={() => toggleIntent(intent.key as keyof typeof selectedIntents)}
+                          />
+                          <span className="text-sm font-light text-neutral-700">{intent.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* My Access Filter */}
+                <Card className={cn(
+                  "border-2 rounded-2xl overflow-hidden",
+                  hasActiveAccessFilters ? "border-green-200 bg-green-50" : "border-neutral-200"
+                )}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <UserCheck className={cn("size-4", hasActiveAccessFilters ? "text-green-600" : "text-neutral-600")} />
+                      <h3 className="text-sm font-normal text-neutral-900">My Access Status</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { value: "all", label: "All Collections", icon: Database },
+                        { value: "have_access", label: "I Have Access", icon: Unlock },
+                        { value: "need_request", label: "Need to Request", icon: Lock },
+                      ].map((option) => {
+                        const Icon = option.icon
+                        return (
+                          <button
+                            key={option.value}
+                            onClick={() => setMyAccessFilter(option.value as any)}
+                            className={cn(
+                              "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-light transition-all",
+                              myAccessFilter === option.value
+                                ? "bg-green-100 text-green-900 border border-green-200"
+                                : "hover:bg-neutral-50 text-neutral-700"
+                            )}
+                          >
+                            <Icon className="size-4" />
+                            {option.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Status Filter */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-normal text-neutral-900 mb-3">Status</h3>
+                    <div className="space-y-2">
+                      {[
+                        { value: "provisioning", label: "Provisioning" },
+                        { value: "completed", label: "Completed" },
+                        { value: "pending_approval", label: "Pending Approval" },
+                      ].map((status) => (
+                        <label
+                          key={status.value}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedStatus.includes(status.value)}
+                            onCheckedChange={() => toggleStatus(status.value)}
+                          />
+                          <span className="text-sm font-light text-neutral-700">{status.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Therapeutic Areas */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-normal text-neutral-900 mb-3">Therapeutic Area</h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {allAreas.map((area) => (
+                        <label
+                          key={area}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedAreas.includes(area)}
+                            onCheckedChange={() => toggleArea(area)}
+                          />
+                          <span className="text-sm font-light text-neutral-700">{area}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    onClick={clearAllFilters}
+                    className="w-full rounded-xl font-light border-neutral-200"
+                  >
+                    <X className="size-4 mr-2" />
+                    Clear All Filters
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Filters Sidebar */}
+      <div className="flex gap-4 xl:gap-6">
+        {/* Filters Sidebar - Hidden on smaller screens */}
         {showFilters && (
-          <div className="w-72 shrink-0 space-y-6">
+          <div className="hidden xl:block w-72 shrink-0 space-y-6">
             {/* Intent Filter - Most Important for End Users */}
             <Card className={cn(
               "border-2 rounded-2xl overflow-hidden",

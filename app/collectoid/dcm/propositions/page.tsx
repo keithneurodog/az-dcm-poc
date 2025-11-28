@@ -236,7 +236,7 @@ export default function DCMPropositionsPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Pending Review", value: pendingCount, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
           { label: "In Review", value: inReviewCount, icon: Eye, color: "text-blue-600", bg: "bg-blue-50" },

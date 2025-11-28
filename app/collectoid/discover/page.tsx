@@ -57,7 +57,7 @@ export default function DiscoverPage() {
         </p>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-4 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 max-w-3xl mx-auto">
           {[
             { label: "Collections", value: "24", icon: FolderSearch },
             { label: "Datasets", value: "1,200+", icon: Database },
@@ -85,7 +85,7 @@ export default function DiscoverPage() {
           Choose your preferred discovery method
         </p>
 
-        <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6 max-w-5xl mx-auto">
           {/* AI-Assisted Discovery Card */}
           <Card
             className="border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group"
@@ -203,7 +203,7 @@ export default function DiscoverPage() {
           Benefit from expert curation and transparent access controls
         </p>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6">
           {[
             {
               icon: CheckCircle2,

@@ -154,7 +154,7 @@ export default function CollectoidDashboard() {
       </div>
 
       {/* Needs Attention Cards */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6 mb-8">
         {/* Critical Blockers */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
@@ -372,9 +372,9 @@ export default function CollectoidDashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6 mb-8">
         {/* Recent Collections */}
-        <Card className="col-span-2 border-neutral-200 rounded-2xl overflow-hidden">
+        <Card className="lg:col-span-2 border-neutral-200 rounded-2xl overflow-hidden">
           <CardHeader className="border-b border-neutral-100 bg-white">
             <CardTitle className="text-lg font-light text-neutral-900">
               My Collections

@@ -781,7 +781,7 @@ export default function AIDiscoveryPage() {
               </div>
 
               {/* Statistics Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
                 {/* Total Datasets */}
                 <div className="flex items-center gap-2">
                   <Database className="size-4 text-neutral-400" />

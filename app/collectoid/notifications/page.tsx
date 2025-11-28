@@ -9,6 +9,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import {
   Search,
@@ -65,6 +72,7 @@ export default function NotificationsPage() {
   const [includeArchived, setIncludeArchived] = useState(false)
   const [dateRange, setDateRange] = useState<"today" | "week" | "month" | "all">("all")
   const [showFilters, setShowFilters] = useState(true)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   // View/Sort state
   const [viewMode, setViewMode] = useState<ViewMode>("detailed")
@@ -450,7 +458,7 @@ export default function NotificationsPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           {[
             { label: "Total", value: stats.total, icon: Bell, color: "neutral" },
             { label: "Unread", value: stats.unread, icon: MessageSquare, color: "blue" },
@@ -503,10 +511,11 @@ export default function NotificationsPage() {
               </button>
             )}
           </div>
+          {/* Desktop Filter Toggle */}
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
+            className="hidden xl:flex h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
           >
             <Filter className="size-4 mr-2" />
             Filters
@@ -523,13 +532,135 @@ export default function NotificationsPage() {
               </Badge>
             )}
           </Button>
+
+          {/* Mobile Filter Sheet */}
+          <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="xl:hidden h-14 px-6 rounded-2xl font-light border-neutral-200 min-w-[140px]"
+              >
+                <Filter className="size-4 mr-2" />
+                Filters
+                {hasActiveFilters && (
+                  <Badge className={cn("ml-2 font-light bg-gradient-to-r text-white border-0", scheme.from, scheme.to)}>
+                    {[
+                      selectedTypes.length,
+                      selectedPriorities.length,
+                      selectedCollection !== "all" ? 1 : 0,
+                      readStatus !== "all" ? 1 : 0,
+                      includeArchived ? 1 : 0,
+                      dateRange !== "all" ? 1 : 0,
+                    ].reduce((a, b) => a + b, 0)}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-light">Filters</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-4 mt-6">
+                {/* Type Filter */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-normal text-neutral-900 mb-3">Type</h3>
+                    <div className="space-y-2">
+                      {["blocker", "mention", "approval", "update", "completion"].map((type) => (
+                        <label
+                          key={type}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedTypes.includes(type)}
+                            onCheckedChange={() => {
+                              setSelectedTypes((prev) =>
+                                prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+                              )
+                            }}
+                          />
+                          <span className="text-sm font-light text-neutral-700 capitalize">{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Priority Filter */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-normal text-neutral-900 mb-3">Priority</h3>
+                    <div className="space-y-2">
+                      {["critical", "high", "medium", "low"].map((priority) => (
+                        <label
+                          key={priority}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-50 transition-all cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selectedPriorities.includes(priority)}
+                            onCheckedChange={() => {
+                              setSelectedPriorities((prev) =>
+                                prev.includes(priority)
+                                  ? prev.filter((p) => p !== priority)
+                                  : [...prev, priority]
+                              )
+                            }}
+                          />
+                          <span className="text-sm font-light text-neutral-700 capitalize">{priority}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Date Range Filter */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+                  <CardContent className="p-4">
+                    <h3 className="text-sm font-normal text-neutral-900 mb-3">Date Range</h3>
+                    <div className="space-y-2">
+                      {[
+                        { value: "all", label: "All Time" },
+                        { value: "today", label: "Today" },
+                        { value: "week", label: "Last 7 Days" },
+                        { value: "month", label: "Last 30 Days" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setDateRange(option.value as any)}
+                          className={cn(
+                            "w-full text-left px-3 py-2 rounded-lg text-sm font-light transition-all",
+                            dateRange === option.value
+                              ? cn("bg-gradient-to-r text-white", scheme.bg, scheme.bgHover)
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className="w-full rounded-xl font-light border-neutral-200"
+                  >
+                    <X className="size-4 mr-2" />
+                    Clear All Filters
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Filters Sidebar */}
+      <div className="flex gap-4 xl:gap-6">
+        {/* Filters Sidebar - Hidden on smaller screens */}
         {showFilters && (
-          <div className="w-72 shrink-0 space-y-4">
+          <div className="hidden xl:block w-72 shrink-0 space-y-4">
             {/* Type Filter */}
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-4">

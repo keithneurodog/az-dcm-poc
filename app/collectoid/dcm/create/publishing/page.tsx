@@ -290,7 +290,7 @@ export default function DCMPublishingPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-neutral-100">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 border-t border-neutral-100">
               <div>
                 <p className="text-xs font-light text-neutral-500 mb-1 uppercase tracking-wider">
                   Expected (1 hour)
@@ -336,7 +336,7 @@ export default function DCMPublishingPage() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
             {/* What to Do Next */}
             <div>
               <div className="flex items-center gap-2 mb-3">

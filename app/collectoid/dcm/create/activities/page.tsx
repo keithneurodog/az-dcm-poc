@@ -601,7 +601,7 @@ export default function DCMActivitiesPage() {
             Your Data Collection Overview
           </h3>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             {/* Data Modalities */}
             <div>
               <p className="text-xs font-light text-neutral-600 mb-2 uppercase tracking-wider">Data Modalities</p>
@@ -633,7 +633,7 @@ export default function DCMActivitiesPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             {/* Therapeutic Areas */}
             <div>
               <p className="text-xs font-light text-neutral-600 mb-2 uppercase tracking-wider">Therapeutic Areas</p>

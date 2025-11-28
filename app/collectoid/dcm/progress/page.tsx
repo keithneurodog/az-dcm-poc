@@ -618,9 +618,9 @@ ${currentUser.email}`
         {/* Health Score & Progress Bar */}
         <Card className="border-neutral-200 rounded-2xl overflow-hidden">
           <CardContent className="p-6">
-            <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6 mb-6">
               {/* Health Score */}
-              <div className="col-span-1">
+              <div className="lg:col-span-1">
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <svg className="size-24" viewBox="0 0 100 100">
@@ -672,7 +672,7 @@ ${currentUser.email}`
               </div>
 
               {/* Progress */}
-              <div className="col-span-2">
+              <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-sm font-light text-neutral-700">Overall Progress</p>
                   <p className="text-sm font-normal text-neutral-900">{collection.progress}% Complete</p>
@@ -684,7 +684,7 @@ ${currentUser.email}`
               />
             </div>
 
-                <div className="grid grid-cols-4 gap-4 text-center">
+                <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-light text-neutral-900 mb-1">{collection.usersWithAccess}</p>
                     <p className="text-xs font-light text-neutral-600">Users with access</p>
@@ -763,11 +763,11 @@ ${currentUser.email}`
       </div>
 
       {/* Main Content with Sidebar */}
-      <div className="flex gap-6">
+      <div className="flex gap-4 xl:gap-6">
         {/* Main Content Area */}
         <div className="flex-1 min-w-0">
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-1 xl:gap-2 mb-6 flex-wrap">
         {(() => {
           const blockerCount = comments.filter((c) => c.type === "blocker" && !c.isResolved).length
 
@@ -779,9 +779,9 @@ ${currentUser.email}`
 
           const tabs = [
             { id: "overview", label: "Overview", icon: Activity },
-            { id: "agreement", label: "Agreement of Terms", icon: Shield },
-            { id: "datasets", label: "Dataset Status", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
-            { id: "users", label: "User Status", icon: Users },
+            { id: "agreement", label: "Agreement of Terms", shortLabel: "AoT", icon: Shield },
+            { id: "datasets", label: "Dataset Status", shortLabel: "Datasets", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
+            { id: "users", label: "User Status", shortLabel: "Users", icon: Users },
             { id: "timeline", label: "Timeline", icon: TrendingUp },
             { id: "discussion", label: "Discussion", icon: MessageSquare, badge: comments.length, blockerCount },
           ]
@@ -795,19 +795,21 @@ ${currentUser.email}`
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
+                title={tab.label}
                 className={cn(
-                  "flex items-center gap-2 px-6 py-3 rounded-xl border-2 font-light transition-all relative",
+                  "flex items-center gap-1.5 xl:gap-2 px-3 xl:px-6 py-2.5 xl:py-3 rounded-xl border-2 font-light transition-all relative",
                   activeTab === tab.id
                     ? cn("border-current bg-gradient-to-r", scheme.bg, scheme.bgHover)
                     : "border-neutral-200 bg-white hover:border-neutral-300"
                 )}
               >
                 <Icon className="size-4" />
-                {tab.label}
+                <span className="hidden xl:inline">{tab.label}</span>
+                <span className="xl:hidden text-xs">{(tab as any).shortLabel || tab.label}</span>
                 {tab.badge && (
                   <Badge
                     className={cn(
-                      "ml-1 rounded-full font-light text-xs",
+                      "ml-0.5 xl:ml-1 rounded-full font-light text-xs",
                       hasCritical
                         ? cn("bg-gradient-to-r text-white border-0", scheme.from, scheme.to)
                         : isApprovalBadge
@@ -817,7 +819,8 @@ ${currentUser.email}`
                         : scheme.from.replace("from-", "bg-") + " text-white"
                     )}
                   >
-                    {hasCritical ? `${tab.blockerCount} Critical` : tab.badge}
+                    <span className="hidden xl:inline">{hasCritical ? `${tab.blockerCount} Critical` : tab.badge}</span>
+                    <span className="xl:hidden">{hasCritical ? tab.blockerCount : tab.badge}</span>
                   </Badge>
                 )}
               </button>
@@ -1314,7 +1317,7 @@ ${currentUser.email}`
                   </div>
 
                   {/* Metadata */}
-                  <div className="grid grid-cols-4 gap-4 p-4 bg-neutral-50 rounded-xl">
+                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 p-4 bg-neutral-50 rounded-xl">
                     <div>
                       <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-1">Created By</p>
                       <p className="text-sm font-normal text-neutral-900">{collection.agreementOfTerms.createdBy}</p>
@@ -1340,7 +1343,7 @@ ${currentUser.email}`
               </Card>
 
               {/* Primary Use & Beyond Primary Use */}
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
                 {/* Primary Use */}
                 <Card className="border-neutral-200 rounded-2xl overflow-hidden">
                   <CardContent className="p-6">
@@ -1557,7 +1560,7 @@ ${currentUser.email}`
                       View All Users
                     </Button>
                   </div>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     {collection.agreementOfTerms.userScope.byDepartment && collection.agreementOfTerms.userScope.byDepartment.length > 0 && (
                       <div className="p-4 bg-neutral-50 rounded-xl">
                         <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-2">Departments</p>
@@ -1740,7 +1743,7 @@ ${currentUser.email}`
                 )}
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                   <Card className="border-neutral-200 rounded-xl">
                     <CardContent className="p-4">
                       <p className="text-3xl font-light text-neutral-900 mb-1">{collection.totalDatasets}</p>
@@ -2274,7 +2277,7 @@ ${currentUser.email}`
                                 <tr key={`${user.id}-expanded`}>
                                   <td colSpan={7} className="px-4 py-4 bg-neutral-50">
                                     <div className="space-y-4">
-                                      <div className="grid grid-cols-3 gap-4">
+                                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                                         {/* Access Details */}
                                         <div className="space-y-2">
                                           <h4 className="text-sm font-normal text-neutral-900 flex items-center gap-2">
@@ -3358,8 +3361,8 @@ ${currentUser.email}`
         </div>
         {/* End Main Content Area */}
 
-        {/* Quick Actions Sidebar */}
-        <div className="w-72 shrink-0">
+        {/* Quick Actions Sidebar - Hidden on smaller screens */}
+        <div className="hidden xl:block w-72 shrink-0">
           <div className="sticky top-8 space-y-4">
             {/* Status Summary */}
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">

@@ -331,7 +331,7 @@ export default function AgreementOfTermsPage() {
                     Based on your selected activities and datasets, we recommend the following terms:
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2 p-3 bg-white/70 backdrop-blur-sm rounded-xl">
                       <CheckCircle2 className="size-5 text-green-600 shrink-0" strokeWidth={1.5} />
                       <span className="font-light text-neutral-700 text-sm">Primary use allowed (all)</span>
@@ -370,7 +370,7 @@ export default function AgreementOfTermsPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6 mb-6">
         {/* Primary Use - Left Column */}
         <Card className="border-neutral-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
           <CardContent className="p-8">
@@ -724,7 +724,7 @@ export default function AgreementOfTermsPage() {
       </div>
 
       {/* Publication & External Sharing - Full Width */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6 mb-6">
         {/* Publication */}
         <Card className="border-neutral-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
           <CardContent className="p-8">

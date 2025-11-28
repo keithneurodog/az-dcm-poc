@@ -1272,7 +1272,7 @@ export default function UserRequestDashboard() {
                     <h3 className="text-base font-normal text-neutral-900">Help Resources</h3>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     <button className="flex items-center gap-3 p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-left">
                       <div className="flex size-10 items-center justify-center rounded-lg bg-blue-100">
                         <BookOpen className="size-5 text-blue-600" strokeWidth={1.5} />
