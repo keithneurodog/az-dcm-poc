@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 
 export function TopBar() {
   const { scheme } = useColorScheme()
-  const { unreadCount, criticalCount } = useNotifications()
+  const { unreadCount } = useNotifications()
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false)
 
   return (
@@ -50,9 +50,7 @@ export function TopBar() {
                 <Badge
                   className={cn(
                     "absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center text-xs font-light bg-gradient-to-r border-0 text-white",
-                    criticalCount > 0
-                      ? "from-red-500 to-orange-400"
-                      : `${scheme.from} ${scheme.to}`
+                    scheme.from, scheme.to
                   )}
                 >
                   {unreadCount}

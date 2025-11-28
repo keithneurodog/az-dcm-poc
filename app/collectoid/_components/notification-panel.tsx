@@ -139,7 +139,7 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
                 {notification.title}
               </p>
               {!notification.isRead && (
-                <div className="size-2 rounded-full bg-gradient-to-r from-red-500 to-orange-400 shrink-0 mt-1.5" />
+                <div className={cn("size-2 rounded-full bg-gradient-to-r shrink-0 mt-1.5", scheme.from, scheme.to)} />
               )}
             </div>
             <p className={cn("text-xs font-light mb-2", !notification.isRead ? "text-neutral-700" : "text-neutral-500")}>

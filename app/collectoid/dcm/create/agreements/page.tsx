@@ -938,18 +938,18 @@ export default function AgreementOfTermsPage() {
       {conflicts.length > 0 && (
         <div className="relative mb-8">
           {/* Warning glow */}
-          <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-amber-400 to-orange-400 opacity-20 blur-md" />
+          <div className={cn("absolute -inset-0.5 rounded-3xl bg-gradient-to-r opacity-20 blur-md", scheme.from.replace("from-", "from-").replace("500", "400"), scheme.to.replace("to-", "to-").replace("400", "400"))} />
 
-          <Card className="relative border-2 border-amber-300 rounded-3xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 shadow-xl">
+          <Card className={cn("relative border-2 rounded-3xl overflow-hidden bg-gradient-to-br shadow-xl", scheme.from.replace("from-", "border-").replace("500", "300"), scheme.bg, scheme.bgHover)}>
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shrink-0">
+                  <div className={cn("flex size-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg shrink-0", scheme.from, scheme.to)}>
                     <AlertCircle className="size-6 text-white" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <h3 className="font-normal text-xl text-amber-900 mb-2">Dataset Conflicts Detected</h3>
-                    <p className="text-sm text-amber-700 font-light">
+                    <h3 className={cn("font-normal text-xl mb-2", scheme.from.replace("from-", "text-").replace("500", "900"))}>Dataset Conflicts Detected</h3>
+                    <p className={cn("text-sm font-light", scheme.from.replace("from-", "text-").replace("500", "700"))}>
                       {conflicts.length} {conflicts.length === 1 ? 'dataset has' : 'datasets have'} restrictions that conflict with your defined terms
                     </p>
                   </div>

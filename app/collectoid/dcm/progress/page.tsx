@@ -809,9 +809,9 @@ ${currentUser.email}`
                     className={cn(
                       "ml-1 rounded-full font-light text-xs",
                       hasCritical
-                        ? "bg-gradient-to-r from-red-500 to-orange-400 text-white border-0"
+                        ? cn("bg-gradient-to-r text-white border-0", scheme.from, scheme.to)
                         : isApprovalBadge
-                        ? "bg-amber-500 text-white border-0"
+                        ? cn("bg-gradient-to-r text-white border-0", scheme.from, scheme.to)
                         : activeTab === tab.id
                         ? "bg-white/80 text-neutral-900"
                         : scheme.from.replace("from-", "bg-") + " text-white"
@@ -1702,22 +1702,22 @@ ${currentUser.email}`
               <>
                 {/* Approval Alert Panel */}
                 {datasetsRequiringApproval.length > 0 && (
-                  <Card className="border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-md">
+                  <Card className={cn("rounded-2xl shadow-md bg-gradient-to-r", scheme.from.replace("from-", "border-"), scheme.bg, scheme.bgHover)}>
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4">
-                          <div className="p-3 bg-amber-100 rounded-xl">
-                            <AlertCircle className="size-8 text-amber-700" strokeWidth={1.5} />
+                          <div className={cn("p-3 rounded-xl", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
+                            <AlertCircle className={cn("size-8", scheme.from.replace("from-", "text-").replace("500", "700"))} strokeWidth={1.5} />
                           </div>
                           <div>
-                            <h3 className="text-xl font-normal text-amber-900 mb-1">
+                            <h3 className={cn("text-xl font-normal mb-1", scheme.from.replace("from-", "text-").replace("500", "900"))}>
                               {pendingApprovalCount} Approval{pendingApprovalCount !== 1 ? 's' : ''} Awaiting Decision
                             </h3>
-                            <p className="text-sm font-light text-amber-700 mb-3">
+                            <p className={cn("text-sm font-light mb-3", scheme.from.replace("from-", "text-").replace("500", "700"))}>
                               {datasetsRequiringApproval.length} dataset{datasetsRequiringApproval.length !== 1 ? 's' : ''} requiring approval from governance teams
                             </p>
                             {teamBreakdown.length > 0 && (
-                              <div className="flex gap-4 text-xs font-light text-amber-800">
+                              <div className={cn("flex gap-4 text-xs font-light", scheme.from.replace("from-", "text-").replace("500", "800"))}>
                                 {teamBreakdown.map(team => (
                                   <span key={team.name}>
                                     {team.name}: {team.count}
@@ -1729,7 +1729,7 @@ ${currentUser.email}`
                         </div>
                         <Button
                           onClick={() => setApprovalModalOpen(true)}
-                          className="bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-700 hover:to-orange-700 rounded-full px-6"
+                          className={cn("bg-gradient-to-r text-white rounded-full px-6", scheme.from, scheme.to)}
                         >
                           <CheckCircle2 className="size-4 mr-2" strokeWidth={1.5} />
                           Review Approvals
@@ -3946,16 +3946,16 @@ ${currentUser.email}`
 
                     {/* Smart Selection - My Approvals */}
                     {myApprovalsCount > 0 && (
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between">
+                      <div className={cn("bg-gradient-to-r border rounded-xl p-3 flex items-center justify-between", scheme.bg, scheme.bgHover, scheme.from.replace("from-", "border-").replace("500", "200"))}>
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-100 rounded-lg">
-                            <UserCheck className="size-5 text-blue-700" strokeWidth={1.5} />
+                          <div className={cn("p-2 rounded-lg", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
+                            <UserCheck className={cn("size-5", scheme.from.replace("from-", "text-").replace("500", "700"))} strokeWidth={1.5} />
                           </div>
                           <div>
-                            <p className="text-sm font-normal text-blue-900">
+                            <p className={cn("text-sm font-normal", scheme.from.replace("from-", "text-").replace("500", "900"))}>
                               {myApprovalsCount} dataset{myApprovalsCount !== 1 ? 's' : ''} awaiting your approval
                             </p>
-                            <p className="text-xs font-light text-blue-700">
+                            <p className={cn("text-xs font-light", scheme.from.replace("from-", "text-").replace("500", "700"))}>
                               {currentUser.approvalTeam} team
                             </p>
                           </div>
@@ -3964,8 +3964,8 @@ ${currentUser.email}`
                           onClick={selectMyApprovals}
                           className={cn(
                             "rounded-full font-light",
-                            "bg-gradient-to-r from-blue-600 to-indigo-600",
-                            "hover:from-blue-700 hover:to-indigo-700",
+                            "bg-gradient-to-r",
+                            scheme.from, scheme.to,
                             "text-white shadow-md"
                           )}
                         >

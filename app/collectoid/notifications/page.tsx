@@ -292,7 +292,7 @@ export default function NotificationsPage() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               {!notification.isRead && (
-                <div className="size-2 rounded-full bg-gradient-to-r from-red-500 to-orange-400 shrink-0" />
+                <div className={cn("size-2 rounded-full bg-gradient-to-r shrink-0", scheme.from, scheme.to)} />
               )}
               <span className="text-sm font-normal text-neutral-900 truncate">
                 {notification.title}
@@ -339,7 +339,7 @@ export default function NotificationsPage() {
           <td className="px-4 py-3">
             <div className="flex items-center gap-2">
               {!notification.isRead && (
-                <div className="size-2 rounded-full bg-gradient-to-r from-red-500 to-orange-400" />
+                <div className={cn("size-2 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} />
               )}
               <span className="text-sm font-normal text-neutral-900">{notification.title}</span>
             </div>
@@ -395,7 +395,7 @@ export default function NotificationsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     {!notification.isRead && (
-                      <div className="size-2 rounded-full bg-gradient-to-r from-red-500 to-orange-400 animate-pulse" />
+                      <div className={cn("size-2 rounded-full bg-gradient-to-r animate-pulse", scheme.from, scheme.to)} />
                     )}
                     <h3 className="text-sm font-normal text-neutral-900">{notification.title}</h3>
                   </div>

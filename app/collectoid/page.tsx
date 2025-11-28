@@ -472,7 +472,7 @@ export default function CollectoidDashboard() {
                 <CardDescription className="font-light">{unreadCount} unread</CardDescription>
               </div>
               {criticalCount > 0 && (
-                <Badge className="bg-gradient-to-r from-red-500 to-orange-400 text-white border-0 font-light">
+                <Badge className={cn("bg-gradient-to-r text-white border-0 font-light", scheme.from, scheme.to)}>
                   {criticalCount} Critical
                 </Badge>
               )}
@@ -504,7 +504,7 @@ export default function CollectoidDashboard() {
                   >
                     <div className="flex items-start gap-2 mb-1">
                       {!notification.isRead && (
-                        <div className="size-2 rounded-full bg-gradient-to-r from-red-500 to-orange-400 mt-1.5 shrink-0" />
+                        <div className={cn("size-2 rounded-full bg-gradient-to-r mt-1.5 shrink-0", scheme.from, scheme.to)} />
                       )}
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-normal block truncate">
