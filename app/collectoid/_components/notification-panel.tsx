@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useNotifications } from "./notification-context"
-import { useColorScheme } from "./ux12-color-context"
+import { useColorScheme } from "./color-context"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -247,7 +247,7 @@ export function NotificationPanel({ open, onOpenChange }: NotificationPanelProps
             {(unreadCount > 0 || readNotifications.length > 0) && (
               <div className="border-t border-neutral-200 pt-4 mt-6">
                 <Link
-                  href="/poc/1/notifications"
+                  href="/collectoid/notifications"
                   onClick={() => onOpenChange(false)}
                   className={cn(
                     "block w-full text-center py-3 rounded-xl font-light transition-all bg-gradient-to-r text-white",

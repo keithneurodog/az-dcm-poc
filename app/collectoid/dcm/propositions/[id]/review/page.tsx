@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   ArrowLeft,

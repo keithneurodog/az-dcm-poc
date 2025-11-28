@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   Search,

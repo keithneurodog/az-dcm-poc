@@ -22,7 +22,7 @@ import {
   MessageSquare,
   Sparkles,
 } from "lucide-react"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/ux/_components/ux12-color-context"
 import { cn } from "@/lib/utils"
 
 export default function UX12DashboardPage() {

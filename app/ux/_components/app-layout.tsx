@@ -2,8 +2,8 @@
 
 import * as React from "react"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { TopBar } from "@/components/top-bar"
+import { AppSidebar } from "@/app/ux/_components/app-sidebar"
+import { TopBar } from "@/app/ux/_components/top-bar"
 
 interface AppLayoutProps {
   children: React.ReactNode

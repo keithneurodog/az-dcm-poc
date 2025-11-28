@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   ArrowLeft,
@@ -202,7 +202,7 @@ export default function CustomizeCollectionPage() {
         <button
           onClick={() => {
             if (typeof window !== "undefined") {
-              sessionStorage.setItem("dcm_current_collection_id", params.id)
+              sessionStorage.setItem("dcm_current_collection_id", params.id as string)
             }
             router.push("/collectoid/dcm/progress")
           }}
@@ -741,7 +741,7 @@ export default function CustomizeCollectionPage() {
                   variant="ghost"
                   onClick={() => {
                     if (typeof window !== "undefined") {
-                      sessionStorage.setItem("dcm_current_collection_id", params.id)
+                      sessionStorage.setItem("dcm_current_collection_id", params.id as string)
                     }
                     router.push("/collectoid/dcm/progress")
                   }}

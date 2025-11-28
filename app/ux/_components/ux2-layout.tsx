@@ -1,5 +1,5 @@
 import * as React from "react"
-import { UX2TopNav } from "@/components/ux2-top-nav"
+import { UX2TopNav } from "@/app/ux/_components/ux2-top-nav"
 
 interface UX2LayoutProps {
   children: React.ReactNode

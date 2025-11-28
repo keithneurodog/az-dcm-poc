@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Bell, User, LayoutDashboard, Search, FileStack, Settings } from "lucide-react"
-import { Badge } from "./ui/badge"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 const navigation = [

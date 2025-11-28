@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   CheckCircle2,
@@ -469,7 +469,7 @@ export default function DCMPublishingPage() {
 
         <div className="flex gap-4">
           <Button
-            onClick={() => router.push("/poc/2")}
+            onClick={() => router.push("/collectoid")}
             variant="outline"
             className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
           >

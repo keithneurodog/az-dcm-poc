@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   Sparkles,

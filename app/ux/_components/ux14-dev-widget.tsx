@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Palette, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { colorSchemes, useColorScheme } from "@/components/ux14-color-context"
+import { colorSchemes, useColorScheme } from "@/app/ux/_components/ux14-color-context"
 import { cn } from "@/lib/utils"
 
 export function UX14DevWidget() {

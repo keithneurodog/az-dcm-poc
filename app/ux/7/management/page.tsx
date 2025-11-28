@@ -1,4 +1,4 @@
-import { UX7Layout } from "@/components/ux7-layout"
+import { UX7Layout } from "@/app/ux/_components/ux7-layout"
 import {
   Card,
   CardContent,

@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useNotifications } from "@/components/notification-context"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useNotifications } from "@/app/collectoid/_components"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

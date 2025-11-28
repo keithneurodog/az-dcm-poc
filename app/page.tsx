@@ -282,7 +282,7 @@ export default function Home() {
                 </ul>
               </div>
               <Button asChild className="w-full">
-                <Link href="/poc/1">
+                <Link href="/collectoid/dcm/create">
                   Explore DCM Prototype
                   <ArrowRight className="ml-2 size-4" />
                 </Link>

@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/app-layout"
+import { AppLayout } from "@/app/ux/_components/app-layout"
 import {
   Card,
   CardContent,

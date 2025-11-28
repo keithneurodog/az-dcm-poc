@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/ux/_components/ux12-color-context"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

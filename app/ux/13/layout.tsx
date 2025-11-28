@@ -1,11 +1,11 @@
 "use client"
 
 import { ReactNode } from "react"
-import { ColorSchemeProvider } from "@/components/ux12-color-context"
-import { NotificationProvider } from "@/components/notification-context"
-import { UX13Sidebar } from "@/components/ux13-sidebar"
-import { UX13TopBar } from "@/components/ux13-top-bar"
-import { UX12DevWidget } from "@/components/ux12-dev-widget"
+import { ColorSchemeProvider } from "@/app/ux/_components/ux12-color-context"
+import { NotificationProvider } from "@/app/ux/_components/notification-context"
+import { UX13Sidebar } from "@/app/ux/_components/ux13-sidebar"
+import { UX13TopBar } from "@/app/ux/_components/ux13-top-bar"
+import { UX12DevWidget } from "@/app/ux/_components/ux12-dev-widget"
 
 export default function UX13RootLayout({ children }: { children: ReactNode }) {
   return (

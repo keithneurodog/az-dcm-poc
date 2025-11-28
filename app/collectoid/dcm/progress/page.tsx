@@ -25,7 +25,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useColorScheme } from "@/components/ux12-color-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
   ArrowLeft,
@@ -526,7 +526,7 @@ ${currentUser.email}`
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/poc/2")}
+          onClick={() => router.push("/collectoid")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" strokeWidth={1.5} />

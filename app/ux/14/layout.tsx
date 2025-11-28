@@ -2,8 +2,8 @@
 
 import { ReactNode } from "react"
 import { IterationSwitcher } from "@/components/iteration-switcher"
-import { ColorSchemeProvider, useColorScheme } from "@/components/ux14-color-context"
-import { UX14DevWidget } from "@/components/ux14-dev-widget"
+import { ColorSchemeProvider, useColorScheme } from "@/app/ux/_components/ux14-color-context"
+import { UX14DevWidget } from "@/app/ux/_components/ux14-dev-widget"
 import { cn } from "@/lib/utils"
 
 function UX14Header() {

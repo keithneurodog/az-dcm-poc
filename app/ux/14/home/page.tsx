@@ -20,7 +20,7 @@ import {
   Sparkles,
   Wind,
 } from "lucide-react"
-import { useColorScheme } from "@/components/ux14-color-context"
+import { useColorScheme } from "@/app/ux/_components/ux14-color-context"
 import { cn } from "@/lib/utils"
 
 export default function UX14DashboardPage() {

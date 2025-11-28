@@ -1,4 +1,4 @@
-import { UX11Layout } from "@/components/ux11-layout"
+import { UX11Layout } from "@/app/ux/_components/ux11-layout"
 import {
   Card,
   CardContent,

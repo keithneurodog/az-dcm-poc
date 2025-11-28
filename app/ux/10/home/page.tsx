@@ -1,4 +1,4 @@
-import { UX10Layout } from "@/components/ux10-layout"
+import { UX10Layout } from "@/app/ux/_components/ux10-layout"
 import {
   Card,
   CardContent,

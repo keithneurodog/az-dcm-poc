@@ -1,9 +1,9 @@
 "use client"
 
 import { ReactNode } from "react"
-import { ColorSchemeProvider } from "@/components/ux12-color-context"
-import { UX12TopBar } from "@/components/ux12-top-bar"
-import { UX12DevWidget } from "@/components/ux12-dev-widget"
+import { ColorSchemeProvider } from "@/app/ux/_components/ux12-color-context"
+import { UX12TopBar } from "@/app/ux/_components/ux12-top-bar"
+import { UX12DevWidget } from "@/app/ux/_components/ux12-dev-widget"
 
 export default function UX12RootLayout({ children }: { children: ReactNode }) {
   return (
