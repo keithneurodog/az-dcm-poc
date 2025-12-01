@@ -5,6 +5,10 @@ export { NotificationProvider, useNotifications } from "./notification-context"
 
 export { SidebarProvider, useSidebar } from "./sidebar-context"
 
+export { VariationProvider, useVariation } from "./variation-context"
+export { useRouteVariations, loadVariationsForPath } from "./use-route-variations"
+export type { VariationConfig, RouteVariations } from "./variation-types"
+
 export { Sidebar } from "./sidebar"
 export { TopBar } from "./top-bar"
 export { NotificationPanel } from "./notification-panel"
