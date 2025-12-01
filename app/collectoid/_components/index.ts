@@ -16,6 +16,7 @@ export { NotesElementSelector } from "./notes-element-selector"
 export { NotesInputDialog, UserNamePrompt } from "./notes-input-dialog"
 export { NotesIndicators } from "./notes-indicator"
 export { NotesElementHighlight } from "./notes-element-highlight"
+export { NotesFloatingPanel } from "./notes-floating-panel"
 
 export { Sidebar } from "./sidebar"
 export { TopBar } from "./top-bar"

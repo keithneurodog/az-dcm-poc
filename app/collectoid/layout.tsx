@@ -11,6 +11,7 @@ import {
   DevWidget,
   NotesProvider,
   NotesWrapper,
+  NotesFloatingPanel,
 } from "./_components"
 
 export default function CollectoidLayout({ children }: { children: ReactNode }) {
@@ -31,6 +32,7 @@ export default function CollectoidLayout({ children }: { children: ReactNode }) 
                   </main>
                 </div>
                 <DevWidget />
+                <NotesFloatingPanel />
               </div>
             </SidebarProvider>
           </VariationProvider>

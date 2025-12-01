@@ -25,6 +25,7 @@ interface NotesContextType {
   isAddingNote: boolean
   highlightedNoteId: string | null
   expandedNoteId: string | null
+  isPanelOpen: boolean
 
   // User management
   promptForUserName: () => void
@@ -51,6 +52,9 @@ interface NotesContextType {
   setHighlightedNoteId: (id: string | null) => void
   setExpandedNoteId: (id: string | null) => void
 
+  // Panel
+  setIsPanelOpen: (open: boolean) => void
+
   // Refresh notes from storage
   refreshNotes: () => void
 }
@@ -65,6 +69,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const [isAddingNote, setIsAddingNote] = useState(false)
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(null)
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null)
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
 
   // Load notes and user on mount
   useEffect(() => {
@@ -221,6 +226,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         isAddingNote,
         highlightedNoteId,
         expandedNoteId,
+        isPanelOpen,
 
         promptForUserName,
         setCurrentUserName,
@@ -240,6 +246,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
 
         setHighlightedNoteId,
         setExpandedNoteId,
+        setIsPanelOpen,
         refreshNotes,
       }}
     >

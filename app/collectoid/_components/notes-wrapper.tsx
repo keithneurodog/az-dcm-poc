@@ -23,6 +23,7 @@ export function NotesWrapper({ children }: NotesWrapperProps) {
     cancelAddingNote,
     setHighlightedNoteId,
     setExpandedNoteId,
+    setIsPanelOpen,
   } = useNotes()
 
   const [isSelectingElement, setIsSelectingElement] = useState(false)
@@ -70,8 +71,9 @@ export function NotesWrapper({ children }: NotesWrapperProps) {
     (noteId: string) => {
       setHighlightedNoteId(noteId)
       setExpandedNoteId(noteId)
+      setIsPanelOpen(true)
     },
-    [setHighlightedNoteId, setExpandedNoteId]
+    [setHighlightedNoteId, setExpandedNoteId, setIsPanelOpen]
   )
 
   return (

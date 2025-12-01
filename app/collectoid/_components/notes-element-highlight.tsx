@@ -6,14 +6,16 @@ import { getElementFromXPath } from "@/lib/dcm-mock-data"
 
 interface NotesElementHighlightProps {
   xpath: string | null
+  onElementMissing?: (xpath: string) => void
 }
 
-export function NotesElementHighlight({ xpath }: NotesElementHighlightProps) {
+export function NotesElementHighlight({ xpath, onElementMissing }: NotesElementHighlightProps) {
   const [rect, setRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
   const lastRectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null)
   const rafRef = useRef<number | null>(null)
+  const notifiedMissingRef = useRef<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -43,16 +45,38 @@ export function NotesElementHighlight({ xpath }: NotesElementHighlightProps) {
   useEffect(() => {
     if (!xpath) {
       setIsVisible(false)
+      notifiedMissingRef.current = null
       return
     }
 
     const element = getElementFromXPath(xpath)
     if (!element) {
       setIsVisible(false)
+      // Notify parent that element is missing (only once per xpath)
+      if (onElementMissing && notifiedMissingRef.current !== xpath) {
+        notifiedMissingRef.current = xpath
+        onElementMissing(xpath)
+      }
       return
     }
 
-    const handleUpdate = () => updateRect(element)
+    // Reset the notified ref since element was found
+    notifiedMissingRef.current = null
+
+    const handleUpdate = () => {
+      // Re-check if element still exists
+      const el = getElementFromXPath(xpath)
+      if (!el) {
+        setIsVisible(false)
+        if (onElementMissing && notifiedMissingRef.current !== xpath) {
+          notifiedMissingRef.current = xpath
+          onElementMissing(xpath)
+        }
+        return
+      }
+      updateRect(el)
+    }
+
     handleUpdate()
 
     window.addEventListener("scroll", handleUpdate, true)
@@ -88,7 +112,7 @@ export function NotesElementHighlight({ xpath }: NotesElementHighlightProps) {
         cancelAnimationFrame(rafRef.current)
       }
     }
-  }, [xpath, updateRect])
+  }, [xpath, updateRect, onElementMissing])
 
   if (!mounted) return null
 
