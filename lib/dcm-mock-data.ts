@@ -3362,3 +3362,107 @@ export function detectAoTConflicts(
 
   return conflicts
 }
+
+// ============================================================================
+// NOTES SYSTEM
+// ============================================================================
+
+export interface NoteAuthor {
+  name: string
+  avatarInitials: string
+}
+
+export interface EmojiReaction {
+  emoji: string
+  users: string[] // usernames who reacted
+}
+
+export interface NoteReply {
+  id: string
+  noteId: string
+  content: string
+  author: NoteAuthor
+  createdAt: string // ISO timestamp
+  updatedAt?: string
+}
+
+export interface Note {
+  id: string
+  xpath: string // Element identifier
+  route: string // Page route where note was created
+  content: string
+  author: NoteAuthor
+  createdAt: string
+  updatedAt?: string
+  reactions: EmojiReaction[]
+  replies: NoteReply[]
+}
+
+export const REACTION_EMOJIS = [
+  '👍', '👎', '❤️', '😊', '😂', '🎉',
+  '🔥', '👀', '💯', '✅', '❌', '⚠️',
+  '💡', '🤔', '👏', '🙌', '💪', '🚀',
+  '📝', '🔍', '💬', '⭐', '🎯', '✨'
+]
+
+// Helper function to generate XPath for an element
+export function getXPath(element: Element): string {
+  if (element.id) return `//*[@id="${element.id}"]`
+
+  const parts: string[] = []
+  let current: Element | null = element
+
+  while (current && current.nodeType === Node.ELEMENT_NODE) {
+    let index = 1
+    let sibling = current.previousElementSibling
+    while (sibling) {
+      if (sibling.nodeName === current.nodeName) index++
+      sibling = sibling.previousElementSibling
+    }
+    parts.unshift(`${current.nodeName.toLowerCase()}[${index}]`)
+    current = current.parentElement
+  }
+
+  return '/' + parts.join('/')
+}
+
+// Helper function to get element from XPath
+export function getElementFromXPath(xpath: string): Element | null {
+  try {
+    const result = document.evaluate(
+      xpath,
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    )
+    return result.singleNodeValue as Element | null
+  } catch {
+    return null
+  }
+}
+
+// Initial mock notes for demonstration
+export const MOCK_NOTES: Note[] = [
+  {
+    id: 'note-1',
+    xpath: '//*[@id="dashboard-header"]',
+    route: '/collectoid',
+    content: 'This header could use more contrast for accessibility',
+    author: { name: 'Alice Chen', avatarInitials: 'AC' },
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    reactions: [
+      { emoji: '👍', users: ['Bob Smith', 'Carol White'] },
+      { emoji: '💡', users: ['Dan Brown'] }
+    ],
+    replies: [
+      {
+        id: 'reply-1',
+        noteId: 'note-1',
+        content: 'Agreed! Maybe we can use the brand primary color here.',
+        author: { name: 'Bob Smith', avatarInitials: 'BS' },
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ]
+  }
+]

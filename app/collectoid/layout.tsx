@@ -9,26 +9,32 @@ import {
   Sidebar,
   TopBar,
   DevWidget,
+  NotesProvider,
+  NotesWrapper,
 } from "./_components"
 
 export default function CollectoidLayout({ children }: { children: ReactNode }) {
   return (
     <ColorSchemeProvider>
       <NotificationProvider>
-        <VariationProvider>
-          <SidebarProvider>
-            <div className="flex h-screen bg-neutral-50 relative">
-              <Sidebar />
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <TopBar />
-                <main className="flex-1 overflow-auto">
-                  <div className="mx-auto px-6 xl:px-12 py-6 xl:py-8 max-w-[1600px]">{children}</div>
-                </main>
+        <NotesProvider>
+          <VariationProvider>
+            <SidebarProvider>
+              <div className="flex h-screen bg-neutral-50 relative">
+                <Sidebar />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <TopBar />
+                  <main className="flex-1 overflow-auto">
+                    <NotesWrapper>
+                      <div className="mx-auto px-6 xl:px-12 py-6 xl:py-8 max-w-[1600px]">{children}</div>
+                    </NotesWrapper>
+                  </main>
+                </div>
+                <DevWidget />
               </div>
-              <DevWidget />
-            </div>
-          </SidebarProvider>
-        </VariationProvider>
+            </SidebarProvider>
+          </VariationProvider>
+        </NotesProvider>
       </NotificationProvider>
     </ColorSchemeProvider>
   )

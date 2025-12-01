@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { useColorScheme } from "./color-context"
 import { useNotifications } from "./notification-context"
 import { useSidebar } from "./sidebar-context"
+import { NotesSidebarSection } from "./notes-sidebar-section"
 import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
@@ -151,6 +152,11 @@ export function Sidebar() {
             return <div key={item.name}>{linkContent}</div>
           })}
         </nav>
+
+        {/* Notes Section */}
+        <div className="border-t border-neutral-100 mt-2 pt-2">
+          <NotesSidebarSection />
+        </div>
 
         {/* Status Card - Hidden when collapsed */}
         {!isCollapsed && (
