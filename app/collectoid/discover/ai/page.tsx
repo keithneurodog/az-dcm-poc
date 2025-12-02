@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
 import {
   Sparkles,
   ArrowLeft,
@@ -30,6 +32,13 @@ import {
   Layers,
   Filter,
   Clock,
+  HelpCircle,
+  MessageSquare,
+  CheckCircle2,
+  XCircle,
+  Zap,
+  Info,
+  Target,
 } from "lucide-react"
 
 // Mock AI response data
@@ -402,22 +411,281 @@ export default function AIDiscoveryPage() {
           <ArrowLeft className="size-4" />
           Back to Discovery
         </button>
-        <div className="flex items-center gap-3 mb-2">
+
+        <div className="text-center">
           <div className={cn(
-            "flex size-12 items-center justify-center rounded-xl bg-gradient-to-br",
+            "inline-flex items-center justify-center size-16 rounded-2xl mb-6 bg-gradient-to-br",
             scheme.from,
             scheme.to
           )}>
-            <Sparkles className="size-6 text-white" />
+            <Sparkles className="size-8 text-white" />
           </div>
-          <div>
-            <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight">
-              AI-Assisted Data Discovery
-            </h1>
-            <p className="text-base font-light text-neutral-600">
-              Describe your research needs and let AI find the right data
-            </p>
-          </div>
+          <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight mb-3">
+            AI-Assisted Data Discovery
+          </h1>
+          <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
+            Describe your research needs and let AI find the right data
+          </p>
+
+          {/* Help Link */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <button className={cn(
+                "inline-flex items-center gap-2 text-sm font-light transition-colors",
+                scheme.from.replace("from-", "text-"),
+                "hover:underline"
+              )}>
+                <HelpCircle className="size-4" />
+                New to AI-powered search? Learn how to write effective prompts
+              </button>
+            </SheetTrigger>
+          <SheetContent className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+            <div className="px-6 pb-6">
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-light text-neutral-900 flex items-center gap-2">
+                  <MessageSquare className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                  Writing Effective Discovery Prompts
+                </SheetTitle>
+                <SheetDescription className="font-light">
+                  Get better results by describing your data needs clearly
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-6 space-y-6">
+                {/* Overview */}
+                <div>
+                  <h3 className="text-lg font-normal text-neutral-900 mb-3">How does this work?</h3>
+                  <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                    Our AI analyzes your natural language description to understand what data you need.
+                    It extracts key concepts like disease areas, data types, and intended use, then matches
+                    them against our collection catalog. The more specific you are, the better the results!
+                  </p>
+                </div>
+
+                <Separator />
+
+                {/* What to Include */}
+                <div>
+                  <h3 className="text-lg font-normal text-neutral-900 mb-4 flex items-center gap-2">
+                    <Target className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                    What to Include in Your Prompt
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "flex size-6 shrink-0 items-center justify-center rounded-full text-xs text-white bg-gradient-to-br mt-0.5",
+                          scheme.from,
+                          scheme.to
+                        )}>
+                          1
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-normal text-neutral-900 mb-1">Disease or therapeutic area</h4>
+                          <p className="text-xs font-light text-neutral-600 leading-relaxed">
+                            e.g., "lung cancer", "cardiovascular", "immunotherapy", "NSCLC", "melanoma"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "flex size-6 shrink-0 items-center justify-center rounded-full text-xs text-white bg-gradient-to-br mt-0.5",
+                          scheme.from,
+                          scheme.to
+                        )}>
+                          2
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-normal text-neutral-900 mb-1">Data types you need</h4>
+                          <p className="text-xs font-light text-neutral-600 leading-relaxed">
+                            e.g., "ctDNA biomarkers", "genomic profiling", "imaging data", "patient outcomes", "clinical trial data"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "flex size-6 shrink-0 items-center justify-center rounded-full text-xs text-white bg-gradient-to-br mt-0.5",
+                          scheme.from,
+                          scheme.to
+                        )}>
+                          3
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-normal text-neutral-900 mb-1">Your intended use</h4>
+                          <p className="text-xs font-light text-neutral-600 leading-relaxed">
+                            e.g., "ML model training", "publication", "biomarker discovery", "outcome prediction"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "flex size-6 shrink-0 items-center justify-center rounded-full text-xs text-white bg-gradient-to-br mt-0.5",
+                          scheme.from,
+                          scheme.to
+                        )}>
+                          4
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-normal text-neutral-900 mb-1">Study characteristics (optional)</h4>
+                          <p className="text-xs font-light text-neutral-600 leading-relaxed">
+                            e.g., "Phase III trials", "longitudinal studies", "multi-site studies"
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Good vs Bad Examples */}
+                <div>
+                  <h3 className="text-lg font-normal text-neutral-900 mb-4 flex items-center gap-2">
+                    <Lightbulb className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                    Good vs. Bad Prompts
+                  </h3>
+
+                  {/* Good Examples */}
+                  <div className="space-y-3 mb-4">
+                    <div className="rounded-xl bg-green-50 border border-green-200 p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        <CheckCircle2 className="size-4 text-green-600 shrink-0 mt-0.5" />
+                        <Badge className="bg-green-100 text-green-800 font-light text-xs">
+                          Excellent
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-light text-green-900 italic">
+                        "I need lung cancer data with ctDNA biomarker monitoring from immunotherapy trials for ML-based outcome prediction. Planning to publish results."
+                      </p>
+                      <p className="text-xs font-light text-green-700 mt-2">
+                        Why it works: Specifies disease, data type, trial context, intended use (ML + publication)
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-green-50 border border-green-200 p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        <CheckCircle2 className="size-4 text-green-600 shrink-0 mt-0.5" />
+                        <Badge className="bg-green-100 text-green-800 font-light text-xs">
+                          Good
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-light text-green-900 italic">
+                        "Show me oncology studies with genomic profiling data for biomarker discovery"
+                      </p>
+                      <p className="text-xs font-light text-green-700 mt-2">
+                        Why it works: Clear therapeutic area, data type, and research goal
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bad Examples */}
+                  <div className="space-y-3">
+                    <div className="rounded-xl bg-red-50 border border-red-200 p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        <XCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
+                        <Badge className="bg-red-100 text-red-800 font-light text-xs">
+                          Too vague
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-light text-red-900 italic">
+                        "I need some data"
+                      </p>
+                      <p className="text-xs font-light text-red-700 mt-2">
+                        Problem: No disease area, data type, or intended use specified
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-red-50 border border-red-200 p-4">
+                      <div className="flex items-start gap-2 mb-2">
+                        <XCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
+                        <Badge className="bg-red-100 text-red-800 font-light text-xs">
+                          Missing context
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-light text-red-900 italic">
+                        "cancer data"
+                      </p>
+                      <p className="text-xs font-light text-red-700 mt-2">
+                        Problem: Which cancer type? What kind of data? For what purpose?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Understanding Results */}
+                <div>
+                  <h3 className="text-lg font-normal text-neutral-900 mb-4 flex items-center gap-2">
+                    <Zap className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                    Understanding Your Results
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={cn("size-5 shrink-0 mt-0.5", scheme.from.replace("from-", "text-"))} />
+                      <div>
+                        <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                          <span className="font-normal">Match Score</span> - How well a collection matches your described needs (higher is better)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={cn("size-5 shrink-0 mt-0.5", scheme.from.replace("from-", "text-"))} />
+                      <div>
+                        <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                          <span className="font-normal">Intent Match</span> - Whether collection allows your intended use (ML, publication, etc.)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={cn("size-5 shrink-0 mt-0.5", scheme.from.replace("from-", "text-"))} />
+                      <div>
+                        <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                          <span className="font-normal">Access Breakdown</span> - Shows how much data you can access instantly vs. needs approval
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className={cn("size-5 shrink-0 mt-0.5", scheme.from.replace("from-", "text-"))} />
+                      <div>
+                        <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                          <span className="font-normal">Keywords</span> - Concepts AI extracted from your prompt (you can add/remove them to refine results)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Pro Tips */}
+                <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
+                  <div className="flex gap-3">
+                    <Info className="size-5 shrink-0 text-blue-600 mt-0.5" />
+                    <div className="text-sm font-light text-blue-900">
+                      <p className="mb-2 font-normal">Pro Tips</p>
+                      <ul className="text-blue-700 leading-relaxed space-y-1">
+                        <li>• Mention if you need ML/AI rights or publication rights upfront</li>
+                        <li>• Specify trial phases if that matters for your research</li>
+                        <li>• After searching, use filters to narrow down results</li>
+                        <li>• Check the "Intent Match" badge to avoid access issues later</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
         </div>
       </div>
 

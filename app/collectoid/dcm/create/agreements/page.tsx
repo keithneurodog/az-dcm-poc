@@ -615,11 +615,14 @@ export default function AgreementOfTermsPage() {
                       Select organizations from Workday:
                     </p>
                     {ORGANIZATIONS.map((org) => (
-                      <button
+                      <div
                         key={org.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => toggleOrg(org.id)}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOrg(org.id); } }}
                         className={cn(
-                          "w-full text-left p-3 rounded-xl border-2 transition-all",
+                          "w-full text-left p-3 rounded-xl border-2 transition-all cursor-pointer",
                           selectedOrgs.has(org.id)
                             ? cn("border-current bg-gradient-to-r", scheme.bg, scheme.bgHover)
                             : "border-neutral-200 bg-white hover:border-neutral-300"
@@ -639,7 +642,7 @@ export default function AgreementOfTermsPage() {
                             </p>
                           </div>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -651,11 +654,14 @@ export default function AgreementOfTermsPage() {
                       Select roles:
                     </p>
                     {ROLES.map((role) => (
-                      <button
+                      <div
                         key={role.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => toggleRole(role.id)}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleRole(role.id); } }}
                         className={cn(
-                          "w-full text-left p-3 rounded-xl border-2 transition-all",
+                          "w-full text-left p-3 rounded-xl border-2 transition-all cursor-pointer",
                           selectedRoles.has(role.id)
                             ? cn("border-current bg-gradient-to-r", scheme.bg, scheme.bgHover)
                             : "border-neutral-200 bg-white hover:border-neutral-300"
@@ -670,7 +676,7 @@ export default function AgreementOfTermsPage() {
                             {role.count} users
                           </Badge>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}
