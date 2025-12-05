@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { MOCK_DATASETS, filterDatasets } from "@/lib/dcm-mock-data"
+import { MOCK_DATASETS, filterDatasets, type ChildDataset } from "@/lib/dcm-mock-data"
 import {
   Sparkles,
   ArrowLeft,
@@ -55,6 +55,12 @@ import {
   Search,
   Building2,
   IdCard,
+  Eye,
+  Calendar,
+  Lock,
+  User,
+  FlaskConical,
+  Beaker,
 } from "lucide-react"
 
 // Access status grouping configuration
@@ -122,6 +128,8 @@ const STATUS_OPTIONS = ["Active", "Closed"]
 const THERAPEUTIC_AREAS = ["Oncology", "Cardiology", "Neurology", "Immunology", "Endocrinology", "Respiratory", "Infectious Disease"]
 const GEOGRAPHY_OPTIONS = ["US", "EU", "Asia", "Global", "Latin America", "Middle East"]
 const DATA_MODALITY_OPTIONS = ["Clinical", "Genomic", "Imaging (DICOM)", "Biomarker", "Patient Reported Outcomes", "Real World Data"]
+const ACCESS_PLATFORM_OPTIONS = ["Domino", "SCP", "AIBench"] as const
+const DATA_LAYER_OPTIONS = ["Starburst", "S3", "Snowflake"] as const
 const COMPLIANCE_OPTIONS = ["Research Allowed", "Research with Restrictions", "External Publication OK", "AI/ML Training OK", "Commercial Use OK"]
 const STUDY_SPONSOR_OPTIONS = ["Sponsor", "Investigator-Initiated", "Academic", "Government", "Consortium"]
 const PATIENT_POPULATION_OPTIONS = [
@@ -194,6 +202,9 @@ export default function VariationDatasets() {
   const [sponsorFilters, setSponsorFilters] = useState<string[]>([])
   const [patientPopulationFilters, setPatientPopulationFilters] = useState<string[]>([])
 
+  // Platform filters
+  const [accessPlatformFilters, setAccessPlatformFilters] = useState<string[]>([])
+
   // User Access Filters
   const [myAccessOnly, setMyAccessOnly] = useState(false)
 
@@ -237,6 +248,11 @@ export default function VariationDatasets() {
       )
     }
 
+    // Apply access platform filter
+    if (accessPlatformFilters.length > 0) {
+      result = result.filter(d => accessPlatformFilters.includes(d.accessPlatform))
+    }
+
     // Sort results
     if (sortBy === "name") {
       result = [...result].sort((a, b) => a.name.localeCompare(b.name))
@@ -247,7 +263,7 @@ export default function VariationDatasets() {
     }
 
     return result
-  }, [phaseFilters, statusFilters, therapeuticAreaFilters, geographyFilters, sortBy, smartFilterActive])
+  }, [phaseFilters, statusFilters, therapeuticAreaFilters, geographyFilters, accessPlatformFilters, sortBy, smartFilterActive])
 
   // Group datasets by access status
   const groupedDatasets = useMemo(() => {
@@ -302,6 +318,7 @@ export default function VariationDatasets() {
     therapeuticAreaFilters.length > 0 || geographyFilters.length > 0 ||
     dataModalityFilters.length > 0 || complianceFilters.length > 0 ||
     sponsorFilters.length > 0 || patientPopulationFilters.length > 0 ||
+    accessPlatformFilters.length > 0 ||
     hasUserCriteria || myAccessOnly
 
   // Count total active filters
@@ -309,6 +326,7 @@ export default function VariationDatasets() {
     therapeuticAreaFilters.length + geographyFilters.length +
     dataModalityFilters.length + complianceFilters.length +
     sponsorFilters.length + patientPopulationFilters.length +
+    accessPlatformFilters.length +
     (hasUserCriteria ? 1 : 0) + (myAccessOnly ? 1 : 0)
 
   // Handle AI discovery
@@ -466,6 +484,7 @@ export default function VariationDatasets() {
     setComplianceFilters([])
     setSponsorFilters([])
     setPatientPopulationFilters([])
+    setAccessPlatformFilters([])
     setSelectedOrgs(new Set())
     setSelectedRoles(new Set())
     setIndividualEmails("")
@@ -501,28 +520,6 @@ export default function VariationDatasets() {
       newSelected.add(roleId)
     }
     setSelectedRoles(newSelected)
-  }
-
-  // New Search - resets filters but stays in results view showing all datasets
-  const handleNewSearch = () => {
-    setPrompt("")
-    setSmartFilterQuery("")
-    setSmartFilterActive(false)
-    setPhaseFilters([])
-    setStatusFilters([])
-    setTherapeuticAreaFilters([])
-    setGeographyFilters([])
-    setDataModalityFilters([])
-    setComplianceFilters([])
-    setSponsorFilters([])
-    setPatientPopulationFilters([])
-    setSelectedOrgs(new Set())
-    setSelectedRoles(new Set())
-    setIndividualEmails("")
-    setMyAccessOnly(false)
-    setShowSmartFilterInput(false)
-    setSmartFilterInput("")
-    // Stay in results view but show all datasets
   }
 
   // Edit smart filter
@@ -794,17 +791,6 @@ export default function VariationDatasets() {
             </div>
           </div>
 
-          {/* Right side: New Search button (only shown after search) */}
-          {hasSearched && (
-            <Button
-              variant="outline"
-              onClick={handleNewSearch}
-              className="rounded-xl font-light border-neutral-200 animate-in fade-in duration-300"
-            >
-              <Sparkles className="size-4 mr-2" />
-              New Search
-            </Button>
-          )}
         </div>
       </div>
 
@@ -1343,6 +1329,44 @@ export default function VariationDatasets() {
                           onCheckedChange={() => toggleFilter(modality, dataModalityFilters, setDataModalityFilters)}
                         />
                         <span className="text-xs font-light">{modality}</span>
+                      </label>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+
+                {/* Access Platform Filter */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "rounded-xl font-light h-8 text-xs",
+                        accessPlatformFilters.length > 0 && cn(
+                          scheme.from.replace("from-", "border-").replace("-500", "-300"),
+                          scheme.from.replace("from-", "bg-").replace("-500", "-50")
+                        )
+                      )}
+                    >
+                      <Layers className="size-3 mr-1" />
+                      Platform
+                      {accessPlatformFilters.length > 0 && (
+                        <Badge className="ml-1.5 h-4 px-1 text-[10px] font-light">{accessPlatformFilters.length}</Badge>
+                      )}
+                      <ChevronDown className="size-3 ml-1" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40 p-2" align="start">
+                    {ACCESS_PLATFORM_OPTIONS.map(platform => (
+                      <label
+                        key={platform}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-50 cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={accessPlatformFilters.includes(platform)}
+                          onCheckedChange={() => toggleFilter(platform, accessPlatformFilters, setAccessPlatformFilters)}
+                        />
+                        <span className="text-xs font-light">{platform}</span>
                       </label>
                     ))}
                   </PopoverContent>
@@ -1914,104 +1938,63 @@ export default function VariationDatasets() {
             </div>
           </div>
 
-          {/* Grouped Results */}
-          <div className="space-y-6">
-            {ACCESS_GROUPS.map(group => {
-              const GroupIcon = group.icon
-              const datasets = groupedDatasets[group.id] || []
-              const isCollapsed = collapsedGroups.has(group.id)
-
-              if (datasets.length === 0) return null
-
-              return (
-                <div key={group.id} className="space-y-3">
-                  {/* Group Header */}
-                  <div
-                    className={cn(
-                      "flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all",
-                      group.bgColor,
-                      "border",
-                      group.borderColor,
-                      "hover:shadow-md"
-                    )}
-                    onClick={() => toggleGroup(group.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "flex size-10 items-center justify-center rounded-full",
-                        group.bgColor
-                      )}>
-                        <GroupIcon className={cn("size-5", group.iconColor)} />
-                      </div>
-                      <div>
-                        <h3 className={cn("text-base font-normal", group.textColor)}>
-                          {group.label}
-                        </h3>
-                        <p className="text-xs font-light text-neutral-500">
-                          {group.description}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className={cn("ml-2 font-light", group.textColor, group.borderColor)}>
-                        {datasets.length} datasets
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          selectGroup(group.id)
-                        }}
-                        className={cn(
-                          "rounded-lg font-light h-8 text-xs",
-                          group.borderColor,
-                          group.textColor
-                        )}
-                      >
-                        Select All
-                      </Button>
-                      <ChevronDown className={cn(
-                        "size-5 transition-transform",
-                        group.iconColor,
-                        isCollapsed && "-rotate-90"
-                      )} />
-                    </div>
-                  </div>
-
-                  {/* Group Content */}
-                  <div className={cn(
-                    "grid transition-all duration-300",
-                    isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
+          {/* Results List */}
+          <div>
+            {/* Results Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-light text-neutral-600">
+                  Showing <span className="font-normal text-neutral-900">{filteredDatasets.length}</span> datasets
+                </p>
+                {selectedDatasets.size > 0 && (
+                  <Badge className={cn(
+                    "font-light text-xs",
+                    scheme.from.replace("from-", "bg-"),
+                    "text-white"
                   )}>
-                    <div className="overflow-hidden">
-                      {viewMode === "cards" ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-2">
-                          {datasets.map(dataset => (
-                            <DatasetCard
-                              key={dataset.id}
-                              dataset={dataset}
-                              selected={selectedDatasets.has(dataset.id)}
-                              onToggle={() => toggleDataset(dataset.id)}
-                              scheme={scheme}
-                              group={group}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <DatasetTable
-                          datasets={datasets}
-                          selectedDatasets={selectedDatasets}
-                          onToggle={toggleDataset}
-                          scheme={scheme}
-                          group={group}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+                    {selectedDatasets.size} selected
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (selectedDatasets.size === filteredDatasets.length) {
+                      clearSelection()
+                    } else {
+                      filteredDatasets.forEach(d => setSelectedDatasets(prev => new Set([...prev, d.id])))
+                    }
+                  }}
+                  className="rounded-lg font-light h-8 text-xs"
+                >
+                  {selectedDatasets.size === filteredDatasets.length ? "Deselect All" : "Select All"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Results Grid/Table */}
+            {viewMode === "cards" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filteredDatasets.map(dataset => (
+                  <DatasetCardFlat
+                    key={dataset.id}
+                    dataset={dataset}
+                    selected={selectedDatasets.has(dataset.id)}
+                    onToggle={() => toggleDataset(dataset.id)}
+                    scheme={scheme}
+                  />
+                ))}
+              </div>
+            ) : (
+              <DatasetTableFlat
+                datasets={filteredDatasets}
+                selectedDatasets={selectedDatasets}
+                onToggle={toggleDataset}
+                scheme={scheme}
+              />
+            )}
           </div>
 
           {/* Empty State */}
@@ -2516,6 +2499,465 @@ function DatasetTable({
               </td>
             </tr>
           ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+// Flat Dataset Card Component (no grouping)
+// Platform icon helper
+const getPlatformIcon = (platform: string) => {
+  switch (platform) {
+    case "Domino": return "🎯"
+    case "SCP": return "☁️"
+    case "AIBench": return "🤖"
+    default: return "📊"
+  }
+}
+
+// Dataset Preview Popover Component
+function DatasetPreviewPopover({
+  dataset,
+  children,
+}: {
+  dataset: typeof MOCK_DATASETS[0]
+  children: React.ReactNode
+}) {
+  const meta = dataset.clinicalMetadata
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+        {children}
+      </PopoverTrigger>
+      <PopoverContent
+        side="right"
+        align="start"
+        className="w-96 p-0"
+        collisionPadding={16}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="px-4 py-2.5 border-b border-neutral-100 bg-neutral-50/50">
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="outline" className="font-mono text-xs">
+              {dataset.code}
+            </Badge>
+            {meta?.nctNumber && (
+              <Badge variant="outline" className="text-xs font-light text-neutral-600">
+                {meta.nctNumber}
+              </Badge>
+            )}
+          </div>
+          <h3 className="text-sm font-medium text-neutral-900 leading-snug">
+            {dataset.name}
+          </h3>
+        </div>
+
+        {/* Description */}
+        {dataset.description && (
+          <div className="px-4 py-2 border-b border-neutral-100">
+            <p className="text-xs font-light text-neutral-600 leading-relaxed">
+              {dataset.description}
+            </p>
+          </div>
+        )}
+
+        {/* Study Details */}
+        {meta && (
+          <div className="px-4 py-2 space-y-2.5 border-b border-neutral-100">
+            {meta.studyDesign && (
+              <div>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <FlaskConical className="size-3.5 text-neutral-400" />
+                  <span className="text-xs font-medium text-neutral-700">Study Design</span>
+                </div>
+                <p className="text-xs font-light text-neutral-600 pl-5">{meta.studyDesign}</p>
+              </div>
+            )}
+
+            {meta.primaryEndpoint && (
+              <div>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Target className="size-3.5 text-neutral-400" />
+                  <span className="text-xs font-medium text-neutral-700">Primary Endpoint</span>
+                </div>
+                <p className="text-xs font-light text-neutral-600 pl-5">{meta.primaryEndpoint}</p>
+              </div>
+            )}
+
+            {meta.principalInvestigator && (
+              <div className="flex items-center gap-1.5">
+                <User className="size-3.5 text-neutral-400" />
+                <span className="text-xs text-neutral-600">
+                  <span className="font-medium">PI:</span>{" "}
+                  <span className="font-light">{meta.principalInvestigator}</span>
+                </span>
+              </div>
+            )}
+
+            {meta.sponsor && (
+              <div className="flex items-center gap-1.5">
+                <Building2 className="size-3.5 text-neutral-400" />
+                <span className="text-xs text-neutral-600">
+                  <span className="font-medium">Sponsor:</span>{" "}
+                  <span className="font-light">{meta.sponsor}</span>
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Timeline */}
+        {meta && (meta.enrollmentStartDate || meta.studyLockDate) && (
+          <div className="px-4 py-2 border-b border-neutral-100">
+            <div className="grid grid-cols-2 gap-4">
+              {meta.enrollmentStartDate && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <Calendar className="size-3 text-neutral-400" />
+                    <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wide">Enrollment Start</span>
+                  </div>
+                  <span className="text-xs font-light text-neutral-700 pl-4">{meta.enrollmentStartDate}</span>
+                </div>
+              )}
+              {meta.studyLockDate && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <Lock className="size-3 text-neutral-400" />
+                    <span className="text-[10px] font-medium text-neutral-500 uppercase tracking-wide">Data Lock</span>
+                  </div>
+                  <span className="text-xs font-light text-neutral-700 pl-4">{meta.studyLockDate}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Status Badges */}
+        {meta && (
+          <div className="px-4 py-2 border-b border-neutral-100">
+            <div className="flex flex-wrap gap-1.5">
+              {meta.enrollmentStatus && (
+                <Badge className={cn(
+                  "text-xs font-light",
+                  meta.enrollmentStatus === "Completed" ? "bg-emerald-100 text-emerald-700" :
+                  meta.enrollmentStatus === "Ongoing" ? "bg-blue-100 text-blue-700" :
+                  meta.enrollmentStatus === "Recruiting" ? "bg-purple-100 text-purple-700" :
+                  "bg-red-100 text-red-700"
+                )}>
+                  {meta.enrollmentStatus}
+                </Badge>
+              )}
+              {meta.dataLockStatus && (
+                <Badge className={cn(
+                  "text-xs font-light",
+                  meta.dataLockStatus === "Locked" ? "bg-neutral-100 text-neutral-700" :
+                  meta.dataLockStatus === "Interim" ? "bg-amber-100 text-amber-700" :
+                  "bg-blue-100 text-blue-700"
+                )}>
+                  {meta.dataLockStatus === "Locked" ? "Data Locked" : meta.dataLockStatus}
+                </Badge>
+              )}
+              {meta.protocolVersion && (
+                <Badge variant="outline" className="text-xs font-light">
+                  Protocol {meta.protocolVersion}
+                </Badge>
+              )}
+              {meta.blindingType && (
+                <Badge variant="outline" className="text-xs font-light">
+                  {meta.blindingType}
+                </Badge>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Enrollment Stats */}
+        {meta && (meta.numberOfSites || meta.actualEnrollment || meta.treatmentArms) && (
+          <div className="px-4 py-2 border-b border-neutral-100">
+            <div className="flex items-center justify-between text-xs text-neutral-600">
+              {meta.numberOfSites && (
+                <span className="font-light">
+                  <span className="font-medium">{meta.numberOfSites}</span> sites
+                </span>
+              )}
+              {meta.actualEnrollment && (
+                <span className="font-light">
+                  <span className="font-medium">{meta.actualEnrollment.toLocaleString()}</span> enrolled
+                </span>
+              )}
+              {meta.treatmentArms && (
+                <span className="font-light">
+                  <span className="font-medium">{meta.treatmentArms.length}</span> arms
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Child Datasets */}
+        {dataset.childDatasets && dataset.childDatasets.length > 0 && (
+          <div className="px-4 py-2">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Layers className="size-3.5 text-neutral-400" />
+              <span className="text-xs font-medium text-neutral-700">
+                Child Datasets ({dataset.childDatasets.length})
+              </span>
+            </div>
+            <div className="space-y-1.5 pl-5">
+              {dataset.childDatasets.map((child) => (
+                <div key={child.id} className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="font-mono text-[10px] text-neutral-500 shrink-0">{child.code}</span>
+                    <span className="text-xs font-light text-neutral-600 truncate">{child.name}</span>
+                  </div>
+                  <Badge className={cn(
+                    "text-[10px] font-light shrink-0",
+                    child.accessStatus === "open" ? "bg-emerald-100 text-emerald-700" :
+                    child.accessStatus === "ready" ? "bg-blue-100 text-blue-700" :
+                    child.accessStatus === "approval" ? "bg-amber-100 text-amber-700" :
+                    "bg-neutral-100 text-neutral-600"
+                  )}>
+                    {child.accessStatus === "open" ? "Open" :
+                     child.accessStatus === "ready" ? "Ready" :
+                     child.accessStatus === "approval" ? "Approval" :
+                     "Missing"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function DatasetCardFlat({
+  dataset,
+  selected,
+  onToggle,
+  scheme,
+}: {
+  dataset: typeof MOCK_DATASETS[0]
+  selected: boolean
+  onToggle: () => void
+  scheme: ReturnType<typeof useColorScheme>["scheme"]
+}) {
+  const { alreadyOpen, readyToGrant, needsApproval, missingLocation } = dataset.accessBreakdown
+
+  return (
+    <Card className={cn(
+      "border rounded-xl overflow-hidden transition-all cursor-pointer group hover:shadow-md",
+      selected
+        ? cn(
+            scheme.from.replace("from-", "bg-").replace("-500", "-50"),
+            scheme.from.replace("from-", "border-").replace("-500", "-200")
+          )
+        : "border-neutral-200 hover:border-neutral-300 bg-white"
+    )}
+    onClick={onToggle}
+    >
+      <CardContent className="p-4">
+        {/* Top Row: Code, Platform, Status, Eye + Checkbox */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="font-mono text-xs">
+              {dataset.code}
+            </Badge>
+            <Badge variant="outline" className="text-xs font-light gap-1">
+              <span>{getPlatformIcon(dataset.accessPlatform)}</span>
+              {dataset.accessPlatform}
+            </Badge>
+            <Badge className={cn(
+              "text-xs font-light",
+              dataset.status === "Closed" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+            )}>
+              {dataset.status}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <DatasetPreviewPopover dataset={dataset}>
+              <button
+                className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Eye className="size-4 text-neutral-400 hover:text-neutral-600" strokeWidth={1.5} />
+              </button>
+            </DatasetPreviewPopover>
+            <Checkbox
+              checked={selected}
+              onCheckedChange={onToggle}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h4 className="text-sm font-normal text-neutral-900 line-clamp-2 mb-2">
+          {dataset.name}
+        </h4>
+
+        {/* Meta info with icons */}
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <Microscope className="size-3.5 text-neutral-400" />
+            <span className="font-light">Phase {dataset.phase}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <Users className="size-3.5 text-neutral-400" />
+            <span className="font-light">{dataset.patientCount.toLocaleString()}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-600">
+            <Globe className="size-3.5 text-neutral-400" />
+            <span className="font-light">{dataset.geography.slice(0, 2).join(", ")}</span>
+          </div>
+        </div>
+
+        {/* Data layers */}
+        <div className="flex items-center gap-1.5 mb-3">
+          <Database className="size-3.5 text-neutral-400" />
+          <div className="flex gap-1">
+            {dataset.dataLayer.map(layer => (
+              <Badge key={layer} variant="outline" className="text-[10px] font-light h-5 px-1.5 border-neutral-200">
+                {layer}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {dataset.therapeuticArea.slice(0, 2).map(ta => (
+            <Badge key={ta} variant="outline" className="text-xs font-light border-neutral-200 bg-neutral-50">
+              {ta}
+            </Badge>
+          ))}
+        </div>
+
+        {/* Access RAG Bar */}
+        <div className="space-y-1">
+          <div className="flex h-1.5 rounded-full overflow-hidden bg-neutral-100">
+            <div
+              className="bg-green-500"
+              style={{ width: `${alreadyOpen}%` }}
+            />
+            <div
+              className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
+              style={{ width: `${readyToGrant}%` }}
+            />
+            <div
+              className="bg-amber-500"
+              style={{ width: `${needsApproval}%` }}
+            />
+            <div
+              className="bg-neutral-400"
+              style={{ width: `${missingLocation}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] font-light text-neutral-500">
+            <span>{alreadyOpen}% open</span>
+            <span>{readyToGrant}% ready</span>
+            <span>{needsApproval}% approval</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Flat Dataset Table Component (no grouping)
+function DatasetTableFlat({
+  datasets,
+  selectedDatasets,
+  onToggle,
+  scheme,
+}: {
+  datasets: typeof MOCK_DATASETS
+  selectedDatasets: Set<string>
+  onToggle: (id: string) => void
+  scheme: ReturnType<typeof useColorScheme>["scheme"]
+}) {
+  return (
+    <div className="border border-neutral-200 rounded-xl overflow-hidden">
+      <table className="w-full">
+        <thead className="bg-neutral-50 border-b border-neutral-200">
+          <tr>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600 w-10"></th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600">Study</th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600">Name</th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600">Platform</th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600">Phase</th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600">Patients</th>
+            <th className="p-3 text-left text-xs font-normal text-neutral-600 w-44">Access Breakdown</th>
+          </tr>
+        </thead>
+        <tbody>
+          {datasets.map((dataset, index) => {
+            const { alreadyOpen, readyToGrant, needsApproval, missingLocation } = dataset.accessBreakdown
+            return (
+              <tr
+                key={dataset.id}
+                className={cn(
+                  "border-b border-neutral-100 cursor-pointer transition-colors",
+                  selectedDatasets.has(dataset.id)
+                    ? scheme.from.replace("from-", "bg-").replace("-500", "-50")
+                    : "hover:bg-neutral-50",
+                  index === datasets.length - 1 && "border-b-0"
+                )}
+                onClick={() => onToggle(dataset.id)}
+              >
+                <td className="p-3">
+                  <Checkbox
+                    checked={selectedDatasets.has(dataset.id)}
+                    onCheckedChange={() => onToggle(dataset.id)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </td>
+                <td className="p-3">
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {dataset.code}
+                  </Badge>
+                </td>
+                <td className="p-3 max-w-[280px]">
+                  <span className="text-sm font-light text-neutral-900 line-clamp-1">{dataset.name}</span>
+                </td>
+                <td className="p-3">
+                  <Badge variant="outline" className="text-xs font-light gap-1">
+                    <span>{getPlatformIcon(dataset.accessPlatform)}</span>
+                    {dataset.accessPlatform}
+                  </Badge>
+                </td>
+                <td className="p-3">
+                  <span className="text-xs font-light text-neutral-700">
+                    {dataset.phase}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <span className="text-xs font-light text-neutral-600">
+                    {dataset.patientCount.toLocaleString()}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <div className="space-y-1 min-w-[140px]">
+                    <div className="flex h-1.5 rounded-full overflow-hidden bg-neutral-100">
+                      <div className="bg-green-500" style={{ width: `${alreadyOpen}%` }} />
+                      <div className={cn("bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: `${readyToGrant}%` }} />
+                      <div className="bg-amber-500" style={{ width: `${needsApproval}%` }} />
+                      <div className="bg-neutral-400" style={{ width: `${missingLocation}%` }} />
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-light text-neutral-500">
+                      <span>{alreadyOpen}% open</span>
+                      <span>{readyToGrant}% ready</span>
+                      <span>{needsApproval}% approval</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>

@@ -84,7 +84,7 @@ const MOCK_AD_USERS = [
 // Mock discussion comments
 interface Comment {
   id: string
-  author: { name: string; role: string }
+  author: { name: string; role: string; isBot?: boolean }
   type: "update" | "question" | "blocker" | "suggestion"
   content: string
   timestamp: Date
@@ -162,6 +162,18 @@ const MOCK_COMMENTS: Comment[] = [
       { emoji: "👍", count: 2, users: ["Dr. Michael Chen", "Emily Rodriguez"] },
     ],
     mentions: ["Dr. Michael Chen"],
+  },
+  {
+    id: "c7",
+    author: { name: "Collectoid", role: "Automated Assistant", isBot: true },
+    type: "update",
+    content: "I noticed DCODE-042 and DCODE-001 share 3 common data stewards who have previously approved similar ctDNA collections. Based on historical patterns, these approvals typically complete within 2-3 business days. I've flagged this collection as high-priority in the GPT-Oncology queue.",
+    timestamp: new Date("2025-11-11T14:22:00"),
+    reactions: [
+      { emoji: "🤖", count: 3, users: ["Jennifer Martinez", "Dr. Sarah Martinez", "Jane Smith"] },
+      { emoji: "👍", count: 2, users: ["Lisa Thompson", "Dr. Michael Chen"] },
+    ],
+    mentions: [],
   },
 ]
 
@@ -3203,7 +3215,8 @@ ${currentUser.email}`
                     "border-neutral-200 rounded-2xl overflow-hidden transition-all",
                     comment.isPinned && "border-2 border-amber-300 bg-amber-50/30",
                     comment.type === "blocker" && !comment.isResolved && "border-l-4 border-red-500 bg-red-50/50 shadow-lg",
-                    comment.type === "blocker" && comment.isResolved && "border-l-4 border-green-500 bg-green-50/30"
+                    comment.type === "blocker" && comment.isResolved && "border-l-4 border-green-500 bg-green-50/30",
+                    comment.author.isBot && "border-l-4 border-violet-400 bg-gradient-to-r from-violet-50/50 to-transparent"
                   )}
                 >
                   <CardContent className="p-6">
@@ -3257,22 +3270,34 @@ ${currentUser.email}`
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-start gap-3 flex-1">
                         {/* Avatar */}
-                        <div
-                          className={cn(
-                            "flex size-10 items-center justify-center rounded-full font-normal text-white shrink-0",
-                            "bg-gradient-to-br",
-                            scheme.from,
-                            scheme.to
-                          )}
-                        >
-                          {comment.author.name.split(" ").map(n => n[0]).join("")}
-                        </div>
+                        {comment.author.isBot ? (
+                          <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shrink-0 ring-2 ring-violet-200">
+                            <Sparkles className="size-5" />
+                          </div>
+                        ) : (
+                          <div
+                            className={cn(
+                              "flex size-10 items-center justify-center rounded-full font-normal text-white shrink-0",
+                              "bg-gradient-to-br",
+                              scheme.from,
+                              scheme.to
+                            )}
+                          >
+                            {comment.author.name.split(" ").map(n => n[0]).join("")}
+                          </div>
+                        )}
 
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="text-sm font-normal text-neutral-900">
                               {comment.author.name}
                             </h4>
+                            {comment.author.isBot && (
+                              <Badge className="bg-violet-100 text-violet-700 border-violet-200 font-light text-xs gap-1">
+                                <Sparkles className="size-3" />
+                                AI
+                              </Badge>
+                            )}
                             <Badge variant="outline" className="font-light text-xs">
                               {comment.author.role}
                             </Badge>

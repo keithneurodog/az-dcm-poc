@@ -346,6 +346,16 @@ export default function DCMCreateVariation1() {
             Get AI Suggestions
             <ArrowRight className="ml-2 size-5" />
           </Button>
+
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => router.push("/collectoid/dcm/create/categories")}
+              className="text-sm font-light text-neutral-500 hover:text-neutral-700 transition-colors inline-flex items-center gap-1.5"
+            >
+              Skip AI and select categories manually
+              <ArrowRight className="size-3.5" />
+            </button>
+          </div>
         </CardContent>
       </Card>
 
