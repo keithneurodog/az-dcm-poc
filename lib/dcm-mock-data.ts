@@ -1,5 +1,113 @@
 // DCM POC Mock Data
 
+// =============================================================================
+// DATA ACCESS REQUEST INTERFACES
+// =============================================================================
+
+// User's declared intent for data access (simplified AoT preferences)
+export interface DataAccessIntent {
+  primaryUse: {
+    understandDrugMechanism: boolean
+    understandDisease: boolean
+    developDiagnosticTests: boolean
+    learnFromPastStudies: boolean
+    improveAnalysisMethods: boolean
+  }
+  beyondPrimaryUse: {
+    aiResearch: boolean
+    softwareDevelopment: boolean
+  }
+  publication: {
+    internalOnly: boolean
+    externalPublication: boolean
+  }
+  researchPurpose?: string
+  expectedDuration?: "3-months" | "6-months" | "1-year" | "2-years" | "indefinite"
+}
+
+// Access category for a dataset based on user intent
+export type AccessCategory = "immediate" | "soon" | "extended" | "conflict"
+
+// Individual conflict between user intent and dataset restrictions
+export interface IntentConflict {
+  intentField: "aiResearch" | "softwareDevelopment" | "externalPublication"
+  intentLabel: string
+  datasetRestriction: string
+  addedWeeks: number
+}
+
+// Result of matching a single dataset against user intent
+export interface DatasetMatchResult {
+  datasetId: string
+  dataset: Dataset
+  accessCategory: AccessCategory
+  estimatedDays: number
+  estimatedWeeks: number
+  categoryReason: string
+  intentConflicts: IntentConflict[]
+  matchingCollectionId?: string
+  matchingCollectionName?: string
+  similarDatasets: SimilarDataset[]
+}
+
+// Similar dataset recommendation
+export interface SimilarDataset {
+  dataset: Dataset
+  similarityScore: number // 0-100
+  reason: string
+  accessCategory: AccessCategory
+  estimatedWeeks: number
+}
+
+// Complete result of smart matching all selected datasets
+export interface RequestMatchingResult {
+  immediate: DatasetMatchResult[]   // Green - ready now (0 days)
+  soon: DatasetMatchResult[]        // Blue - ~1-2 weeks
+  extended: DatasetMatchResult[]    // Amber - ~6-8 weeks
+  conflicts: DatasetMatchResult[]   // Red - has blocking conflicts
+
+  summary: {
+    totalDatasets: number
+    immediateCount: number
+    soonCount: number
+    extendedCount: number
+    conflictCount: number
+    maxEstimatedWeeks: number
+    estimatedFullAccessWeeks: number
+  }
+
+  intentWarnings: IntentWarning[]
+}
+
+// Warning about how an intent affects multiple datasets
+export interface IntentWarning {
+  intentField: "aiResearch" | "softwareDevelopment" | "externalPublication"
+  intentLabel: string
+  affectedDatasetIds: string[]
+  affectedDatasetCodes: string[]
+  addedWeeks: number
+  message: string
+}
+
+// Final submitted data access request
+export interface DataAccessRequest {
+  id: string
+  status: "submitted" | "in_review" | "approved" | "rejected"
+  requesterId: string
+  requesterName: string
+  requesterEmail: string
+  intent: DataAccessIntent
+  datasetIds: string[]
+  matchingResult: RequestMatchingResult
+  createdAt: Date
+  submittedAt: Date
+  notes?: string
+}
+
+// =============================================================================
+// EXISTING INTERFACES
+// =============================================================================
+
 export interface DataCategory {
   id: string
   name: string

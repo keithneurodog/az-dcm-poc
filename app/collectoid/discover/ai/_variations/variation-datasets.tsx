@@ -2716,9 +2716,21 @@ function DatasetCardFlat({
 }) {
   const { alreadyOpen, readyToGrant, needsApproval, missingLocation } = dataset.accessBreakdown
 
+  // Pre-flight access hint based on breakdown
+  const getAccessHint = () => {
+    if (alreadyOpen >= 80) return { label: "Ready for you", color: "emerald", icon: "⚡" }
+    if (readyToGrant >= 50) return { label: "~1 week", color: "blue", icon: "🕐" }
+    if (needsApproval >= 50) return { label: "~2 weeks", color: "amber", icon: "🕐" }
+    if (dataset.aotMetadata?.restrictML || dataset.aotMetadata?.restrictPublication) {
+      return { label: "May have restrictions", color: "red", icon: "⚠️" }
+    }
+    return null
+  }
+  const accessHint = getAccessHint()
+
   return (
     <Card className={cn(
-      "border rounded-xl overflow-hidden transition-all cursor-pointer group hover:shadow-md",
+      "border rounded-xl overflow-hidden transition-all cursor-pointer group hover:shadow-md relative",
       selected
         ? cn(
             scheme.from.replace("from-", "bg-").replace("-500", "-50"),
@@ -2728,6 +2740,20 @@ function DatasetCardFlat({
     )}
     onClick={onToggle}
     >
+      {/* Pre-flight Access Hint Badge */}
+      {accessHint && (
+        <div className={cn(
+          "absolute top-2 right-12 px-1.5 py-0.5 rounded text-[10px] font-light flex items-center gap-1",
+          accessHint.color === "emerald" && "bg-emerald-100 text-emerald-700",
+          accessHint.color === "blue" && "bg-blue-100 text-blue-700",
+          accessHint.color === "amber" && "bg-amber-100 text-amber-700",
+          accessHint.color === "red" && "bg-red-100 text-red-600"
+        )}>
+          <span>{accessHint.icon}</span>
+          {accessHint.label}
+        </div>
+      )}
+
       <CardContent className="p-4">
         {/* Top Row: Code, Platform, Status, Eye + Checkbox */}
         <div className="flex items-center justify-between mb-2">
