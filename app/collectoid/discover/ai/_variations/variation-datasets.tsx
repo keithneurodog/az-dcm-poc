@@ -1222,6 +1222,23 @@ export default function VariationDatasets() {
                   Quick:
                 </div>
 
+                {/* My Access Quick Filter */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setMyAccessOnly(!myAccessOnly)}
+                  className={cn(
+                    "rounded-xl font-light h-8 text-xs",
+                    myAccessOnly && cn(
+                      "border-blue-300 bg-blue-50 text-blue-700"
+                    )
+                  )}
+                >
+                  <Shield className="size-3 mr-1" />
+                  My Access
+                  {myAccessOnly && <Check className="size-3 ml-1" />}
+                </Button>
+
                 {/* Phase Filter */}
                 <Popover>
                   <PopoverTrigger asChild>
@@ -1371,23 +1388,6 @@ export default function VariationDatasets() {
                     ))}
                   </PopoverContent>
                 </Popover>
-
-                {/* My Access Quick Filter */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setMyAccessOnly(!myAccessOnly)}
-                  className={cn(
-                    "rounded-xl font-light h-8 text-xs",
-                    myAccessOnly && cn(
-                      "border-blue-300 bg-blue-50 text-blue-700"
-                    )
-                  )}
-                >
-                  <Shield className="size-3 mr-1" />
-                  My Access
-                  {myAccessOnly && <Check className="size-3 ml-1" />}
-                </Button>
 
                 {/* Clear Filters */}
                 {hasActiveFilters && (
@@ -1623,51 +1623,6 @@ export default function VariationDatasets() {
                 ))}
               </div>
             )}
-
-            {/* Selection Controls */}
-            <div className="flex items-center gap-3 mt-3">
-              <span className="text-xs font-light text-neutral-500">Select:</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={selectAll}
-                className="h-7 px-2 text-xs font-light rounded-lg"
-              >
-                All ({filteredDatasets.length})
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={selectAllOpen}
-                className="h-7 px-2 text-xs font-light rounded-lg text-emerald-700"
-              >
-                All Open
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={selectAllReady}
-                className="h-7 px-2 text-xs font-light rounded-lg text-blue-700"
-              >
-                All Ready
-              </Button>
-              {selectedDatasets.size > 0 && (
-                <>
-                  <Separator orientation="vertical" className="h-4" />
-                  <span className="text-xs font-normal text-neutral-900">
-                    {selectedDatasets.size} selected
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearSelection}
-                    className="h-7 px-2 text-xs font-light rounded-lg text-red-600"
-                  >
-                    Clear
-                  </Button>
-                </>
-              )}
-            </div>
 
             {/* Expandable All Filters Panel */}
             <div className={cn(
@@ -1942,35 +1897,48 @@ export default function VariationDatasets() {
           <div>
             {/* Results Header */}
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <p className="text-sm font-light text-neutral-600">
                   Showing <span className="font-normal text-neutral-900">{filteredDatasets.length}</span> datasets
                 </p>
+                <Separator orientation="vertical" className="h-4" />
+                <div className="flex items-center gap-0.5 text-xs text-neutral-400">
+                  <span className="mr-1">Select</span>
+                  <button
+                    onClick={selectAll}
+                    className="px-1.5 py-0.5 rounded hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition-colors"
+                  >
+                    All
+                  </button>
+                  <span>·</span>
+                  <button
+                    onClick={selectAllOpen}
+                    className="px-1.5 py-0.5 rounded hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    Open
+                  </button>
+                  <span>·</span>
+                  <button
+                    onClick={selectAllReady}
+                    className="px-1.5 py-0.5 rounded hover:bg-blue-50 text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    Ready
+                  </button>
+                </div>
                 {selectedDatasets.size > 0 && (
-                  <Badge className={cn(
-                    "font-light text-xs",
-                    scheme.from.replace("from-", "bg-"),
-                    "text-white"
-                  )}>
-                    {selectedDatasets.size} selected
-                  </Badge>
+                  <>
+                    <Separator orientation="vertical" className="h-4" />
+                    <span className="text-xs font-medium text-neutral-700">
+                      {selectedDatasets.size} selected
+                    </span>
+                    <button
+                      onClick={clearSelection}
+                      className="text-xs text-neutral-400 hover:text-red-600 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </>
                 )}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (selectedDatasets.size === filteredDatasets.length) {
-                      clearSelection()
-                    } else {
-                      filteredDatasets.forEach(d => setSelectedDatasets(prev => new Set([...prev, d.id])))
-                    }
-                  }}
-                  className="rounded-lg font-light h-8 text-xs"
-                >
-                  {selectedDatasets.size === filteredDatasets.length ? "Deselect All" : "Select All"}
-                </Button>
               </div>
             </div>
 
