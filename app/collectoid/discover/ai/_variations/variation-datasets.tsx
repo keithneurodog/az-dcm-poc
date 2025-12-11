@@ -489,8 +489,8 @@ export default function VariationDatasets() {
     setSelectedRoles(new Set())
     setIndividualEmails("")
     setMyAccessOnly(false)
+    // Disable smart filter instead of clearing it completely
     setSmartFilterActive(false)
-    setSmartFilterQuery("")
   }
 
   // Clear user criteria
@@ -1485,7 +1485,7 @@ export default function VariationDatasets() {
                       scheme.from.replace("from-", "text-").replace("500", "700"),
                       "hover:bg-red-50 hover:text-red-700"
                     )}
-                    onClick={clearSmartFilter}
+                    onClick={() => setSmartFilterActive(false)}
                   >
                     <Sparkles className="size-3 mr-1" />
                     AI: &quot;{smartFilterQuery.length > 25 ? smartFilterQuery.substring(0, 25) + '...' : smartFilterQuery}&quot;

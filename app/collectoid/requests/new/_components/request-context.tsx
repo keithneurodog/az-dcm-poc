@@ -1,59 +1,55 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react"
 import {
   Dataset,
   DataAccessIntent,
   RequestMatchingResult,
+  DatasetMatchResult,
   MOCK_DATASETS,
 } from "@/lib/dcm-mock-data"
 import { performSmartMatching, getDefaultIntent } from "@/lib/request-matching"
 
-type Step = "intent" | "builder" | "confirmation"
+type Step = "intent" | "review" | "confirmation"
 
 interface RequestFlowState {
-  // Current step
   currentStep: Step
-
-  // Selected datasets (loaded from sessionStorage)
   selectedDatasets: Dataset[]
-
-  // User intent
   intent: DataAccessIntent
-
-  // Matching results (computed after intent is set)
   matchingResult: RequestMatchingResult | null
   isMatching: boolean
-
-  // Removed datasets (user can remove during refinement)
   removedDatasetIds: Set<string>
-
-  // Submission state
   isSubmitting: boolean
   submittedRequestId: string | null
 }
 
 interface RequestFlowContextValue extends RequestFlowState {
-  // Navigation
   goToStep: (step: Step) => void
   goNext: () => void
   goBack: () => void
-
-  // Intent
   updateIntent: (intent: DataAccessIntent) => void
-
-  // Dataset management
   removeDataset: (datasetId: string) => void
   restoreDataset: (datasetId: string) => void
-  swapDataset: (oldDatasetId: string, newDataset: Dataset) => void
+  removeDatasetsByCategory: (category: "extended" | "conflict") => void
   addDataset: (dataset: Dataset) => void
-
-  // Submission
+  swapDataset: (removeId: string, addDataset: Dataset) => void
   submitRequest: () => Promise<void>
-
-  // Computed values
   activeDatasets: Dataset[]
   activeMatchingResult: RequestMatchingResult | null
+  // Preview intent changes without committing
+  previewIntent: DataAccessIntent | null
+  setPreviewIntent: (intent: DataAccessIntent | null) => void
+  previewMatchingResult: RequestMatchingResult | null
+  // Aggregated stats for large dataset handling
+  stats: {
+    total: number
+    immediate: number
+    soon: number
+    extended: number
+    conflict: number
+    removed: number
+    maxWeeks: number
+  }
 }
 
 const RequestFlowContext = createContext<RequestFlowContextValue | null>(null)
@@ -79,6 +75,8 @@ export function RequestFlowProvider({ children }: RequestFlowProviderProps) {
   const [removedDatasetIds, setRemovedDatasetIds] = useState<Set<string>>(new Set())
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submittedRequestId, setSubmittedRequestId] = useState<string | null>(null)
+  const [previewIntent, setPreviewIntent] = useState<DataAccessIntent | null>(null)
+  const [previewMatchingResult, setPreviewMatchingResult] = useState<RequestMatchingResult | null>(null)
 
   // Load selected datasets from sessionStorage on mount
   useEffect(() => {
@@ -92,69 +90,67 @@ export function RequestFlowProvider({ children }: RequestFlowProviderProps) {
         } catch (e) {
           console.error("Failed to parse selected datasets", e)
         }
+      } else {
+        // Default datasets for testing - includes a mix of open, ready, approval, and complex
+        const defaultIds = [
+          "dcode-101", "dcode-102", "dcode-103", "dcode-104", "dcode-105",
+          "dcode-501", "dcode-502", "dcode-503", "dcode-504", "dcode-505" // Complex datasets
+        ]
+        const datasets = MOCK_DATASETS.filter(d => defaultIds.includes(d.id))
+        setSelectedDatasets(datasets)
       }
     }
   }, [])
 
-  // Compute active datasets (selected minus removed)
-  const activeDatasets = selectedDatasets.filter(d => !removedDatasetIds.has(d.id))
+  // Compute active datasets
+  const activeDatasets = useMemo(() =>
+    selectedDatasets.filter(d => !removedDatasetIds.has(d.id)),
+    [selectedDatasets, removedDatasetIds]
+  )
 
-  // Recompute matching when intent or datasets change
+  // Recompute matching
   const recomputeMatching = useCallback((datasets: Dataset[], newIntent: DataAccessIntent) => {
     if (datasets.length === 0) {
       setMatchingResult(null)
       return
     }
-
     setIsMatching(true)
-
-    // Simulate async matching with small delay for animation
     setTimeout(() => {
       const result = performSmartMatching(datasets, newIntent)
       setMatchingResult(result)
       setIsMatching(false)
-    }, 100)
+    }, 50)
   }, [])
 
   // Navigation
-  const goToStep = useCallback((step: Step) => {
-    setCurrentStep(step)
-  }, [])
+  const goToStep = useCallback((step: Step) => setCurrentStep(step), [])
 
   const goNext = useCallback(() => {
     if (currentStep === "intent") {
-      // Compute matching when moving from intent to builder
       recomputeMatching(activeDatasets, intent)
-      setCurrentStep("builder")
-    } else if (currentStep === "builder") {
+      setCurrentStep("review")
+    } else if (currentStep === "review") {
       setCurrentStep("confirmation")
     }
   }, [currentStep, activeDatasets, intent, recomputeMatching])
 
   const goBack = useCallback(() => {
-    if (currentStep === "builder") {
-      setCurrentStep("intent")
-    } else if (currentStep === "confirmation") {
-      setCurrentStep("builder")
-    }
+    if (currentStep === "review") setCurrentStep("intent")
+    else if (currentStep === "confirmation") setCurrentStep("review")
   }, [currentStep])
 
   // Intent management
   const updateIntent = useCallback((newIntent: DataAccessIntent) => {
     setIntent(newIntent)
-    // Recompute matching if we're on the builder step
-    if (currentStep === "builder") {
+    if (currentStep === "review") {
       recomputeMatching(activeDatasets, newIntent)
     }
   }, [currentStep, activeDatasets, recomputeMatching])
 
-  // Dataset management
+  // Dataset management - no recompute needed, UI calculates from removedDatasetIds
   const removeDataset = useCallback((datasetId: string) => {
     setRemovedDatasetIds(prev => new Set([...prev, datasetId]))
-    // Recompute matching
-    const remaining = activeDatasets.filter(d => d.id !== datasetId)
-    recomputeMatching(remaining, intent)
-  }, [activeDatasets, intent, recomputeMatching])
+  }, [])
 
   const restoreDataset = useCallback((datasetId: string) => {
     setRemovedDatasetIds(prev => {
@@ -162,79 +158,87 @@ export function RequestFlowProvider({ children }: RequestFlowProviderProps) {
       next.delete(datasetId)
       return next
     })
-    // Recompute matching
-    const restored = selectedDatasets.filter(d =>
-      !removedDatasetIds.has(d.id) || d.id === datasetId
-    )
-    recomputeMatching(restored, intent)
-  }, [selectedDatasets, removedDatasetIds, intent, recomputeMatching])
+  }, [])
 
-  const swapDataset = useCallback((oldDatasetId: string, newDataset: Dataset) => {
-    // Remove old, add new
-    setSelectedDatasets(prev => [
-      ...prev.filter(d => d.id !== oldDatasetId),
-      newDataset,
-    ])
-    // Update removed set
-    setRemovedDatasetIds(prev => {
-      const next = new Set(prev)
-      next.delete(oldDatasetId) // In case it was removed
-      return next
-    })
-    // Recompute
-    const updated = [
-      ...activeDatasets.filter(d => d.id !== oldDatasetId),
-      newDataset,
-    ]
-    recomputeMatching(updated, intent)
-  }, [activeDatasets, intent, recomputeMatching])
-
+  // Add a new dataset (e.g., alternative recommendation) - no recompute needed
   const addDataset = useCallback((dataset: Dataset) => {
-    if (selectedDatasets.some(d => d.id === dataset.id)) return
-    setSelectedDatasets(prev => [...prev, dataset])
-    // Recompute
-    const updated = [...activeDatasets, dataset]
-    recomputeMatching(updated, intent)
-  }, [selectedDatasets, activeDatasets, intent, recomputeMatching])
+    setSelectedDatasets(prev => {
+      if (prev.some(d => d.id === dataset.id)) return prev // Already selected
+      return [...prev, dataset]
+    })
+  }, [])
+
+  // Swap one dataset for another (remove old, add new) - no recompute needed
+  const swapDataset = useCallback((removeId: string, newDataset: Dataset) => {
+    setRemovedDatasetIds(prev => new Set([...prev, removeId]))
+    setSelectedDatasets(prev => {
+      if (prev.some(d => d.id === newDataset.id)) return prev
+      return [...prev, newDataset]
+    })
+  }, [])
+
+  // Preview intent - recompute matching when preview intent changes
+  useEffect(() => {
+    if (previewIntent && activeDatasets.length > 0) {
+      const result = performSmartMatching(activeDatasets, previewIntent)
+      setPreviewMatchingResult(result)
+    } else {
+      setPreviewMatchingResult(null)
+    }
+  }, [previewIntent, activeDatasets])
+
+  const removeDatasetsByCategory = useCallback((category: "extended" | "conflict") => {
+    if (!matchingResult) return
+    const toRemove = category === "extended"
+      ? matchingResult.extended.map(r => r.datasetId)
+      : matchingResult.conflicts.map(r => r.datasetId)
+
+    setRemovedDatasetIds(prev => new Set([...prev, ...toRemove]))
+  }, [matchingResult])
 
   // Submission
   const submitRequest = useCallback(async () => {
     setIsSubmitting(true)
-
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // Generate a request ID
     const requestId = `REQ-${Date.now()}`
     setSubmittedRequestId(requestId)
-
-    // Clear sessionStorage
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("selected_datasets_for_request")
     }
-
     setIsSubmitting(false)
     setCurrentStep("confirmation")
   }, [])
 
-  // Compute active matching result (filtering out removed datasets)
-  const activeMatchingResult = matchingResult
-    ? {
-        ...matchingResult,
-        immediate: matchingResult.immediate.filter(r => !removedDatasetIds.has(r.datasetId)),
-        soon: matchingResult.soon.filter(r => !removedDatasetIds.has(r.datasetId)),
-        extended: matchingResult.extended.filter(r => !removedDatasetIds.has(r.datasetId)),
-        conflicts: matchingResult.conflicts.filter(r => !removedDatasetIds.has(r.datasetId)),
-        summary: {
-          ...matchingResult.summary,
-          totalDatasets: activeDatasets.length,
-          immediateCount: matchingResult.immediate.filter(r => !removedDatasetIds.has(r.datasetId)).length,
-          soonCount: matchingResult.soon.filter(r => !removedDatasetIds.has(r.datasetId)).length,
-          extendedCount: matchingResult.extended.filter(r => !removedDatasetIds.has(r.datasetId)).length,
-          conflictCount: matchingResult.conflicts.filter(r => !removedDatasetIds.has(r.datasetId)).length,
-        },
-      }
-    : null
+  // Compute active matching result
+  const activeMatchingResult = useMemo(() => {
+    if (!matchingResult) return null
+    return {
+      ...matchingResult,
+      immediate: matchingResult.immediate.filter(r => !removedDatasetIds.has(r.datasetId)),
+      soon: matchingResult.soon.filter(r => !removedDatasetIds.has(r.datasetId)),
+      extended: matchingResult.extended.filter(r => !removedDatasetIds.has(r.datasetId)),
+      conflicts: matchingResult.conflicts.filter(r => !removedDatasetIds.has(r.datasetId)),
+      summary: {
+        ...matchingResult.summary,
+        totalDatasets: activeDatasets.length,
+        immediateCount: matchingResult.immediate.filter(r => !removedDatasetIds.has(r.datasetId)).length,
+        soonCount: matchingResult.soon.filter(r => !removedDatasetIds.has(r.datasetId)).length,
+        extendedCount: matchingResult.extended.filter(r => !removedDatasetIds.has(r.datasetId)).length,
+        conflictCount: matchingResult.conflicts.filter(r => !removedDatasetIds.has(r.datasetId)).length,
+      },
+    }
+  }, [matchingResult, removedDatasetIds, activeDatasets.length])
+
+  // Aggregated stats for efficient rendering
+  const stats = useMemo(() => ({
+    total: activeDatasets.length,
+    immediate: activeMatchingResult?.summary.immediateCount || 0,
+    soon: activeMatchingResult?.summary.soonCount || 0,
+    extended: activeMatchingResult?.summary.extendedCount || 0,
+    conflict: activeMatchingResult?.summary.conflictCount || 0,
+    removed: removedDatasetIds.size,
+    maxWeeks: activeMatchingResult?.summary.estimatedFullAccessWeeks || 0,
+  }), [activeDatasets.length, activeMatchingResult, removedDatasetIds.size])
 
   const value: RequestFlowContextValue = {
     currentStep,
@@ -251,11 +255,16 @@ export function RequestFlowProvider({ children }: RequestFlowProviderProps) {
     updateIntent,
     removeDataset,
     restoreDataset,
-    swapDataset,
+    removeDatasetsByCategory,
     addDataset,
+    swapDataset,
     submitRequest,
     activeDatasets,
     activeMatchingResult,
+    previewIntent,
+    setPreviewIntent,
+    previewMatchingResult,
+    stats,
   }
 
   return (

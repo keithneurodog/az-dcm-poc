@@ -160,7 +160,7 @@ export default function CollectionsBrowserVariation1() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    let filtered = filterCollections(COLLECTIONS_WITH_AOT, {
+    let filtered = filterCollections(COLLECTIONS_WITH_AOT as any, {
       search: searchQuery,
       status: selectedStatus,
       therapeuticAreas: selectedAreas,

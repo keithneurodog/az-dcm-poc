@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion"
 import { useRequestFlow } from "./request-context"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 import {
   ArrowRight,
@@ -17,51 +17,33 @@ import {
   BookOpen,
   Globe,
   Database,
+  Check,
+  FlaskConical,
+  LineChart,
 } from "lucide-react"
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05 },
-  },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0 },
-}
-
 export function StepIntent() {
+  const { scheme } = useColorScheme()
   const { intent, updateIntent, goNext, selectedDatasets } = useRequestFlow()
 
   const togglePrimaryUse = (key: keyof typeof intent.primaryUse) => {
     updateIntent({
       ...intent,
-      primaryUse: {
-        ...intent.primaryUse,
-        [key]: !intent.primaryUse[key],
-      },
+      primaryUse: { ...intent.primaryUse, [key]: !intent.primaryUse[key] },
     })
   }
 
   const toggleBeyondPrimary = (key: keyof typeof intent.beyondPrimaryUse) => {
     updateIntent({
       ...intent,
-      beyondPrimaryUse: {
-        ...intent.beyondPrimaryUse,
-        [key]: !intent.beyondPrimaryUse[key],
-      },
+      beyondPrimaryUse: { ...intent.beyondPrimaryUse, [key]: !intent.beyondPrimaryUse[key] },
     })
   }
 
   const togglePublication = (key: keyof typeof intent.publication) => {
     updateIntent({
       ...intent,
-      publication: {
-        ...intent.publication,
-        [key]: !intent.publication[key],
-      },
+      publication: { ...intent.publication, [key]: !intent.publication[key] },
     })
   }
 
@@ -70,309 +52,179 @@ export function StepIntent() {
     Object.values(intent.beyondPrimaryUse).some(Boolean) ||
     Object.values(intent.publication).some(Boolean)
 
-  const primaryUseOptions = [
-    {
-      key: "understandDrugMechanism" as const,
-      label: "Understand how drugs work",
-      description: "Study drug mechanisms and pharmacology",
-      icon: Microscope,
-    },
-    {
-      key: "understandDisease" as const,
-      label: "Understand disease",
-      description: "Research disease progression and biology",
-      icon: Brain,
-    },
-    {
-      key: "developDiagnosticTests" as const,
-      label: "Develop diagnostics",
-      description: "Create diagnostic tests and biomarkers",
-      icon: BarChart3,
-    },
-    {
-      key: "learnFromPastStudies" as const,
-      label: "Learn from past studies",
-      description: "Inform future trial design",
-      icon: Lightbulb,
-    },
-    {
-      key: "improveAnalysisMethods" as const,
-      label: "Improve analysis methods",
-      description: "Enhance statistical approaches",
-      icon: FileText,
-    },
+  // Research Purpose - What you'll study
+  const researchPurposeOptions = [
+    { key: "understandDrugMechanism" as const, label: "Drug mechanism", icon: Microscope, description: "Study how drugs work" },
+    { key: "understandDisease" as const, label: "Disease understanding", icon: Brain, description: "Research disease pathways" },
+    { key: "developDiagnosticTests" as const, label: "Diagnostics", icon: BarChart3, description: "Develop diagnostic tools" },
+    { key: "learnFromPastStudies" as const, label: "Historical analysis", icon: Lightbulb, description: "Learn from prior studies" },
+    { key: "improveAnalysisMethods" as const, label: "Methodology", icon: FileText, description: "Improve analysis methods" },
   ]
 
-  const beyondPrimaryOptions = [
-    {
-      key: "aiResearch" as const,
-      label: "AI/ML Research",
-      description: "Train models, develop algorithms",
-      icon: Cpu,
-      warning: "May add time for restricted datasets",
-    },
-    {
-      key: "softwareDevelopment" as const,
-      label: "Software Development",
-      description: "Build tools and applications",
-      icon: Code,
-      warning: "May add time for restricted datasets",
-    },
+  // Technical Application - How you'll use the data
+  const technicalApplicationOptions = [
+    { key: "aiResearch" as const, label: "AI/ML training", icon: Cpu, description: "Train machine learning models", warning: true },
+    { key: "softwareDevelopment" as const, label: "Software dev", icon: Code, description: "Build software tools", warning: true },
   ]
 
-  const publicationOptions = [
-    {
-      key: "internalOnly" as const,
-      label: "Internal use only",
-      description: "Company-restricted findings",
-      icon: BookOpen,
-    },
-    {
-      key: "externalPublication" as const,
-      label: "External publication",
-      description: "Publish in journals/conferences",
-      icon: Globe,
-      warning: "May add time for restricted datasets",
-    },
+  // Dissemination - How results will be shared
+  const disseminationOptions = [
+    { key: "internalOnly" as const, label: "Internal only", icon: BookOpen, description: "Results stay within org" },
+    { key: "externalPublication" as const, label: "External publication", icon: Globe, description: "Publish externally", warning: true },
   ]
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="max-w-3xl mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="h-full flex flex-col items-center justify-center"
     >
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 mb-4">
-          <Database className="size-6 text-white" />
+      <div className="text-center mb-6">
+        <div className={cn(
+          "inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br mb-4 shadow-lg",
+          scheme.from, scheme.to
+        )}>
+          <FlaskConical className="size-7 text-white" />
         </div>
-        <h1 className="text-2xl font-light text-neutral-900 mb-2">
-          What do you want to do with this data?
+        <h1 className="text-3xl font-extralight text-neutral-900 tracking-tight mb-2">
+          Describe your research intent
         </h1>
         <p className="text-neutral-500 font-light">
-          Selecting your intended use helps us find the fastest path to access for your{" "}
-          <span className="font-medium text-neutral-700">{selectedDatasets.length} datasets</span>
+          <span className={cn("font-normal", scheme.from.replace("from-", "text-"))}>
+            {selectedDatasets.length.toLocaleString()}
+          </span>
+          {" "}datasets selected for secondary use
         </p>
       </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="space-y-6"
-      >
-        {/* Primary Use */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <h2 className="text-sm font-medium text-neutral-900 mb-1">Primary Research Use</h2>
-          <p className="text-xs text-neutral-500 mb-4">Standard research activities</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {primaryUseOptions.map((option) => {
+      {/* Intent Categories */}
+      <div className="max-w-2xl mx-auto w-full space-y-5">
+        {/* Research Purpose */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Research Purpose</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-light">
+              What you'll study
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {researchPurposeOptions.map((option) => {
               const Icon = option.icon
               const isChecked = intent.primaryUse[option.key]
-
               return (
                 <button
                   key={option.key}
                   onClick={() => togglePrimaryUse(option.key)}
+                  title={option.description}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-xl text-left transition-all",
+                    "flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-light transition-all border-2",
                     isChecked
-                      ? "bg-violet-50 border-2 border-violet-300"
-                      : "bg-neutral-50 border-2 border-transparent hover:border-neutral-200"
+                      ? cn("bg-gradient-to-r text-white border-transparent shadow-md", scheme.from, scheme.to)
+                      : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:shadow-sm"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "flex items-center justify-center w-8 h-8 rounded-lg shrink-0",
-                      isChecked ? "bg-violet-100" : "bg-neutral-100"
-                    )}
-                  >
-                    <Icon className={cn("size-4", isChecked ? "text-violet-600" : "text-neutral-500")} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "text-sm font-medium",
-                        isChecked ? "text-violet-900" : "text-neutral-700"
-                      )}>
-                        {option.label}
-                      </span>
-                      <Checkbox
-                        checked={isChecked}
-                        className={cn(
-                          "ml-auto shrink-0",
-                          isChecked && "border-violet-500 bg-violet-500"
-                        )}
-                      />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">{option.description}</p>
-                  </div>
+                  {isChecked ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <Icon className="size-4" />
+                  )}
+                  {option.label}
                 </button>
               )
             })}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Beyond Primary Use */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-sm font-medium text-neutral-900">Beyond Primary Use</h2>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+        {/* Technical Application */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Technical Application</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-light">
               May affect timeline
             </span>
           </div>
-          <p className="text-xs text-neutral-500 mb-4">Advanced research activities with additional governance</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {beyondPrimaryOptions.map((option) => {
+          <div className="flex flex-wrap gap-2">
+            {technicalApplicationOptions.map((option) => {
               const Icon = option.icon
               const isChecked = intent.beyondPrimaryUse[option.key]
-
               return (
                 <button
                   key={option.key}
                   onClick={() => toggleBeyondPrimary(option.key)}
+                  title={option.description}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-xl text-left transition-all",
+                    "flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-light transition-all border-2",
                     isChecked
-                      ? "bg-amber-50 border-2 border-amber-300"
-                      : "bg-neutral-50 border-2 border-transparent hover:border-neutral-200"
+                      ? cn("bg-gradient-to-r text-white border-transparent shadow-md", scheme.from, scheme.to)
+                      : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:shadow-sm"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "flex items-center justify-center w-8 h-8 rounded-lg shrink-0",
-                      isChecked ? "bg-amber-100" : "bg-neutral-100"
-                    )}
-                  >
-                    <Icon className={cn("size-4", isChecked ? "text-amber-600" : "text-neutral-500")} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "text-sm font-medium",
-                        isChecked ? "text-amber-900" : "text-neutral-700"
-                      )}>
-                        {option.label}
-                      </span>
-                      <Checkbox
-                        checked={isChecked}
-                        className={cn(
-                          "ml-auto shrink-0",
-                          isChecked && "border-amber-500 bg-amber-500"
-                        )}
-                      />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">{option.description}</p>
-                  </div>
+                  {isChecked ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <Icon className="size-4" />
+                  )}
+                  {option.label}
                 </button>
               )
             })}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Publication */}
-        <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-neutral-200 p-5">
-          <h2 className="text-sm font-medium text-neutral-900 mb-1">Publication Rights</h2>
-          <p className="text-xs text-neutral-500 mb-4">How you plan to share findings</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {publicationOptions.map((option) => {
+        {/* Dissemination */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Dissemination</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-light">
+              How results are shared
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {disseminationOptions.map((option) => {
               const Icon = option.icon
               const isChecked = intent.publication[option.key]
-
               return (
                 <button
                   key={option.key}
                   onClick={() => togglePublication(option.key)}
+                  title={option.description}
                   className={cn(
-                    "flex items-start gap-3 p-3 rounded-xl text-left transition-all",
+                    "flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-light transition-all border-2",
                     isChecked
-                      ? option.key === "externalPublication"
-                        ? "bg-amber-50 border-2 border-amber-300"
-                        : "bg-blue-50 border-2 border-blue-300"
-                      : "bg-neutral-50 border-2 border-transparent hover:border-neutral-200"
+                      ? cn("bg-gradient-to-r text-white border-transparent shadow-md", scheme.from, scheme.to)
+                      : "bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:shadow-sm"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "flex items-center justify-center w-8 h-8 rounded-lg shrink-0",
-                      isChecked
-                        ? option.key === "externalPublication"
-                          ? "bg-amber-100"
-                          : "bg-blue-100"
-                        : "bg-neutral-100"
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "size-4",
-                        isChecked
-                          ? option.key === "externalPublication"
-                            ? "text-amber-600"
-                            : "text-blue-600"
-                          : "text-neutral-500"
-                      )}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "text-sm font-medium",
-                          isChecked
-                            ? option.key === "externalPublication"
-                              ? "text-amber-900"
-                              : "text-blue-900"
-                            : "text-neutral-700"
-                        )}
-                      >
-                        {option.label}
-                      </span>
-                      {option.warning && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                          May affect timeline
-                        </span>
-                      )}
-                      <Checkbox
-                        checked={isChecked}
-                        className={cn(
-                          "ml-auto shrink-0",
-                          isChecked &&
-                            (option.key === "externalPublication"
-                              ? "border-amber-500 bg-amber-500"
-                              : "border-blue-500 bg-blue-500")
-                        )}
-                      />
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">{option.description}</p>
-                  </div>
+                  {isChecked ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <Icon className="size-4" />
+                  )}
+                  {option.label}
                 </button>
               )
             })}
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Continue Button */}
-        <motion.div variants={itemVariants} className="flex justify-end pt-4">
-          <Button
-            onClick={goNext}
-            disabled={!hasAnySelection}
-            className={cn(
-              "rounded-xl px-6 h-11 font-light transition-all",
-              hasAnySelection
-                ? "bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
-                : "bg-neutral-100 text-neutral-400"
-            )}
-          >
-            Continue
-            <ArrowRight className="size-4 ml-2" />
-          </Button>
-        </motion.div>
-      </motion.div>
+      {/* Continue Button */}
+      <div className="mt-6 flex justify-center">
+        <Button
+          onClick={goNext}
+          disabled={!hasAnySelection}
+          className={cn(
+            "h-12 px-8 rounded-full font-light text-base transition-all",
+            hasAnySelection
+              ? cn("bg-gradient-to-r text-white shadow-lg hover:shadow-xl", scheme.from, scheme.to)
+              : "bg-neutral-100 text-neutral-400"
+          )}
+        >
+          Continue
+          <ArrowRight className="size-5 ml-2" />
+        </Button>
+      </div>
     </motion.div>
   )
 }

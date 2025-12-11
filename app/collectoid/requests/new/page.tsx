@@ -3,45 +3,48 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { RequestFlowProvider, useRequestFlow } from "./_components/request-context"
 import { StepIntent } from "./_components/step-intent"
-import { StepBuilder } from "./_components/step-builder"
+import { StepReview } from "./_components/step-review"
 import { StepConfirmation } from "./_components/step-confirmation"
+import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
+import { Circle, Database } from "lucide-react"
 
 function StepIndicator() {
+  const { scheme } = useColorScheme()
   const { currentStep } = useRequestFlow()
 
   const steps = [
     { id: "intent", label: "Intent" },
-    { id: "builder", label: "Build Request" },
+    { id: "review", label: "Review" },
     { id: "confirmation", label: "Done" },
   ]
 
   const currentIndex = steps.findIndex(s => s.id === currentStep)
 
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
+    <div className="flex items-center justify-center gap-3">
       {steps.map((step, index) => {
         const isActive = step.id === currentStep
         const isCompleted = index < currentIndex
 
         return (
-          <div key={step.id} className="flex items-center gap-2">
+          <div key={step.id} className="flex items-center gap-3">
             {index > 0 && (
               <div
                 className={cn(
-                  "w-8 h-0.5 rounded-full transition-colors",
-                  isCompleted ? "bg-violet-500" : "bg-neutral-200"
+                  "w-12 h-px transition-colors",
+                  isCompleted ? cn("bg-gradient-to-r", scheme.from, scheme.to) : "bg-neutral-200"
                 )}
               />
             )}
             <div className="flex items-center gap-2">
               <div
                 className={cn(
-                  "w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all",
+                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-light transition-all",
                   isActive
-                    ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-md"
+                    ? cn("bg-gradient-to-br text-white shadow-lg", scheme.from, scheme.to)
                     : isCompleted
-                    ? "bg-violet-500 text-white"
+                    ? cn("bg-gradient-to-br text-white", scheme.from, scheme.to)
                     : "bg-neutral-100 text-neutral-400"
                 )}
               >
@@ -64,74 +67,102 @@ function StepIndicator() {
 }
 
 function RequestFlowContent() {
+  const { scheme } = useColorScheme()
   const { currentStep, selectedDatasets } = useRequestFlow()
 
   // Show empty state if no datasets selected
   if (selectedDatasets.length === 0 && currentStep !== "confirmation") {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="text-6xl mb-4">📊</div>
-        <h2 className="text-xl font-light text-neutral-700 mb-2">No datasets selected</h2>
-        <p className="text-sm text-neutral-500 font-light mb-4">
+      <div className="h-full flex flex-col items-center justify-center">
+        <div className={cn(
+          "w-20 h-20 rounded-3xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-lg",
+          scheme.from, scheme.to
+        )}>
+          <Database className="size-10 text-white" />
+        </div>
+        <h2 className="text-2xl font-extralight text-neutral-900 tracking-tight mb-2">No datasets selected</h2>
+        <p className="text-sm text-neutral-500 font-light mb-6">
           Please select datasets from the explorer first
         </p>
         <a
           href="/collectoid/discover/ai"
-          className="text-sm font-light text-violet-600 hover:text-violet-700 underline underline-offset-2"
+          className={cn(
+            "text-sm font-light px-6 py-2.5 rounded-full bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
+            scheme.from, scheme.to
+          )}
         >
-          Go to Dataset Explorer →
+          Go to Dataset Explorer
         </a>
       </div>
     )
   }
 
   return (
-    <>
-      <StepIndicator />
+    <div className="h-full flex flex-col overflow-hidden">
+      {/* Step Indicator - compact at top */}
+      <div className="pb-3 mb-3 border-b border-neutral-100 shrink-0">
+        <StepIndicator />
+      </div>
 
-      <AnimatePresence mode="wait">
-        {currentStep === "intent" && (
-          <motion.div
-            key="intent"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <StepIntent />
-          </motion.div>
-        )}
+      {/* Step Content */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <AnimatePresence mode="wait">
+          {currentStep === "intent" && (
+            <motion.div
+              key="intent"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full overflow-hidden"
+            >
+              <StepIntent />
+            </motion.div>
+          )}
 
-        {currentStep === "builder" && (
-          <motion.div
-            key="builder"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <StepBuilder />
-          </motion.div>
-        )}
+          {currentStep === "review" && (
+            <motion.div
+              key="review"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full overflow-hidden"
+            >
+              <StepReview />
+            </motion.div>
+          )}
 
-        {currentStep === "confirmation" && (
-          <motion.div
-            key="confirmation"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <StepConfirmation />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+          {currentStep === "confirmation" && (
+            <motion.div
+              key="confirmation"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full overflow-hidden"
+            >
+              <StepConfirmation />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   )
 }
 
 export default function NewRequestPage() {
+  const { scheme } = useColorScheme()
+
+  // Use CSS custom property approach for dynamic height based on viewport
+  // This accounts for TopBar (~56px) + layout padding (~48px) + some buffer
   return (
     <RequestFlowProvider>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100/50">
-        <div className="container mx-auto px-4 py-8">
+      <div
+        className={cn(
+          "bg-gradient-to-br rounded-2xl overflow-hidden",
+          scheme.bg, scheme.bgHover
+        )}
+        style={{ height: 'calc(100vh - 130px)', maxHeight: '900px', minHeight: '500px' }}
+      >
+        <div className="h-full px-4 py-3 overflow-hidden">
           <RequestFlowContent />
         </div>
       </div>
