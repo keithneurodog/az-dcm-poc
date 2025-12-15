@@ -948,7 +948,7 @@ export default function DCMActivitiesPage() {
                 </div>
               </div>
 
-              {/* Ready to Grant */}
+              {/* Awaiting Policy */}
               <div className="flex items-start gap-3">
                 <div className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-full",
@@ -958,7 +958,7 @@ export default function DCMActivitiesPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-normal text-neutral-900">Ready to Grant</p>
+                    <p className="text-sm font-normal text-neutral-900">Awaiting Policy</p>
                     <Badge className={cn(
                       "font-light text-xs",
                       scheme.bg.replace("500", "100"),

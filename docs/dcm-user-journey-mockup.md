@@ -195,7 +195,7 @@
 │                                                                 │
 │ ⚡ ACCESS ELIGIBILITY (for your 120 target users)              │
 │ ▓▓░░░░░░░░ 20% Already Open (no action needed)                │
-│ ▓▓▓░░░░░░░ 30% Ready to Grant (instant after your confirm)    │
+│ ▓▓▓░░░░░░░ 30% Awaiting Policy (instant after your confirm)   │
 │ ▓▓▓▓░░░░░░ 40% Needs Approval (GPT-Oncology, 2-3 days)        │
 │ ▓░░░░░░░░░ 10% Missing Location (data discovery needed)       │
 │                                                                 │
@@ -240,7 +240,7 @@
 │                                                                 │
 │ ACCESS PROVISIONING BREAKDOWN                                  │
 │ ▓▓▓▓░░░░░░ 20% Already Open (3 datasets)                      │
-│ ▓▓▓▓▓▓▓░░░ 30% Ready to Grant (5 datasets)                    │
+│ ▓▓▓▓▓▓▓░░░ 30% Awaiting Policy (5 datasets)                   │
 │ ▓▓▓▓▓▓▓▓░░ 40% Needs Approval (6 datasets)                    │
 │ ▓░░░░░░░░░ 10% Missing Location (1 dataset)                   │
 │                                                                 │

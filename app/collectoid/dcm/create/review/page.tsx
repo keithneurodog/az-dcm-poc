@@ -412,7 +412,7 @@ export default function DCMReviewPage() {
             </CardContent>
           </Card>
 
-          {/* 30% Ready to Grant */}
+          {/* 30% Awaiting Policy */}
           <Card
             className={cn(
               "border-2 rounded-2xl overflow-hidden",
@@ -433,7 +433,7 @@ export default function DCMReviewPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-normal text-neutral-900">
-                        {accessBreakdown.readyToGrant}% Ready to Grant
+                        {accessBreakdown.readyToGrant}% Awaiting Policy
                       </h3>
                       <p className="text-sm font-light text-neutral-600">instant approval</p>
                     </div>

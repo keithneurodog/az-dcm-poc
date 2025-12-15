@@ -315,7 +315,7 @@ Filters page dataset cards (lines 1770-1873)
              title="Already Open: 20%" />
         <div className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
              style={{ width: `30%` }}
-             title="Ready to Grant: 30%" />
+             title="Awaiting Policy: 30%" />
         <div className="bg-amber-500"
              style={{ width: `40%` }}
              title="Needs Approval: 40%" />

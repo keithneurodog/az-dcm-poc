@@ -2064,7 +2064,7 @@ export default function DCMFiltersPage() {
                   <div
                     className={cn("bg-gradient-to-r transition-all duration-500", scheme.from, scheme.to)}
                     style={{ width: `${accessBreakdown.readyToGrant}%` }}
-                    title={`Ready to Grant: ${accessBreakdown.readyToGrant}%`}
+                    title={`Awaiting Policy: ${accessBreakdown.readyToGrant}%`}
                   />
                   <div
                     className="bg-amber-500 transition-all duration-500"
@@ -2083,7 +2083,7 @@ export default function DCMFiltersPage() {
                       <span className="size-2 rounded-full bg-green-500" /> Open
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className={cn("size-2 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} /> Ready
+                      <span className={cn("size-2 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} /> Policy
                     </span>
                     <span className="flex items-center gap-1">
                       <span className="size-2 rounded-full bg-amber-500" /> Review
@@ -2117,7 +2117,7 @@ export default function DCMFiltersPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-normal text-neutral-900">Ready to Grant</p>
+                      <p className="text-sm font-normal text-neutral-900">Awaiting Policy</p>
                       <Badge className={cn("font-light text-xs", scheme.from.replace("from-", "bg-").replace("500", "100"), scheme.from.replace("from-", "text-"))}>{accessBreakdown.readyToGrant}%</Badge>
                     </div>
                     <p className="text-xs font-light text-neutral-600">Auto-provisioned</p>

@@ -778,7 +778,7 @@ A single dataset can require multiple approvals:
 ### 20/30/40/10 Access Provisioning Model
 
 - **20% Already Open** - For 50% of users, no action needed
-- **30% Ready to Grant** - DCM confirms → Collectoid updates Immuta → instant access
+- **30% Awaiting Policy** - DCM confirms → Collectoid updates Immuta → instant access
 - **40% Needs Approval** - Routed to GPT/TALT → formal approval → policy update
 - **10% Missing Location** - Data discovery workflow
 - **10% Training Blocked** - Automatic grant after training completion

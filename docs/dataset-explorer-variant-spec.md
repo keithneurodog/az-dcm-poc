@@ -128,13 +128,13 @@ Create a new variant that shifts focus from collections to individual datasets. 
 | Group | Color | Icon | Description |
 |-------|-------|------|-------------|
 | Open Access | emerald | CheckCircle2 | Instant access - no action needed |
-| Ready to Grant | blue | Zap | Auto-provisioned when you request |
+| Awaiting Policy | blue | Zap | Granted once policy is configured |
 | Needs Approval | amber | Clock | Requires review from data governance |
 | Missing/Blocked | neutral | AlertTriangle | Data location unknown or training required |
 
 #### Selection System
 - Individual checkboxes on each dataset
-- Bulk buttons: All / All Open / All Ready / Page
+- Bulk buttons: All / All Open / All Policy / Page
 - Per-group "Select All" buttons
 - Clear selection button
 
