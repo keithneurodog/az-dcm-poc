@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
@@ -26,7 +26,43 @@ import {
 export default function DCMCreateVariation1() {
   const { scheme } = useColorScheme()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [intent, setIntent] = useState("")
+  const [fromAnalytics, setFromAnalytics] = useState(false)
+
+  // Check for query params from analytics page
+  useEffect(() => {
+    const ta = searchParams.get("ta")
+    const type = searchParams.get("type")
+    const intentParam = searchParams.get("intent")
+    const source = searchParams.get("source")
+
+    if (source === "analytics" || ta || type || intentParam) {
+      setFromAnalytics(true)
+
+      // Build a pre-filled intent string based on params
+      const parts: string[] = []
+
+      if (ta) {
+        const taName = ta === "ONC" ? "oncology" : ta === "CARDIO" ? "cardiovascular" : ta === "IMMUNONC" ? "immuno-oncology" : ta.toLowerCase()
+        parts.push(`${taName} research`)
+      }
+
+      if (type) {
+        const typeName = type.toLowerCase()
+        parts.push(`with ${typeName} data`)
+      }
+
+      if (intentParam) {
+        const intentName = intentParam === "AI/ML" ? "for AI/ML research" : intentParam === "Software Dev" ? "for software development" : intentParam === "Publication" ? "for external publication" : `for ${intentParam.toLowerCase()} use`
+        parts.push(intentName)
+      }
+
+      if (parts.length > 0) {
+        setIntent(`Create a collection for ${parts.join(" ")}`)
+      }
+    }
+  }, [searchParams])
 
   const handleGetSuggestions = () => {
     // Store intent in sessionStorage for next page
@@ -66,6 +102,12 @@ export default function DCMCreateVariation1() {
           <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
             Create New Collection
           </h1>
+          {fromAnalytics && (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-light mb-3">
+              <Zap className="size-3" />
+              Pre-filled based on demand analysis
+            </div>
+          )}
           <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
             Tell us what you're looking for and we'll help you find the right datasets
           </p>

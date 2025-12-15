@@ -54,7 +54,7 @@ import { MOCK_DATASETS } from "@/lib/dcm-mock-data"
 // Status configuration
 const STATUS_CONFIG = {
   open: { label: "Open", color: "bg-emerald-500", textColor: "text-emerald-700", bgColor: "bg-emerald-50" },
-  ready: { label: "Ready", color: "bg-blue-500", textColor: "text-blue-700", bgColor: "bg-blue-50" },
+  ready: { label: "Policy", color: "bg-blue-500", textColor: "text-blue-700", bgColor: "bg-blue-50" },
   approval: { label: "Approval", color: "bg-amber-500", textColor: "text-amber-700", bgColor: "bg-amber-50" },
 }
 
@@ -379,7 +379,7 @@ function AIInsightsPanel({
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-mono text-neutral-400">{dataset.code}</p>
                   <p className="text-xs font-light text-neutral-700 truncate">{dataset.name}</p>
-                  <p className="text-[10px] text-neutral-400">{dataset.patientCount.toLocaleString()} patients • {status === "open" ? "Open" : "Ready"}</p>
+                  <p className="text-[10px] text-neutral-400">{dataset.patientCount.toLocaleString()} patients • {status === "open" ? "Open" : "Policy"}</p>
                 </div>
                 <Plus className="size-3 text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </button>
@@ -602,7 +602,7 @@ function DatasetPreviewHoverCard({
                     "bg-neutral-100 text-neutral-600"
                   )}>
                     {child.accessStatus === "open" ? "Open" :
-                     child.accessStatus === "ready" ? "Ready" :
+                     child.accessStatus === "ready" ? "Policy" :
                      child.accessStatus === "approval" ? "Approval" :
                      "Missing"}
                   </Badge>

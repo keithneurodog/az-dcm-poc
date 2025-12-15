@@ -204,7 +204,7 @@ export default function CollectionsBrowserVariation1() {
     // Add intent match info
     filtered = filtered.map(col => ({
       ...col,
-      intentMatch: getIntentMatch(col as typeof COLLECTIONS_WITH_AOT[0]),
+      intentMatch: getIntentMatch(col as unknown as typeof COLLECTIONS_WITH_AOT[0]),
     }))
 
     // Sort

@@ -177,7 +177,7 @@ AstraZeneca is decommissioning the legacy **AZCt iDAP** (AstraZeneca Clinical tr
 | Category | Description |
 |----------|-------------|
 | **20% Already Open** | No action needed - data accessible to qualifying users |
-| **30% Ready to Grant** | DCM confirms → Collectoid updates Immuta policy → instant access to 90% of users |
+| **30% Awaiting Policy** | DCM confirms → Collectoid updates Immuta policy → instant access to 90% of users |
 | **40% Blocked, Needs Approval** | DCM creates authorization → routed to GPT/TALT → they approve → Immuta policy written |
 | **10% Missing** | Data location unknown OR users haven't completed required training |
 

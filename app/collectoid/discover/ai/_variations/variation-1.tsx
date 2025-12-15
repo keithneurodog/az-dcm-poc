@@ -1092,11 +1092,11 @@ export default function Variation1() {
                     style={{ width: `${(aiResponse.statistics.alreadyOpen / aiResponse.statistics.totalDatasets) * 100}%` }}
                     title={`Already Open: ${aiResponse.statistics.alreadyOpen} datasets`}
                   />
-                  {/* Ready to Grant */}
+                  {/* Awaiting Policy */}
                   <div
                     className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
                     style={{ width: `${(aiResponse.statistics.readyToGrant / aiResponse.statistics.totalDatasets) * 100}%` }}
-                    title={`Ready to Grant: ${aiResponse.statistics.readyToGrant} datasets`}
+                    title={`Awaiting Policy: ${aiResponse.statistics.readyToGrant} datasets`}
                   />
                   {/* Needs Approval */}
                   <div
@@ -1277,7 +1277,7 @@ export default function Variation1() {
                                     <div
                                       className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
                                       style={{ width: `${collection.accessBreakdown.readyToGrant}%` }}
-                                      title={`Ready to Grant: ${collection.accessBreakdown.readyToGrant}%`}
+                                      title={`Awaiting Policy: ${collection.accessBreakdown.readyToGrant}%`}
                                     />
                                     <div
                                       className="bg-amber-500"
@@ -1408,7 +1408,7 @@ export default function Variation1() {
                   >
                     <option value="">All Access Statuses</option>
                     <option value="open">Open</option>
-                    <option value="ready_to_grant">Ready to Grant</option>
+                    <option value="ready_to_grant">Awaiting Policy</option>
                     <option value="needs_approval">Needs Approval</option>
                     <option value="missing_location">Missing Location</option>
                   </select>
@@ -1455,7 +1455,7 @@ export default function Variation1() {
                           case "open":
                             return { label: "Open", color: "bg-green-100 text-green-700 border-green-200" }
                           case "ready_to_grant":
-                            return { label: "Ready to Grant", color: "bg-blue-100 text-blue-700 border-blue-200" }
+                            return { label: "Awaiting Policy", color: "bg-blue-100 text-blue-700 border-blue-200" }
                           case "needs_approval":
                             return { label: "Needs Approval", color: "bg-amber-100 text-amber-700 border-amber-200" }
                           case "missing_location":

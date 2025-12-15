@@ -79,14 +79,14 @@ const ACCESS_GROUPS = [
   },
   {
     id: "ready",
-    label: "Ready to Grant",
+    label: "Awaiting Policy",
     icon: Zap,
     color: "blue",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     textColor: "text-blue-700",
     iconColor: "text-blue-600",
-    description: "Auto-provisioned when you request",
+    description: "Granted once policy is configured",
     filterFn: (d: typeof MOCK_DATASETS[0]) =>
       d.accessBreakdown.alreadyOpen < 50 && d.accessBreakdown.readyToGrant >= 30,
   },
@@ -1922,7 +1922,7 @@ export default function VariationDatasets() {
                     onClick={selectAllReady}
                     className="px-1.5 py-0.5 rounded hover:bg-blue-50 text-blue-600 hover:text-blue-700 transition-colors"
                   >
-                    Ready
+                    Policy
                   </button>
                 </div>
                 {selectedDatasets.size > 0 && (
@@ -2689,7 +2689,7 @@ function DatasetPreviewPopover({
                     "bg-neutral-100 text-neutral-600"
                   )}>
                     {child.accessStatus === "open" ? "Open" :
-                     child.accessStatus === "ready" ? "Ready" :
+                     child.accessStatus === "ready" ? "Policy" :
                      child.accessStatus === "approval" ? "Approval" :
                      "Missing"}
                   </Badge>

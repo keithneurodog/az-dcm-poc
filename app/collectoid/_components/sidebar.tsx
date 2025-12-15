@@ -15,6 +15,7 @@ import {
   Inbox,
   ChevronLeft,
   ChevronRight,
+  BarChart3,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useColorScheme } from "./color-context"
@@ -43,6 +44,7 @@ export function Sidebar() {
     { name: "My Requests", href: `${basePath}/my-requests`, icon: FileText, section: "end-user" },
     { name: "Notifications", href: `${basePath}/notifications`, icon: Bell },
     { name: "DCM Propositions", href: `${basePath}/dcm/propositions`, icon: Inbox, section: "dcm" },
+    { name: "Analytics", href: `${basePath}/dcm/analytics`, icon: BarChart3, section: "dcm" },
     { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle, section: "dcm" },
     { name: "Settings", href: "#", icon: Settings },
   ]
@@ -91,6 +93,8 @@ export function Sidebar() {
               isActive = pathname.startsWith(`${basePath}/my-requests`) || pathname.startsWith(`${basePath}/requests`)
             } else if (item.name === "DCM Propositions") {
               isActive = pathname.startsWith(`${basePath}/dcm/propositions`)
+            } else if (item.name === "Analytics") {
+              isActive = pathname.startsWith(`${basePath}/dcm/analytics`)
             } else if (item.name === "Browse Collections") {
               isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`)
             } else {

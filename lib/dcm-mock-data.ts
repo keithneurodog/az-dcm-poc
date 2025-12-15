@@ -589,7 +589,7 @@ export interface Dataset {
   accessPlatform: "Domino" | "SCP" | "AIBench"
 
   // Data layer (where data is stored)
-  dataLayer: ("Starburst" | "S3" | "Snowflake")[]
+  dataLayer: ("Starburst" | "S3" | "Snowflake" | "Domino")[]
 
   // Data location
   dataLocation: {
@@ -3444,7 +3444,7 @@ export const MOCK_DATASETS: Dataset[] = [
     accessBreakdown: { alreadyOpen: 10, readyToGrant: 15, needsApproval: 20, missingLocation: 55 },
     accessPlatform: "SCP",
     dataLayer: ["Snowflake", "Domino"],
-    dataLocation: { clinical: "S3", genomic: "Domino" },
+    dataLocation: { clinical: "S3", genomics: "Domino" },
     frequentlyBundledWith: ["DCODE-501", "DCODE-503"],
     approvalRequirements: [],
     approvalActions: [],

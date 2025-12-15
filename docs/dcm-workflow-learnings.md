@@ -50,7 +50,7 @@ After collection created with datasets + users:
 **20% Already Open** (for 50% of users)
 - No action needed
 
-**30% Ready to Grant**
+**30% Awaiting Policy**
 - Study closed, DB lock >6 months, no legal restrictions
 - DCM clicks confirmation → updates Immuta policy (metadata updates) → instant access to 90% of users
 

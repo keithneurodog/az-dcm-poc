@@ -23,7 +23,7 @@ Create a new variant that shifts focus from collections to individual datasets. 
 |-------------|-------------|
 | **Hero AI Smart Filter** | Large, prominent natural language input at top with animated gradient border |
 | **Dataset-first view** | Focus on individual datasets rather than collections |
-| **Access status grouping** | Organize results by Open / Ready to Grant / Needs Approval / Missing |
+| **Access status grouping** | Organize results by Open / Awaiting Policy / Needs Approval / Missing |
 | **Selection options** | Individual checkboxes + bulk selection (all, all on page, smart groups by access status) |
 | **Dual view modes** | Card and Table views with toggle |
 | **Request access action** | Selected datasets flow to access request |
