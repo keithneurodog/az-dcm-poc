@@ -1,0 +1,12 @@
+[VS2-332] Collection data modalities
+
+Background:
+TBC
+
+User Story:
+As a Data Consumer Lead, I want to specify data modalities for each study so that data sourcing and access are clearly defined.
+
+Acceptance criteria:
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection of particular data modality is included or excluded for each study is enabled.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection plural data modalities for a single Study is enabled.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN no Study has blank data modality record.

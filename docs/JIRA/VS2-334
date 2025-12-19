@@ -1,0 +1,12 @@
+[VS2-334] Consumption environments
+
+Background:
+TBC
+
+User Story:
+As a Data Owner/Delegate Data Owner, I want to specify target analysis environments so that provisioning scope and boundaries are clearly defined.
+
+Acceptance criteria:
+GIVEN an Open Access Collection WHEN recording where User will access the data THEN target analysis environment selection is enabled.
+GIVEN a default provisioning boundary defined by Leadership WHEN a data collection is set THEN the default boundaries are applied (e.g., "Provision to Domino only").
+GIVEN a default provisioning boundary defined by Leadership WHEN a data collection analysis is needed in additional or other environments THEN additional ones are available for selection.

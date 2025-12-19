@@ -1,0 +1,13 @@
+[VS2-329] Criteria and rules for Data Collection assets
+
+Background:
+TBC
+
+User Story:
+As a DPO officer, I want access criteria to map to stable metadata fields so that asset lists are unambiguous and reproducible.
+
+Acceptance criteria:
+GIVEN an Open Data Collection access criteria WHEN defining them using metadata fields THEN the criteria to point to unambiguous list of assets AND the asset list is reproduceable.
+GIVEN an Open Data Collection access criteria WHEN they reference metadata fields THEN they are stable and explicit
+GIVEN Open Data Collection assets WHEN input criteria are provided THEN list of study d-codes OR Study IDs are listed.
+GIVEN an Open Data Collection asset WHEN access criteria for it is defined THEN the system automatically flags assets that are "Out of Scope" or "Restricted" based on metadata.

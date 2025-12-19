@@ -1,0 +1,11 @@
+[VS2-333] Data Collection sources
+
+Background:
+TBC
+
+User Story:
+As a Data Owner/Delegate Data Owner, I want to specify data sources for each Data Collection so that data sourcing and access are clearly defined.
+
+Acceptance criteria:
+GIVEN defined data modality for a Study WHEN the source system for it is recorded THEN selection of data source for each data modality is enabled.
+GIVEN defined data modality for a Study WHEN it is submitted for execution THEN no blank data source for each modality is present.

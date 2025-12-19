@@ -59,10 +59,13 @@ AstraZeneca is decommissioning the legacy **AZCt iDAP** (AstraZeneca Clinical tr
     ├── _components/              # POC-specific components (isolated from UX)
     │   ├── color-context.tsx     # Color scheme provider
     │   ├── notification-context.tsx
+    │   ├── variation-context.tsx # Page variation state management
+    │   ├── sidebar-context.tsx   # Collapsible sidebar state
+    │   ├── notes-context.tsx     # Collaborative annotations
     │   ├── sidebar.tsx
     │   ├── top-bar.tsx
     │   ├── notification-panel.tsx
-    │   ├── dev-widget.tsx
+    │   ├── dev-widget.tsx        # Includes variation selector
     │   └── index.ts              # Barrel export
     ├── layout.tsx                # POC layout
     │
@@ -98,6 +101,7 @@ AstraZeneca is decommissioning the legacy **AZCt iDAP** (AstraZeneca Clinical tr
 
 /lib
 ├── dcm-mock-data.ts              # All mock data, interfaces & helper functions
+├── analytics-helpers.ts          # Demand metrics, heatmap data, collection suggestions
 ├── notification-helpers.ts       # Notification utilities
 └── utils.ts                      # Tailwind cn() utility
 
@@ -474,18 +478,80 @@ const { keywords, suggestedCategories } = extractKeywordsAndSuggestCategories("o
 
 ---
 
-## Documentation Index
+## Key Features (Implementation Status)
 
-Detailed specs in `/docs/`:
+### Fully Implemented
 
-| File | Description |
-|------|-------------|
-| `collectoid-poc-requirements.md` | Main requirements document (v2.1) - comprehensive |
-| `dcm-workflow-learnings.md` | Critical insights from screenshot analysis |
-| `end-user-data-discovery-detailed-spec.md` | End user discovery flow specs |
-| `aot-integration-dcm-flow-spec.md` | Agreement of Terms integration |
-| `dataset-approval-workflow-spec.md` | Approval workflow details |
-| `dcm-progress-dashboard-improvements.md` | Progress dashboard specs |
-| `collections-browser-spec.md` | Collections browsing specs |
-| `end-user-request-dashboard-spec.md` | User request dashboard specs |
-| `filterable-categories.md` | Category filtering documentation |
+| Feature | Route | Description |
+|---------|-------|-------------|
+| **DCM Collection Wizard** | `/dcm/create/*` | 8-step wizard: Intent → Categories → Filters → Activities → Agreements → Details → Review → Publishing |
+| **Progress Dashboard** | `/dcm/progress` | Discussion tab with blockers, help panel, email updates, export reports |
+| **Demand Analytics** | `/dcm/analytics` | Heatmap (4 styles), collection suggestions, top datasets table |
+| **Collections Browser** | `/collections` | Grid/list views, AoT filtering, 2 variations (v1, v2) |
+| **AI Discovery** | `/discover/ai` | LLM prompt search, keyword extraction, 2 variations (standard, datasets) |
+| **Request Flow** | `/requests/new/*` | 3-step flow: Intent → Review → Confirmation with timeline transparency |
+| **Request Dashboard** | `/requests/[id]` | Multi-collection tracking, discussion, timeline, help tabs |
+| **Approval Workflow** | `/dcm/progress` | GPT/TALT approvals with mandatory comments |
+| **Notes System** | Global | Right-click annotations with XPath persistence, replies, reactions |
+| **Variations System** | Various | `_variations/` pattern for A/B testing UX approaches |
+| **Responsive Layout** | Global | Collapsible sidebar at xl breakpoint, responsive grids |
+
+### Partially Implemented (Backlog)
+
+| Feature | Status | Missing |
+|---------|--------|---------|
+| **Collections Browser** | Partial | Fork/Template/Export actions, date range filter |
+| **AI Discovery Page** | Partial | Three-state smart filter, floating bottom bar, AI review page |
+| **Collection Crossover** | Not started | Visualization of datasets across collections |
+
+---
+
+## Architecture Patterns
+
+### Variations System
+
+Pages can have multiple UI variations for A/B testing:
+
+```
+app/collectoid/discover/ai/
+├── page.tsx              # Variation loader
+└── _variations/
+    ├── index.ts          # Variation registry
+    ├── variation-1.tsx   # Default: Collection-focused
+    └── variation-datasets.tsx  # Dataset-first view
+```
+
+Use the **DevWidget** (bottom-right) to switch variations per route.
+
+### Notes System
+
+Collaborative annotations on any DOM element:
+- **Trigger**: Right-click any element → context menu
+- **Selection**: Navigate up/down DOM tree to refine target
+- **Persistence**: XPath + localStorage (DB-ready structure)
+- **Features**: Threaded replies, emoji reactions, per-route filtering
+
+### Access Status Grouping
+
+Dataset Explorer variant groups by access status:
+- **Open Access** (emerald) - Instant access, no action needed
+- **Awaiting Policy** (blue) - Granted once policy configured
+- **Needs Approval** (amber) - Requires GPT/TALT review
+- **Missing/Blocked** (neutral) - Data location unknown or training required
+
+---
+
+## Documentation
+
+See `/docs/INDEX.md` for the documentation entry point.
+
+```
+/docs/
+├── INDEX.md                              # Start here - navigation guide
+├── BACKLOG.md                            # Prioritized outstanding work
+├── collections-browser-spec.md           # Active: Partial implementation
+├── ai-discovery-page-ux-enhancement-spec.md  # Active: Partial implementation
+└── _archive/                             # Completed specs (16 files)
+```
+
+**Active specs** have outstanding work. **Archived specs** are for reference only.

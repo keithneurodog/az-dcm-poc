@@ -1,0 +1,13 @@
+[VS2-340] Data Collection operations cross checks
+
+Background:
+TBC
+
+User Story:
+As a Data Owner/Delegate Data Owner and DPO Officer and Data Consumer Lead, I want a centralised view of collection status, including cross-checks for duplicates.
+
+Acceptance criteria:
+GIVEN multiple collections are being processed WHEN a new request is received THEN a cross-check against pending and existing collections is performed.
+GIVEN a cross-check output WHEN a duplicate is found THEN it is flagged for review.
+GIVEN a cross-check output WHEN a duplicate is found THEN Stakeholders are notified of the potential duplicates.
+GIVEN a a cross-check duplicate WHEN viewing a tracker THEN it displays status across all layers including due diligence, source availability, and Environment enablement (e.g., "Available in Domino").

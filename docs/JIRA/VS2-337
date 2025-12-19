@@ -1,0 +1,22 @@
+[VS2-337] Data Collection request tracker
+
+Background:
+TBC
+
+User Story:
+As a Data Consumer, I want to track operational details for data collection requests so that progress and status are visible.
+
+Acceptance criteria:
+GIVEN a request for Data Collection WHEN its information status is required THEN a tracking record is available.
+GIVEN an existing Data Collection WHEN operational tracking is required THEN a tracking record is available.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes due diligence status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes relevant dates (to be defined).
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional

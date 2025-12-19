@@ -1,0 +1,14 @@
+[VS2-335] Versioning and Change Management
+
+Background:
+TBC
+
+User Story:
+As a Data Owner/Delegate Data Owner and DPO Officer, I want to maintain version history of collection definitions so that all changes are tracked.
+
+Acceptance criteria:
+GIVEN an existing Open Access Collection WHEN any changes are made to it THEN a version history is maintained.
+GIVEN a change to Open Access Collection WHEN the change is saved THEN a timestamped artifact is created.
+GIVEN a timestamped artifact for a change made to Open Access Collection WHEN the change is saved THEN it records what was changed, who made the change ad when the change was made.
+GIVEN an existing Open Access Collection WHEN an audit is performed THEN all changes are traceable through timestamped artifacts.
+GIVEN an existing Open Access Collection WHEN a "Periodic Review" cycle is performed THEN the outcome (revoke, extend, modify) is recorded for audit purposes.

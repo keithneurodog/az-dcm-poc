@@ -1,0 +1,10 @@
+[VS2-339] Open Access Collection approval execution
+
+Background:
+TBC
+
+User Story:
+As a DPO Officer, I want data of an approved Open Access Collection to be provisioned so that User can access it.
+
+Acceptance criteria:
+GIVEN an Open Access Collection WHEN it is submitted for execution THEN no outstanding legal or ethical checks are present.

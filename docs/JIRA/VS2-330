@@ -1,0 +1,15 @@
+[VS2-330] User scope for access model
+
+Background:
+TBC
+
+User Story:
+As a Data Owner/Delegate Data Owner, I want to maintain a named virtual team of users so that access is set correctly for the collection.
+
+Acceptance criteria:
+GIVEN an Open Data Collection WHEN one is created THEN a “virtual team” tag can be assigned and managed (e.g., "Oncology-Stats-Lead")
+GIVEN an Open Data Collection WHEN one is created THEN a “virtual team” list of users is provided.
+GIVEN an Open Data Collection User definition WHEN “virtual team” members are selected THEN individual User selection is enabled.
+GIVEN an existing “virtual team” WHEN it is being updated THEN addition of Users to the list is enabled.
+GIVEN an existing “virtual team” WHEN it is being updated THEN removal of Users from the list is enabled.
+GIVEN an existing “virtual team” WHEN User is added/removed in source system THEN the Open Data Collection access automatically updates without manual provisioning intervention.

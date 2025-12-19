@@ -1,0 +1,14 @@
+[VS2-338] DPO delivery tracker
+
+Background:
+TBC
+
+User Story:
+As a DPO Officer, I want visibility of Open Access delivery so that that dependencies and risks are managed.
+
+Acceptance criteria:
+GIVEN a collection of approved Studies WHEN checking its status THEN track record of each individual Study is enabled.
+GIVEN a collection of approved Studies WHEN checking track records THEN each method availability (e.g. available in PDP) is enabled.
+GIVEN a collection of approved Studies WHEN particular availability method is not present THEN a mechanism to submit a request the addition is present.
+GIVEN a Study availability method WHEN tracking status is viewed THEN the count of studies that have been added and those are pending are present.
+GIVEN a collection of approved Studies WHEN checking its delivery progress THEN a report showing completed and uncompleted Study deliveries is present.
