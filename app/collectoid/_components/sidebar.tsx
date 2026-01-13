@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   BarChart3,
+  FolderKanban,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useColorScheme } from "./color-context"
@@ -46,6 +47,7 @@ export function Sidebar() {
     { name: "DCM Propositions", href: `${basePath}/dcm/propositions`, icon: Inbox, section: "dcm" },
     { name: "Analytics", href: `${basePath}/dcm/analytics`, icon: BarChart3, section: "dcm" },
     { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle, section: "dcm" },
+    { name: "Manage (v2)", href: `${basePath}/manage/col-001`, icon: FolderKanban, section: "dcm" },
     { name: "Settings", href: "#", icon: Settings },
   ]
 
@@ -97,6 +99,8 @@ export function Sidebar() {
               isActive = pathname.startsWith(`${basePath}/dcm/analytics`)
             } else if (item.name === "Browse Collections") {
               isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`)
+            } else if (item.name === "Manage (v2)") {
+              isActive = pathname.startsWith(`${basePath}/manage`)
             } else {
               isActive = pathname === item.href
             }
