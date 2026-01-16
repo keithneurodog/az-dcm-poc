@@ -743,11 +743,11 @@ export default function DCMFiltersPage() {
                               <div className="flex-1">
                                 <h4 className="text-sm font-normal text-neutral-900 mb-2">AI Smart Filter (Recommended)</h4>
                                 <p className="text-xs font-light text-neutral-600 leading-relaxed mb-2">
-                                  Describe what you're looking for in plain language. The AI understands complex
+                                  Describe what you&apos;re looking for in plain language. The AI understands complex
                                   requirements and applies intelligent semantic filtering.
                                 </p>
                                 <p className="text-xs font-light text-neutral-500 italic">
-                                  Example: "Show me recent oncology studies with imaging data in Europe"
+                                  Example: &quot;Show me recent oncology studies with imaging data in Europe&quot;
                                 </p>
                               </div>
                             </div>
@@ -829,7 +829,7 @@ export default function DCMFiltersPage() {
                           Real-Time Result Updates
                         </h3>
                         <p className="text-sm font-light text-neutral-700 leading-relaxed mb-3">
-                          As you adjust filters, the dataset count updates instantly. You'll see:
+                          As you adjust filters, the dataset count updates instantly. You&apos;ll see:
                         </p>
                         <div className="space-y-2 text-sm font-light text-neutral-700">
                           <div className="flex items-start gap-2">
@@ -860,7 +860,7 @@ export default function DCMFiltersPage() {
                           Building Your Collection
                         </h3>
                         <p className="text-sm font-light text-neutral-700 leading-relaxed mb-3">
-                          Click "Add to Collection" on any dataset to include it. Your selections appear in:
+                          Click &quot;Add to Collection&quot; on any dataset to include it. Your selections appear in:
                         </p>
                         <div className="space-y-2">
                           <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
@@ -888,8 +888,8 @@ export default function DCMFiltersPage() {
                             <p className="mb-2 font-normal">Pro Tips</p>
                             <ul className="text-blue-700 leading-relaxed space-y-1 text-xs">
                               <li>• Start broad with AI Smart Filter, then refine with traditional filters</li>
-                              <li>• Watch the "Collection Crossover" info to avoid duplicate data</li>
-                              <li>• Check "Frequently bundled with" suggestions for related datasets</li>
+                              <li>• Watch the &quot;Collection Crossover&quot; info to avoid duplicate data</li>
+                              <li>• Check &quot;Frequently bundled with&quot; suggestions for related datasets</li>
                               <li>• Use the access breakdown to understand provisioning complexity</li>
                               <li>• You can always go back and adjust your category selections</li>
                             </ul>
@@ -906,7 +906,7 @@ export default function DCMFiltersPage() {
                           <div className="text-sm font-light text-green-900">
                             <p className="mb-2 font-normal">What happens next?</p>
                             <p className="text-green-700 leading-relaxed text-xs">
-                              After selecting your datasets, you'll define the activities and intents for your collection
+                              After selecting your datasets, you&apos;ll define the activities and intents for your collection
                               (data engineering vs. scientific analysis), which affects access provisioning levels.
                             </p>
                           </div>
@@ -1330,7 +1330,7 @@ export default function DCMFiltersPage() {
                     }}
                   >
                     <Sparkles className="size-3 inline mr-1" />
-                    AI: "{smartFilterQuery.substring(0, 30)}{smartFilterQuery.length > 30 ? '...' : ''}"
+                    AI: &quot;{smartFilterQuery.substring(0, 30)}{smartFilterQuery.length > 30 ? '...' : ''}&quot;
                     <X className="size-3 ml-1.5 inline" />
                   </Badge>
                 )}
@@ -1547,7 +1547,7 @@ export default function DCMFiltersPage() {
                     </Badge>
                   </h3>
                   <p className="text-sm font-light text-neutral-600">
-                    Describe what you're looking for in natural language and let AI refine your search
+                    Describe what you&apos;re looking for in natural language and let AI refine your search
                   </p>
                 </div>
                 <ArrowRight className="size-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
@@ -1605,7 +1605,7 @@ export default function DCMFiltersPage() {
                         "text-sm font-light mb-3 italic transition-colors",
                         smartFilterActive ? "text-neutral-700" : "text-neutral-500"
                       )}>
-                        "{smartFilterQuery}"
+                        &quot;{smartFilterQuery}&quot;
                       </p>
                       {smartFilterActive ? (
                         <div className="flex items-center gap-2 text-xs font-light text-neutral-500">
@@ -1668,12 +1668,12 @@ export default function DCMFiltersPage() {
                 <div className="flex-1">
                   <h3 className="text-base font-normal text-neutral-900 mb-1">AI Smart Filter</h3>
                   <p className="text-sm font-light text-neutral-600 mb-3">
-                    Describe what you're looking for and AI will intelligently filter your datasets
+                    Describe what you&apos;re looking for and AI will intelligently filter your datasets
                   </p>
                   <Textarea
                     value={smartFilterInput}
                     onChange={(e) => setSmartFilterInput(e.target.value)}
-                    placeholder='e.g., "Show me recent oncology studies with imaging data in Europe" or "Find small patient population studies that need data sharing approvals"'
+                    placeholder='e.g., &quot;Show me recent oncology studies with imaging data in Europe&quot; or &quot;Find small patient population studies that need data sharing approvals&quot;'
                     className="min-h-[80px] text-sm font-light border-neutral-200 rounded-xl resize-none"
                     disabled={isSmartFiltering}
                   />

@@ -160,7 +160,7 @@ export default function CollectionsBrowserVariation1() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    let filtered = filterCollections(COLLECTIONS_WITH_AOT as typeof MOCK_COLLECTIONS, {
+    let filtered = filterCollections(COLLECTIONS_WITH_AOT as unknown as typeof MOCK_COLLECTIONS, {
       search: searchQuery,
       status: selectedStatus,
       therapeuticAreas: selectedAreas,
@@ -170,7 +170,7 @@ export default function CollectionsBrowserVariation1() {
     // Apply My Access filter
     if (myAccessFilter !== "all") {
       filtered = filtered.filter(col => {
-        const userAccess = (col as typeof COLLECTIONS_WITH_AOT[0]).userAccess
+        const userAccess = (col as unknown as typeof COLLECTIONS_WITH_AOT[0]).userAccess
         if (myAccessFilter === "have_access") {
           return userAccess?.currentUserHasAccess === true
         } else if (myAccessFilter === "need_request") {
@@ -183,7 +183,7 @@ export default function CollectionsBrowserVariation1() {
     // Apply User/Group Access filter
     if (userGroupFilter.length > 0) {
       filtered = filtered.filter(col => {
-        const userAccess = (col as typeof COLLECTIONS_WITH_AOT[0]).userAccess
+        const userAccess = (col as unknown as typeof COLLECTIONS_WITH_AOT[0]).userAccess
         return userGroupFilter.some(group =>
           userAccess?.accessGroups?.includes(group)
         )
@@ -194,7 +194,7 @@ export default function CollectionsBrowserVariation1() {
     if (pridFilter.trim()) {
       const prids = pridFilter.split(',').map(p => p.trim().toUpperCase())
       filtered = filtered.filter(col => {
-        const userAccess = (col as typeof COLLECTIONS_WITH_AOT[0]).userAccess
+        const userAccess = (col as unknown as typeof COLLECTIONS_WITH_AOT[0]).userAccess
         return prids.some(prid =>
           userAccess?.accessPrids?.includes(prid)
         )
@@ -204,7 +204,7 @@ export default function CollectionsBrowserVariation1() {
     // Add intent match info
     filtered = filtered.map(col => ({
       ...col,
-      intentMatch: getIntentMatch(col as unknown as typeof COLLECTIONS_WITH_AOT[0]),
+      intentMatch: getIntentMatch(col as unknown as (typeof COLLECTIONS_WITH_AOT)[0]),
     }))
 
     // Sort
@@ -217,7 +217,7 @@ export default function CollectionsBrowserVariation1() {
         case "progress":
           return b.progress - a.progress
         case "match":
-          return (b as typeof COLLECTIONS_WITH_AOT[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch.score - (a as typeof COLLECTIONS_WITH_AOT[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch.score
+          return (b as unknown as (typeof COLLECTIONS_WITH_AOT)[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch.score - (a as unknown as (typeof COLLECTIONS_WITH_AOT)[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch.score
         case "recent":
         default:
           return b.createdAt.getTime() - a.createdAt.getTime()
@@ -1018,15 +1018,15 @@ export default function CollectionsBrowserVariation1() {
                       </div>
 
                       {/* User Access Status Badge */}
-                      {(collection as typeof COLLECTIONS_WITH_AOT[0]).userAccess && (
+                      {(collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).userAccess && (
                         <div className="mb-3">
                           <Badge className={cn(
                             "font-light text-xs border",
-                            (collection as typeof COLLECTIONS_WITH_AOT[0]).userAccess.currentUserHasAccess
+                            (collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).userAccess.currentUserHasAccess
                               ? "bg-green-100 text-green-700 border-green-200"
                               : "bg-amber-100 text-amber-700 border-amber-200"
                           )}>
-                            {(collection as typeof COLLECTIONS_WITH_AOT[0]).userAccess.currentUserHasAccess ? (
+                            {(collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).userAccess.currentUserHasAccess ? (
                               <>
                                 <Unlock className="size-3 mr-1" />
                                 You Have Access
@@ -1042,10 +1042,10 @@ export default function CollectionsBrowserVariation1() {
                       )}
 
                       {/* Intent Match Badge */}
-                      {hasActiveIntents && (collection as typeof COLLECTIONS_WITH_AOT[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch && (
+                      {hasActiveIntents && (collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch && (
                         <div className="mb-3">
                           {(() => {
-                            const intentMatch = (collection as typeof COLLECTIONS_WITH_AOT[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch
+                            const intentMatch = (collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0] & { intentMatch: ReturnType<typeof getIntentMatch> }).intentMatch
                             const badge = getIntentMatchBadge(intentMatch.match, intentMatch.score)
                             if (!badge) return null
                             const Icon = badge.icon
@@ -1065,23 +1065,23 @@ export default function CollectionsBrowserVariation1() {
                           variant="outline"
                           className={cn(
                             "font-light text-xs",
-                            (collection as typeof COLLECTIONS_WITH_AOT[0]).agreementOfTerms?.aiResearch
+                            (collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).agreementOfTerms?.aiResearch
                               ? "bg-green-50 text-green-700 border-green-200"
                               : "bg-red-50 text-red-700 border-red-200"
                           )}
                         >
-                          ML/AI {(collection as typeof COLLECTIONS_WITH_AOT[0]).agreementOfTerms?.aiResearch ? "✓" : "✗"}
+                          ML/AI {(collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).agreementOfTerms?.aiResearch ? "✓" : "✗"}
                         </Badge>
                         <Badge
                           variant="outline"
                           className={cn(
                             "font-light text-xs",
-                            (collection as typeof COLLECTIONS_WITH_AOT[0]).agreementOfTerms?.externalPublication
+                            (collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).agreementOfTerms?.externalPublication
                               ? "bg-green-50 text-green-700 border-green-200"
                               : "bg-red-50 text-red-700 border-red-200"
                           )}
                         >
-                          Publish {(collection as typeof COLLECTIONS_WITH_AOT[0]).agreementOfTerms?.externalPublication ? "✓" : "✗"}
+                          Publish {(collection as unknown as (typeof COLLECTIONS_WITH_AOT)[0]).agreementOfTerms?.externalPublication ? "✓" : "✗"}
                         </Badge>
                       </div>
 

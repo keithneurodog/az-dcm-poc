@@ -1,10 +1,11 @@
 "use client"
 
+import { Suspense } from "react"
 import { usePathname } from "next/navigation"
 import { useVariation } from "@/app/collectoid/_components"
 import { variations, defaultVariation } from "./_variations"
 
-export default function DCMCreateCollectionPage() {
+function DCMCreateContent() {
   const pathname = usePathname()
   const { getVariation } = useVariation()
 
@@ -25,4 +26,12 @@ export default function DCMCreateCollectionPage() {
   // Render the selected variation component
   const VariationComponent = currentVariation.component
   return <VariationComponent />
+}
+
+export default function DCMCreateCollectionPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <DCMCreateContent />
+    </Suspense>
+  )
 }

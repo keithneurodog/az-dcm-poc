@@ -118,7 +118,7 @@ export default function DCMPublishingPage() {
           Collection Published!
         </h1>
         <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto">
-          "{collectionName}" has been created and Collectoid is now executing your provisioning plan
+          &quot;{collectionName}&quot; has been created and Collectoid is now executing your provisioning plan
         </p>
       </div>
 
@@ -242,7 +242,7 @@ export default function DCMPublishingPage() {
                     <p>• Dataset: {selectedDatasets.find(d => d.accessBreakdown.missingLocation > 0)?.code || 'DCODE-299'}</p>
                     <p>• Data steward notification sent</p>
                     <p>• Manual search workflow started</p>
-                    <p>• You'll be notified when data is located</p>
+                    <p>• You&apos;ll be notified when data is located</p>
                   </div>
                 </div>
               </div>

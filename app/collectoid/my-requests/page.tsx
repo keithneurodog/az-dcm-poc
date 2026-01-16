@@ -331,13 +331,13 @@ export default function MyRequestsPage() {
                       {/* Details */}
                       {!isProposition && (request as { totalDatasets?: number }).totalDatasets && (
                         <div className="flex items-center gap-4 text-sm font-light text-neutral-600 mb-4">
-                          {(request as { instantAccess?: number }).instantAccess && (request as { instantAccess?: number }).instantAccess > 0 && (
+                          {((request as { instantAccess?: number }).instantAccess ?? 0) > 0 && (
                             <div className="flex items-center gap-1">
                               <Zap className="size-4 text-green-600" />
                               <span>{(request as { instantAccess?: number }).instantAccess} instant</span>
                             </div>
                           )}
-                          {(request as { pendingApproval?: number }).pendingApproval && (request as { pendingApproval?: number }).pendingApproval > 0 && (
+                          {((request as { pendingApproval?: number }).pendingApproval ?? 0) > 0 && (
                             <div className="flex items-center gap-1">
                               <Clock className="size-4 text-amber-600" />
                               <span>{(request as { pendingApproval?: number }).pendingApproval} pending</span>

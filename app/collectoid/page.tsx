@@ -180,7 +180,7 @@ export default function CollectoidDashboard() {
           <CardContent className="pt-0">
             {needsAttentionData.collectionsWithBlockers.length > 0 ? (
               <div className="space-y-2">
-                {needsAttentionData.collectionsWithBlockers.slice(0, 2).map(({ collection, blockers }) => (
+                {needsAttentionData.collectionsWithBlockers.slice(0, 2).map(({ collection }) => (
                   <div
                     key={collection?.id}
                     className="text-xs font-light text-neutral-700 flex items-start gap-2 hover:text-neutral-900 transition-colors"

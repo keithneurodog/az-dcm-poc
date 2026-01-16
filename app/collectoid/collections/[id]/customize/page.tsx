@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, Suspense } from "react"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -104,7 +104,7 @@ const DURATION_OPTIONS = [
   { value: "indefinite", label: "Indefinite (ongoing research)" },
 ]
 
-export default function CustomizeCollectionPage() {
+function CustomizeCollectionContent() {
   const { scheme } = useColorScheme()
   const router = useRouter()
   const params = useParams()
@@ -755,5 +755,13 @@ export default function CustomizeCollectionPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CustomizeCollectionPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <CustomizeCollectionContent />
+    </Suspense>
   )
 }

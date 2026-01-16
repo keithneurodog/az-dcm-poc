@@ -37,7 +37,13 @@ export default function DCMReviewPage() {
   const { scheme } = useColorScheme()
   const router = useRouter()
   const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([])
-  const [selectedActivities, setSelectedActivities] = useState<any[]>([])
+  const [selectedActivities, setSelectedActivities] = useState<Array<{
+    id: string
+    category: string
+    name: string
+    description: string
+    accessLevel: string
+  }>>([])
   const [collectionName, setCollectionName] = useState("Oncology ctDNA Outcomes Collection")
   const [description, setDescription] = useState("Curated collection of Phase III lung cancer studies with ctDNA biomarker monitoring and immunotherapy treatment arms. Suitable for outcomes research, biomarker analysis, and multimodal data fusion.")
   const [targetCommunity, setTargetCommunity] = useState("Oncology Data Scientists and Biostatisticians studying immunotherapy response and ctDNA dynamics")
@@ -626,7 +632,7 @@ export default function DCMReviewPage() {
                         <li>Collectoid notifies data steward</li>
                         <li>Manual search or data location verification begins</li>
                         <li>Once located, standard provisioning workflow resumes</li>
-                        <li>You'll be notified when data is catalogued</li>
+                        <li>You&apos;ll be notified when data is catalogued</li>
                       </ol>
                     </div>
                   </div>
@@ -646,7 +652,7 @@ export default function DCMReviewPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-normal text-neutral-900">
-                        10% Users Haven't Completed Training
+                        10% Users Haven&apos;t Completed Training
                       </h3>
                       <p className="text-sm font-light text-neutral-600">pending certification</p>
                     </div>

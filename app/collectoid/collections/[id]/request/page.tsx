@@ -574,7 +574,7 @@ export default function RequestAccessPage() {
                     Intent Mismatch Warning
                   </h4>
                   <p className="text-sm font-light text-amber-700 mb-3">
-                    {intentMismatches.length} of your selected intents {intentMismatches.length === 1 ? &quot;doesn&apos;t&quot; : &quot;don&apos;t&quot;} match
+                    {intentMismatches.length} of your selected intents {intentMismatches.length === 1 ? "doesn't" : "don't"} match
                     the collection&apos;s Agreement of Terms. You can still submit, but you&apos;ll be prompted to resolve the mismatch.
                   </p>
                   <div className="flex flex-wrap gap-2">
