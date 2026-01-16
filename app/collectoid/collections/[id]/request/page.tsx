@@ -254,7 +254,7 @@ export default function RequestAccessPage() {
                     Intent Mismatch Detected
                   </h3>
                   <p className="text-sm font-light text-neutral-600">
-                    Your selected intents don't match the collection's Agreement of Terms.
+                    Your selected intents don&apos;t match the collection&apos;s Agreement of Terms.
                   </p>
                 </div>
               </div>
@@ -448,7 +448,7 @@ export default function RequestAccessPage() {
                     />
                     <div className="flex-1">
                       <Label htmlFor="internalCompanyRestricted" className="text-sm font-light text-neutral-700 cursor-pointer">
-                        Internal 'company restricted' findings
+                        Internal &apos;company restricted&apos; findings
                       </Label>
                     </div>
                     {collection.agreementOfTerms.publication.internalCompanyRestricted ? (
@@ -540,7 +540,7 @@ export default function RequestAccessPage() {
               <div className="flex-1">
                 <Label htmlFor="agreedToTerms" className="text-sm font-light text-neutral-700 cursor-pointer">
                   I agree to use this data only for the intended purposes declared above and in accordance with
-                  the collection's{" "}
+                  the collection&apos;s{" "}
                   <button
                     type="button"
                     onClick={() => {
@@ -574,8 +574,8 @@ export default function RequestAccessPage() {
                     Intent Mismatch Warning
                   </h4>
                   <p className="text-sm font-light text-amber-700 mb-3">
-                    {intentMismatches.length} of your selected intents {intentMismatches.length === 1 ? "doesn't" : "don't"} match
-                    the collection's Agreement of Terms. You can still submit, but you'll be prompted to resolve the mismatch.
+                    {intentMismatches.length} of your selected intents {intentMismatches.length === 1 ? &quot;doesn&apos;t&quot; : &quot;don&apos;t&quot;} match
+                    the collection&apos;s Agreement of Terms. You can still submit, but you&apos;ll be prompted to resolve the mismatch.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {intentMismatches.map((mismatch) => (

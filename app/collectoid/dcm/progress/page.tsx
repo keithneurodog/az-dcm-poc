@@ -806,7 +806,7 @@ ${currentUser.email}`
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as "overview" | "agreement" | "datasets" | "users" | "timeline" | "discussion")}
                 title={tab.label}
                 className={cn(
                   "flex items-center gap-1.5 xl:gap-2 px-3 xl:px-6 py-2.5 xl:py-3 rounded-xl border-2 font-light transition-all relative",
@@ -817,7 +817,7 @@ ${currentUser.email}`
               >
                 <Icon className="size-4" />
                 <span className="hidden xl:inline">{tab.label}</span>
-                <span className="xl:hidden text-xs">{(tab as any).shortLabel || tab.label}</span>
+                <span className="xl:hidden text-xs">{"shortLabel" in tab ? tab.shortLabel : tab.label}</span>
                 {tab.badge && (
                   <Badge
                     className={cn(
@@ -1203,7 +1203,7 @@ ${currentUser.email}`
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="size-1.5 rounded-full bg-neutral-400 shrink-0 mt-2" />
-                        <p><span className="font-normal">Training Gaps:</span> Send reminders if users haven't enrolled in 1 week</p>
+                        <p><span className="font-normal">Training Gaps:</span> Send reminders if users haven&apos;t enrolled in 1 week</p>
                       </div>
                       <div className="flex items-start gap-2">
                         <div className="size-1.5 rounded-full bg-neutral-400 shrink-0 mt-2" />
@@ -1263,7 +1263,7 @@ ${currentUser.email}`
                             <p>A: Yes, from your DCM dashboard you can add/remove datasets and users at any time.</p>
                           </div>
                           <div>
-                            <p className="font-normal">Q: What if a blocker isn't resolved in time?</p>
+                            <p className="font-normal">Q: What if a blocker isn&apos;t resolved in time?</p>
                             <p>A: Use the discussion tab to escalate. Tag relevant team members and mark as blocker.</p>
                           </div>
                           <div>
@@ -2977,7 +2977,7 @@ ${currentUser.email}`
                     })()}
                     {milestone.status === "pending" && (() => {
                       // Calculate wait time and show estimated start
-                      let waitTimeText = "Awaiting completion of previous steps"
+                      const waitTimeText = "Awaiting completion of previous steps"
                       let estimatedStart = ""
 
                       if (milestone.estimatedTime) {
@@ -3080,7 +3080,7 @@ ${currentUser.email}`
                   return (
                     <button
                       key={type.id}
-                      onClick={() => setCommentType(type.id as any)}
+                      onClick={() => setCommentType(type.id as "update" | "question" | "blocker" | "suggestion")}
                       className={cn(
                         "flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-sm font-light transition-all",
                         commentType === type.id
@@ -3156,7 +3156,7 @@ ${currentUser.email}`
                 ].map((filter) => (
                   <button
                     key={filter.id}
-                    onClick={() => setCommentFilter(filter.id as any)}
+                    onClick={() => setCommentFilter(filter.id as "all" | "update" | "question" | "blocker" | "suggestion")}
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm font-light",
                       commentFilter === filter.id

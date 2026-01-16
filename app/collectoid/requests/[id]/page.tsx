@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -255,7 +255,6 @@ const FAQ_ITEMS = [
 export default function UserRequestDashboard() {
   const { scheme } = useColorScheme()
   const router = useRouter()
-  const params = useParams()
 
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<"collections" | "datasets" | "timeline" | "discussion" | "help">("collections")
@@ -636,7 +635,7 @@ export default function UserRequestDashboard() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as "collections" | "datasets" | "timeline" | "discussion" | "help")}
                   className={cn(
                     "flex items-center gap-2 px-5 py-2.5 rounded-xl border font-light transition-all",
                     activeTab === tab.id

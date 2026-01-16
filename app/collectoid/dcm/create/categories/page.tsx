@@ -177,7 +177,7 @@ export default function DCMCategoriesPage() {
             AI-Suggested Data Categories
           </h1>
           <p className="text-base font-light text-neutral-600 mb-3">
-            Based on your intent, we've identified relevant data categories
+            Based on your intent, we&apos;ve identified relevant data categories
           </p>
 
           {/* Help Link */}
@@ -400,7 +400,7 @@ export default function DCMCategoriesPage() {
             />
           ) : (
             <div className="rounded-xl bg-white/50 p-4 text-sm font-light text-neutral-700 italic border border-white">
-              "{intent}"
+              &quot;{intent}&quot;
             </div>
           )}
 
@@ -584,7 +584,7 @@ export default function DCMCategoriesPage() {
               <span className="font-normal">Next step:</span> Multi-dimensional filtering
             </p>
             <p className="text-blue-700">
-              You'll be able to refine your dataset selection using study characteristics,
+              You&apos;ll be able to refine your dataset selection using study characteristics,
               collection context, and access criteria.
             </p>
           </div>

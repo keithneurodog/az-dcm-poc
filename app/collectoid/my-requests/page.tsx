@@ -14,15 +14,12 @@ import {
   CheckCircle2,
   Clock,
   Zap,
-  ExternalLink,
   MessageSquare,
   ChevronRight,
   Database,
   Sparkles,
   AlertCircle,
   Bell,
-  Filter,
-  Search,
 } from "lucide-react"
 
 // Mock requests data
@@ -135,11 +132,10 @@ export default function MyRequestsPage() {
   const { scheme } = useColorScheme()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("all")
-  const [filter, setFilter] = useState("all")
 
   const activeRequests = MOCK_REQUESTS.filter(r => r.status !== "completed" && r.status !== "approved")
   const completedRequests = MOCK_REQUESTS.filter(r => r.status === "completed" || r.status === "approved")
-  const actionRequiredCount = MOCK_REQUESTS.filter(r => r.status === "action_required" || (r as any).hasUnreadMessage).length
+  const actionRequiredCount = MOCK_REQUESTS.filter(r => r.status === "action_required" || (r as { hasUnreadMessage?: boolean }).hasUnreadMessage).length
 
   const filteredRequests = activeTab === "active" ? activeRequests :
     activeTab === "completed" ? completedRequests : MOCK_REQUESTS
@@ -292,18 +288,18 @@ export default function MyRequestsPage() {
                                 <StatusIcon className="size-3 mr-1" />
                                 {statusBadge.label}
                               </Badge>
-                              {(request as any).hasUnreadMessage && (
+                              {(request as { hasUnreadMessage?: boolean }).hasUnreadMessage && (
                                 <Badge className="bg-red-500 text-white font-light text-xs">
                                   New Message
                                 </Badge>
                               )}
                             </div>
                             <h3 className="text-base font-normal text-neutral-900">
-                              {isProposition ? (request as any).propositionName : (request as any).collectionName}
+                              {isProposition ? (request as { propositionName?: string }).propositionName : (request as { collectionName?: string }).collectionName}
                             </h3>
                             {isProposition && (
                               <p className="text-xs font-light text-neutral-500">
-                                Based on {(request as any).parentCollection}
+                                Based on {(request as { parentCollection?: string }).parentCollection}
                               </p>
                             )}
                           </div>
@@ -333,23 +329,23 @@ export default function MyRequestsPage() {
                       </div>
 
                       {/* Details */}
-                      {!isProposition && (request as any).totalDatasets && (
+                      {!isProposition && (request as { totalDatasets?: number }).totalDatasets && (
                         <div className="flex items-center gap-4 text-sm font-light text-neutral-600 mb-4">
-                          {(request as any).instantAccess > 0 && (
+                          {(request as { instantAccess?: number }).instantAccess && (request as { instantAccess?: number }).instantAccess > 0 && (
                             <div className="flex items-center gap-1">
                               <Zap className="size-4 text-green-600" />
-                              <span>{(request as any).instantAccess} instant</span>
+                              <span>{(request as { instantAccess?: number }).instantAccess} instant</span>
                             </div>
                           )}
-                          {(request as any).pendingApproval > 0 && (
+                          {(request as { pendingApproval?: number }).pendingApproval && (request as { pendingApproval?: number }).pendingApproval > 0 && (
                             <div className="flex items-center gap-1">
                               <Clock className="size-4 text-amber-600" />
-                              <span>{(request as any).pendingApproval} pending</span>
+                              <span>{(request as { pendingApproval?: number }).pendingApproval} pending</span>
                             </div>
                           )}
-                          {(request as any).estimatedDays && (
+                          {(request as { estimatedDays?: string }).estimatedDays && (
                             <span className="text-neutral-400">
-                              Est. {(request as any).estimatedDays} days
+                              Est. {(request as { estimatedDays?: string }).estimatedDays} days
                             </span>
                           )}
                         </div>

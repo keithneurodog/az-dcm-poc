@@ -14,10 +14,8 @@ import { useColorScheme } from "@/app/collectoid/_components"
 import { useNotifications } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
 import {
-  Database,
   Clock,
   CheckCircle2,
-  Users,
   PlusCircle,
   ArrowRight,
   AlertCircle,
@@ -45,8 +43,7 @@ export default function CollectoidDashboard() {
       new Set(blockerNotifications.map((n) => n.collectionId))
     ).map((id) => {
       const collection = MOCK_COLLECTIONS.find((c) => c.id === id)
-      const blockers = blockerNotifications.filter((n) => n.collectionId === id)
-      return { collection, blockers }
+      return { collection }
     })
 
     // Pending Mentions: Unread mention notifications
@@ -231,7 +228,7 @@ export default function CollectoidDashboard() {
               )}
             </div>
             <CardTitle className="text-sm font-normal text-neutral-900">Pending Mentions</CardTitle>
-            <CardDescription className="text-xs font-light">You've been mentioned in discussions</CardDescription>
+            <CardDescription className="text-xs font-light">You&apos;ve been mentioned in discussions</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             {needsAttentionData.pendingMentions.length > 0 ? (
@@ -380,7 +377,7 @@ export default function CollectoidDashboard() {
               My Collections
             </CardTitle>
             <CardDescription className="font-light">
-              Collections you're currently managing
+              Collections you&apos;re currently managing
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">

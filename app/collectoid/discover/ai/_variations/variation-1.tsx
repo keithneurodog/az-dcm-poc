@@ -461,7 +461,7 @@ export default function Variation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Disease or therapeutic area</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            e.g., "lung cancer", "cardiovascular", "immunotherapy", "NSCLC", "melanoma"
+                            e.g., &quot;lung cancer&quot;, &quot;cardiovascular&quot;, &quot;immunotherapy&quot;, &quot;NSCLC&quot;, &quot;melanoma&quot;
                           </p>
                         </div>
                       </div>
@@ -479,7 +479,7 @@ export default function Variation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Data types you need</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            e.g., "ctDNA biomarkers", "genomic profiling", "imaging data", "patient outcomes", "clinical trial data"
+                            e.g., &quot;ctDNA biomarkers&quot;, &quot;genomic profiling&quot;, &quot;imaging data&quot;, &quot;patient outcomes&quot;, &quot;clinical trial data&quot;
                           </p>
                         </div>
                       </div>
@@ -497,7 +497,7 @@ export default function Variation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Your intended use</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            e.g., "ML model training", "publication", "biomarker discovery", "outcome prediction"
+                            e.g., &quot;ML model training&quot;, &quot;publication&quot;, &quot;biomarker discovery&quot;, &quot;outcome prediction&quot;
                           </p>
                         </div>
                       </div>
@@ -515,7 +515,7 @@ export default function Variation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Study characteristics (optional)</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            e.g., "Phase III trials", "longitudinal studies", "multi-site studies"
+                            e.g., &quot;Phase III trials&quot;, &quot;longitudinal studies&quot;, &quot;multi-site studies&quot;
                           </p>
                         </div>
                       </div>
@@ -542,7 +542,7 @@ export default function Variation1() {
                         </Badge>
                       </div>
                       <p className="text-sm font-light text-green-900 italic">
-                        "I need lung cancer data with ctDNA biomarker monitoring from immunotherapy trials for ML-based outcome prediction. Planning to publish results."
+                        &quot;I need lung cancer data with ctDNA biomarker monitoring from immunotherapy trials for ML-based outcome prediction. Planning to publish results.&quot;
                       </p>
                       <p className="text-xs font-light text-green-700 mt-2">
                         Why it works: Specifies disease, data type, trial context, intended use (ML + publication)
@@ -557,7 +557,7 @@ export default function Variation1() {
                         </Badge>
                       </div>
                       <p className="text-sm font-light text-green-900 italic">
-                        "Show me oncology studies with genomic profiling data for biomarker discovery"
+                        &quot;Show me oncology studies with genomic profiling data for biomarker discovery&quot;
                       </p>
                       <p className="text-xs font-light text-green-700 mt-2">
                         Why it works: Clear therapeutic area, data type, and research goal
@@ -575,7 +575,7 @@ export default function Variation1() {
                         </Badge>
                       </div>
                       <p className="text-sm font-light text-red-900 italic">
-                        "I need some data"
+                        &quot;I need some data&quot;
                       </p>
                       <p className="text-xs font-light text-red-700 mt-2">
                         Problem: No disease area, data type, or intended use specified
@@ -590,7 +590,7 @@ export default function Variation1() {
                         </Badge>
                       </div>
                       <p className="text-sm font-light text-red-900 italic">
-                        "cancer data"
+                        &quot;cancer data&quot;
                       </p>
                       <p className="text-xs font-light text-red-700 mt-2">
                         Problem: Which cancer type? What kind of data? For what purpose?
@@ -655,7 +655,7 @@ export default function Variation1() {
                         <li>- Mention if you need ML/AI rights or publication rights upfront</li>
                         <li>- Specify trial phases if that matters for your research</li>
                         <li>- After searching, use filters to narrow down results</li>
-                        <li>- Check the "Intent Match" badge to avoid access issues later</li>
+                        <li>- Check the &quot;Intent Match&quot; badge to avoid access issues later</li>
                       </ul>
                     </div>
                   </div>
@@ -710,7 +710,7 @@ export default function Variation1() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <p className="text-xs font-light text-neutral-500 mb-1">Current search:</p>
-                    <p className="text-sm font-light text-neutral-700 italic">"{lastSearchQuery}"</p>
+                    <p className="text-sm font-light text-neutral-700 italic">&quot;{lastSearchQuery}&quot;</p>
                   </div>
                   <Button
                     variant="ghost"
@@ -844,7 +844,7 @@ export default function Variation1() {
                   onClick={() => handleExamplePrompt(example)}
                   className="px-4 py-2 rounded-xl bg-neutral-50 border border-neutral-200 text-sm font-light text-neutral-700 hover:bg-neutral-100 hover:border-neutral-300 transition-all"
                 >
-                  "{example}"
+                  &quot;{example}&quot;
                 </button>
               ))}
             </div>

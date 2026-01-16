@@ -399,7 +399,7 @@ export default function DCMActivitiesPage() {
                             <h4 className="text-sm font-normal text-neutral-900 mb-2">Scientific Analysis</h4>
                             <p className="text-xs font-light text-neutral-600 leading-relaxed mb-2">
                               Research activities requiring patient-level data for hypothesis testing, modeling,
-                              and discovery. These are considered "secondary use" of clinical trial data.
+                              and discovery. These are considered &quot;secondary use&quot; of clinical trial data.
                             </p>
                           </div>
                         </div>
@@ -431,7 +431,7 @@ export default function DCMActivitiesPage() {
                         <div className="size-1.5 rounded-full bg-blue-500 shrink-0 mt-2" />
                         <div>
                           <span className="font-normal">Variant Harmonization</span> - Users receive genomic data
-                          that's been normalized and annotated. Pre-processed for quality.
+                          that&apos;s been normalized and annotated. Pre-processed for quality.
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
@@ -469,7 +469,7 @@ export default function DCMActivitiesPage() {
                           <p className="text-xs font-normal text-green-900">Data Engineering Activities</p>
                         </div>
                         <p className="text-xs font-light text-green-700">
-                          More datasets fall into "ready to grant" category (30%). Faster provisioning with
+                          More datasets fall into &quot;ready to grant&quot; category (30%). Faster provisioning with
                           fewer approval requirements.
                         </p>
                       </div>
@@ -479,7 +479,7 @@ export default function DCMActivitiesPage() {
                           <p className="text-xs font-normal text-amber-900">Scientific Analysis Activities</p>
                         </div>
                         <p className="text-xs font-light text-amber-700">
-                          More datasets fall into "needs approval" category (40%). Requires governance team
+                          More datasets fall into &quot;needs approval&quot; category (40%). Requires governance team
                           review (GPT, TALT) before access is granted.
                         </p>
                       </div>
@@ -513,7 +513,7 @@ export default function DCMActivitiesPage() {
                       <div className="text-sm font-light text-green-900">
                         <p className="mb-2 font-normal">What happens next?</p>
                         <p className="text-green-700 leading-relaxed text-xs">
-                          After selecting your activities, you'll add collection details (name, description) and
+                          After selecting your activities, you&apos;ll add collection details (name, description) and
                           assign users. The system will then show you the final access provisioning breakdown and
                           initiate the automated Collectoid workflow to grant appropriate permissions.
                         </p>
@@ -548,7 +548,7 @@ export default function DCMActivitiesPage() {
                 Based on your {selectedDatasets.length} selected datasets
               </p>
               <p className="text-xs font-light text-neutral-500 leading-relaxed">
-                We've analyzed your data collection's characteristics—including available data modalities
+                We&apos;ve analyzed your data collection&apos;s characteristics—including available data modalities
                 (clinical, genomic, imaging), therapeutic area distribution, and common usage patterns—to
                 suggest activities that align with your datasets. Click any recommendation to jump to that activity.
               </p>

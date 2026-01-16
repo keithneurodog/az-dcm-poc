@@ -249,7 +249,7 @@ export default function CustomizeCollectionPage() {
                 ) : (
                   <>
                     This will create a new <span className="font-normal">Collection Proposition</span> for DCM review.
-                    Once approved, it will be linked to the parent collection as "derived from".
+                    Once approved, it will be linked to the parent collection as &quot;derived from&quot;.
                   </>
                 )}
               </p>
@@ -449,7 +449,7 @@ export default function CustomizeCollectionPage() {
                 <h3 className="text-lg font-normal text-neutral-900">Requested Uses</h3>
               </div>
               <p className="text-sm font-light text-neutral-500 mb-4">
-                Select the uses you need. Uses marked as "Not in original" will require DCM approval.
+                Select the uses you need. Uses marked as &quot;Not in original&quot; will require DCM approval.
               </p>
 
               <div className="space-y-6">
@@ -541,7 +541,7 @@ export default function CustomizeCollectionPage() {
                         }
                       />
                       <Label htmlFor="customize-internalCompanyRestricted" className="text-sm font-light text-neutral-700 cursor-pointer flex-1">
-                        Internal 'company restricted' findings
+                        Internal &apos;company restricted&apos; findings
                       </Label>
                       {collection.agreementOfTerms.publication.internalCompanyRestricted ? (
                         <Badge className="bg-neutral-100 text-neutral-600 text-xs font-light">In original</Badge>

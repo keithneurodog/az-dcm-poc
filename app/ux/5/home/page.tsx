@@ -16,7 +16,6 @@ import {
   Users,
   TrendingUp,
   TrendingDown,
-  ArrowUpRight,
   MoreVertical,
   Search,
   Sparkles,
@@ -218,7 +217,7 @@ export default function UX5DashboardPage() {
                       <p className="text-sm font-medium text-neutral-900 truncate">{item.title}</p>
                       <p className="text-xs text-neutral-600">{item.user}</p>
                     </div>
-                    <Badge variant={item.color as any} className="text-xs ml-2">
+                    <Badge variant={item.color as "destructive" | "secondary"} className="text-xs ml-2">
                       {item.badge}
                     </Badge>
                   </div>

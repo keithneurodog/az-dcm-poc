@@ -1047,7 +1047,7 @@ export default function VariationDatasets() {
                         "text-sm font-light mb-2 italic transition-colors",
                         smartFilterActive ? "text-neutral-700" : "text-neutral-500"
                       )}>
-                        "{smartFilterQuery}"
+                        &quot;{smartFilterQuery}&quot;
                       </p>
                       {smartFilterActive ? (
                         <div className="flex items-center gap-2 text-xs font-light text-neutral-500">
@@ -1113,7 +1113,7 @@ export default function VariationDatasets() {
                 <div className="flex-1">
                   <h3 className="text-sm font-normal text-neutral-900 mb-1">AI Smart Filter</h3>
                   <p className="text-xs font-light text-neutral-600 mb-3">
-                    Describe what you're looking for and AI will intelligently filter your datasets
+                    Describe what you&apos;re looking for and AI will intelligently filter your datasets
                   </p>
                   <Textarea
                     value={smartFilterInput}

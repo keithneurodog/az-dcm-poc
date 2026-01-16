@@ -380,7 +380,7 @@ export default function DCMPropositionsPage() {
                           {proposition.hasMessages && (
                             <Badge className="bg-red-100 text-red-700 font-light text-xs">
                               <MessageSquare className="size-3 mr-1" />
-                              {(proposition as any).messageCount || 1}
+                              {"messageCount" in proposition ? proposition.messageCount : 1}
                             </Badge>
                           )}
                         </div>
@@ -397,9 +397,9 @@ export default function DCMPropositionsPage() {
                         <p className="text-xs font-light text-neutral-500">
                           {formatTimeAgo(proposition.submittedAt)}
                         </p>
-                        {(proposition as any).assignedTo && (
+                        {"assignedTo" in proposition && (
                           <Badge variant="outline" className="mt-1 font-light text-xs">
-                            Assigned: {(proposition as any).assignedTo}
+                            Assigned: {"assignedTo" in proposition ? proposition.assignedTo : ""}
                           </Badge>
                         )}
                       </div>
@@ -456,12 +456,12 @@ export default function DCMPropositionsPage() {
                     </div>
 
                     {/* Merge suggestion */}
-                    {proposition.recommendation === "merge" && (proposition as any).mergeTarget && (
+                    {proposition.recommendation === "merge" && "mergeTarget" in proposition && (
                       <div className="mt-3 p-3 rounded-lg bg-purple-50 border border-purple-200">
                         <div className="flex items-center gap-2">
                           <GitMerge className="size-4 text-purple-600" />
                           <span className="text-xs font-light text-purple-800">
-                            Consider merging with <span className="font-normal">{(proposition as any).mergeTarget}</span>
+                            Consider merging with <span className="font-normal">{"mergeTarget" in proposition ? proposition.mergeTarget : ""}</span>
                           </span>
                         </div>
                       </div>

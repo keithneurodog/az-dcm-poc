@@ -16,10 +16,8 @@ import {
   Code,
   BookOpen,
   Globe,
-  Database,
   Check,
   FlaskConical,
-  LineChart,
 } from "lucide-react"
 
 export function StepIntent() {
@@ -105,7 +103,7 @@ export function StepIntent() {
           <div className="flex items-center gap-2 mb-3">
             <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Research Purpose</p>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-light">
-              What you'll study
+              What you&apos;ll study
             </span>
           </div>
           <div className="flex flex-wrap gap-2">

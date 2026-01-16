@@ -45,7 +45,7 @@ export default function UX9DashboardPage() {
               Hey John! Ready to Explore? 🚀
             </h1>
             <p className="text-xl text-white/90 mb-8 max-w-2xl font-medium">
-              You've got <span className="font-black text-yellow-300">1,284</span> datasets at your fingertips. Let's make something awesome today!
+              You&apos;ve got <span className="font-black text-yellow-300">1,284</span> datasets at your fingertips. Let&apos;s make something awesome today!
             </p>
             <div className="flex gap-4">
               <Button size="lg" className="bg-white text-purple-600 hover:bg-yellow-400 hover:text-purple-900 font-black text-base h-14 px-8 shadow-2xl">
@@ -69,7 +69,6 @@ export default function UX9DashboardPage() {
           { label: "Completed", value: "23", change: "+8%", icon: CheckCircle2, gradient: "from-green-500 to-emerald-500", emoji: "✅" },
           { label: "Team Members", value: "142", change: "+5%", icon: Users, gradient: "from-amber-500 to-orange-500", emoji: "👥" },
         ].map((stat, i) => {
-          const Icon = stat.icon
           return (
             <Card key={i} className="border-0 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 bg-white overflow-hidden group">
               <CardContent className="pt-6">
@@ -123,7 +122,7 @@ export default function UX9DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-2xl font-black text-neutral-900">Live Activity 🎯</CardTitle>
-                <CardDescription className="font-semibold">What's happening right now</CardDescription>
+                <CardDescription className="font-semibold">What&apos;s happening right now</CardDescription>
               </div>
               <div className="flex size-3 items-center justify-center bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50" />
             </div>

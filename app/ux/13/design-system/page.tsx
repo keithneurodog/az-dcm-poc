@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -14,7 +14,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -41,17 +40,12 @@ import {
   Clock,
   Star,
   Heart,
-  Download,
-  Upload,
   Search,
   Plus,
-  Minus,
   Edit,
   Trash2,
   Settings,
   User,
-  Mail,
-  Phone,
   Home,
   Sparkles,
   TrendingUp,
@@ -61,7 +55,6 @@ import {
   ChevronDown,
   Info,
   AlertTriangle,
-  Menu,
 } from "lucide-react"
 
 const sections = [
@@ -766,7 +759,7 @@ export default function UX13DesignSystemPage() {
                         </Badge>
                       </div>
                       <p className="text-sm font-light text-neutral-700 mb-3 italic">
-                        "Show me recent oncology studies with imaging data in Europe"
+                        &quot;Show me recent oncology studies with imaging data in Europe&quot;
                       </p>
                       <div className="flex items-center gap-2 text-xs font-light text-neutral-500">
                         <Check className="size-3 text-green-600" />
@@ -961,7 +954,7 @@ export default function UX13DesignSystemPage() {
                       </Badge>
                     </div>
                     <p className="text-sm font-light text-blue-800">
-                      Your collection "Q4 Oncology Research" now has 3 new datasets available
+                      Your collection &quot;Q4 Oncology Research&quot; now has 3 new datasets available
                     </p>
                   </div>
                 </div>

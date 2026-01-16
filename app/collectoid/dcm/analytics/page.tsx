@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useColorScheme } from "@/app/collectoid/_components"
 import { cn } from "@/lib/utils"
@@ -251,7 +252,7 @@ export default function AnalyticsPage() {
 // Inline suggestion card for the collapsible section
 function SuggestionCard({ suggestion }: { suggestion: ReturnType<typeof generateCollectionSuggestions>[0] }) {
   const { scheme } = useColorScheme()
-  const router = require("next/navigation").useRouter()
+  const router = useRouter()
 
   const handleClick = () => {
     const params = new URLSearchParams()

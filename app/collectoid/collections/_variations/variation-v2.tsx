@@ -263,7 +263,7 @@ export default function CollectionsBrowserV2() {
                 ].map(({ id, icon: Icon }) => (
                   <button
                     key={id}
-                    onClick={() => setViewMode(id as any)}
+                    onClick={() => setViewMode(id as "cards" | "table" | "kanban")}
                     className={cn(
                       "p-2.5 rounded-md transition-all",
                       viewMode === id ? "bg-white shadow-sm" : "hover:bg-neutral-50"

@@ -121,7 +121,7 @@ export default function UX12DashboardPage() {
                   `hover:${scheme.bg} hover:${scheme.bgHover} hover:border-current`
                 )}
                 style={{
-                  // @ts-ignore
+                  // @ts-expect-error - CSS custom properties for gradients
                   "--tw-gradient-from": scheme.bg,
                   "--tw-gradient-to": scheme.bgHover,
                 }}

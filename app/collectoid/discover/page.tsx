@@ -103,7 +103,7 @@ export default function DiscoverPage() {
                 AI-Assisted Discovery
               </h3>
               <p className="text-sm font-light text-neutral-600 mb-6">
-                Describe what you're looking for in natural language and let AI help you find relevant collections and datasets.
+                Describe what you&apos;re looking for in natural language and let AI help you find relevant collections and datasets.
               </p>
               <div className="flex items-center gap-3 mb-6">
                 {["Natural Language", "Smart Recommendations", "Intent Matching"].map((tag) => (
@@ -169,7 +169,7 @@ export default function DiscoverPage() {
             <div>
               <h3 className="text-lg font-normal text-neutral-900">Quick Search (Power Users)</h3>
               <p className="text-sm font-light text-neutral-600">
-                Know exactly what you're looking for? Search by dataset code or keyword.
+                Know exactly what you&apos;re looking for? Search by dataset code or keyword.
               </p>
             </div>
           </div>

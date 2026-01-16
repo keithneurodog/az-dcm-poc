@@ -21,8 +21,6 @@ import {
   Search,
   Filter,
   X,
-  Grid3x3,
-  List,
   CheckCheck,
   Archive,
   AlertCircle,
@@ -31,12 +29,9 @@ import {
   Info,
   CheckCircle2,
   Bell,
-  TrendingUp,
-  Users,
-  Loader2,
   ChevronDown,
 } from "lucide-react"
-import { Notification, MOCK_COLLECTIONS } from "@/lib/dcm-mock-data"
+import { Notification } from "@/lib/dcm-mock-data"
 import {
   filterNotifications,
   searchNotifications,
@@ -626,7 +621,7 @@ export default function NotificationsPage() {
                       ].map((option) => (
                         <button
                           key={option.value}
-                          onClick={() => setDateRange(option.value as any)}
+                          onClick={() => setDateRange(option.value as "today" | "week" | "month" | "all")}
                           className={cn(
                             "w-full text-left px-3 py-2 rounded-lg text-sm font-light transition-all",
                             dateRange === option.value
@@ -786,13 +781,13 @@ export default function NotificationsPage() {
                 <h3 className="text-sm font-normal text-neutral-900 mb-3">Read Status</h3>
                 <div className="space-y-2">
                   {[
-                    { value: "all", label: "All" },
-                    { value: false, label: "Unread Only" },
-                    { value: true, label: "Read Only" },
+                    { value: "all" as const, label: "All" },
+                    { value: false as const, label: "Unread Only" },
+                    { value: true as const, label: "Read Only" },
                   ].map((option) => (
                     <button
                       key={String(option.value)}
-                      onClick={() => setReadStatus(option.value as any)}
+                      onClick={() => setReadStatus(option.value)}
                       className={cn(
                         "w-full text-left px-3 py-2 rounded-lg text-sm font-light transition-all",
                         readStatus === option.value
@@ -820,7 +815,7 @@ export default function NotificationsPage() {
                   ].map((option) => (
                     <button
                       key={option.value}
-                      onClick={() => setDateRange(option.value as any)}
+                      onClick={() => setDateRange(option.value as "today" | "week" | "month" | "all")}
                       className={cn(
                         "w-full text-left px-3 py-2 rounded-lg text-sm font-light transition-all",
                         dateRange === option.value

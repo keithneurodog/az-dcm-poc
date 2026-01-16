@@ -303,7 +303,7 @@ export default function DCMPropositionReviewPage() {
             <CardContent className="p-6">
               <h3 className="text-base font-normal text-neutral-900 mb-4">Request Rationale</h3>
               <p className="text-sm font-light text-neutral-700 leading-relaxed mb-4">
-                "{proposition.rationale}"
+                &quot;{proposition.rationale}&quot;
               </p>
               <div className="flex items-center gap-2">
                 <Clock className="size-4 text-neutral-400" strokeWidth={1.5} />

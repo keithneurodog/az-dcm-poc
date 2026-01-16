@@ -109,7 +109,7 @@ export default function DCMCreateVariation1() {
             </div>
           )}
           <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
-            Tell us what you're looking for and we'll help you find the right datasets
+            Tell us what you&apos;re looking for and we&apos;ll help you find the right datasets
           </p>
 
           {/* Help Link */}
@@ -139,9 +139,9 @@ export default function DCMCreateVariation1() {
               <div className="mt-6 space-y-6">
                 {/* Overview */}
                 <div>
-                  <h3 className="text-lg font-normal text-neutral-900 mb-3">Don't worry, it's easier than you think!</h3>
+                  <h3 className="text-lg font-normal text-neutral-900 mb-3">Don&apos;t worry, it&apos;s easier than you think!</h3>
                   <p className="text-sm font-light text-neutral-700 leading-relaxed">
-                    You don't need to use technical language or special commands. Just describe what you're looking
+                    You don&apos;t need to use technical language or special commands. Just describe what you&apos;re looking
                     for in your own words, as if you were explaining it to a colleague. Our AI will understand
                     and help you find the right data.
                   </p>
@@ -168,7 +168,7 @@ export default function DCMCreateVariation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Your research area or disease focus</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            Examples: "oncology", "breast cancer", "cardiovascular outcomes", "immunotherapy"
+                            Examples: &quot;oncology&quot;, &quot;breast cancer&quot;, &quot;cardiovascular outcomes&quot;, &quot;immunotherapy&quot;
                           </p>
                         </div>
                       </div>
@@ -186,7 +186,7 @@ export default function DCMCreateVariation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Types of data you need</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            Examples: "clinical trial data", "genomics", "imaging scans", "biomarkers", "patient outcomes"
+                            Examples: &quot;clinical trial data&quot;, &quot;genomics&quot;, &quot;imaging scans&quot;, &quot;biomarkers&quot;, &quot;patient outcomes&quot;
                           </p>
                         </div>
                       </div>
@@ -204,7 +204,7 @@ export default function DCMCreateVariation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">What you plan to do with it</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            Examples: "building a predictive model", "biomarker discovery", "comparative analysis"
+                            Examples: &quot;building a predictive model&quot;, &quot;biomarker discovery&quot;, &quot;comparative analysis&quot;
                           </p>
                         </div>
                       </div>
@@ -222,7 +222,7 @@ export default function DCMCreateVariation1() {
                         <div>
                           <h4 className="text-sm font-normal text-neutral-900 mb-1">Who needs access (optional)</h4>
                           <p className="text-xs font-light text-neutral-600 leading-relaxed">
-                            Examples: "oncology research team", "data scientists in my group", "external collaborators"
+                            Examples: &quot;oncology research team&quot;, &quot;data scientists in my group&quot;, &quot;external collaborators&quot;
                           </p>
                         </div>
                       </div>
@@ -244,8 +244,8 @@ export default function DCMCreateVariation1() {
                         Great example
                       </Badge>
                       <p className="text-sm font-light text-green-900 italic">
-                        "I need to create a collection for oncology researchers studying ctDNA biomarkers and
-                        immunotherapy response in lung cancer patients"
+                        &quot;I need to create a collection for oncology researchers studying ctDNA biomarkers and
+                        immunotherapy response in lung cancer patients&quot;
                       </p>
                     </div>
 
@@ -254,8 +254,8 @@ export default function DCMCreateVariation1() {
                         Great example
                       </Badge>
                       <p className="text-sm font-light text-green-900 italic">
-                        "Looking for cardiovascular outcomes data from Phase III trials that include patient-reported
-                        outcomes and quality of life metrics for our meta-analysis"
+                        &quot;Looking for cardiovascular outcomes data from Phase III trials that include patient-reported
+                        outcomes and quality of life metrics for our meta-analysis&quot;
                       </p>
                     </div>
                   </div>
@@ -316,7 +316,7 @@ export default function DCMCreateVariation1() {
                   <div className="flex gap-3">
                     <Info className="size-5 shrink-0 text-blue-600 mt-0.5" />
                     <div className="text-sm font-light text-blue-900">
-                      <p className="mb-2 font-normal">Remember: You're in control!</p>
+                      <p className="mb-2 font-normal">Remember: You&apos;re in control!</p>
                       <p className="text-blue-700 leading-relaxed">
                         The AI is here to help, not replace your expertise. You can always edit, refine, or start
                         over at any point. Think of it as having a knowledgeable assistant who knows where all
@@ -338,7 +338,7 @@ export default function DCMCreateVariation1() {
           <div className="mb-6">
             <label className="block text-sm font-light text-neutral-700 mb-3 flex items-center gap-2">
               <Target className="size-4" />
-              Describe your collection's purpose
+              Describe your collection&apos;s purpose
             </label>
             <div className="relative">
               <Sparkles
