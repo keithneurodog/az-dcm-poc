@@ -254,15 +254,20 @@ export default function VariationDatasets() {
     }
 
     // Simulate semantic/vector search filtering when smart filter is active
-    // This removes ~40-50% of results to demonstrate what AI filtering would feel like
+    // This removes ~40% of results to demonstrate what AI filtering would feel like
     if (smartFilterActive && smartFilterQuery) {
-      // Use a deterministic "hash" based on dataset id + query so results are consistent
+      // Use a deterministic "hash" to score and sort results, then keep top ~60%
       const queryHash = smartFilterQuery.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-      result = result.filter(d => {
+      const scored = result.map(d => {
         const idHash = d.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-        // Keep datasets where (idHash + queryHash) % 10 < 6 (roughly 60% kept)
-        return (idHash + queryHash) % 10 < 6
+        // Create a pseudo-random score between 0-99 for each dataset
+        const score = (idHash * 31 + queryHash * 17) % 100
+        return { dataset: d, score }
       })
+      // Sort by score descending and keep top 60%
+      scored.sort((a, b) => b.score - a.score)
+      const keepCount = Math.max(1, Math.ceil(scored.length * 0.6))
+      result = scored.slice(0, keepCount).map(s => s.dataset)
     }
 
     // Sort results
@@ -369,15 +374,15 @@ export default function VariationDatasets() {
       lowerPrompt.includes("complex") ||
       lowerPrompt.length > 60 // Longer queries likely need semantic search
 
-    // Auto-detect therapeutic area
+    // Auto-detect therapeutic area (using abbreviations that match mock data)
     if (lowerPrompt.includes("oncology") || lowerPrompt.includes("cancer")) {
-      setTherapeuticAreaFilters(["Oncology"])
+      setTherapeuticAreaFilters(["ONC"])
     }
     if (lowerPrompt.includes("cardio") || lowerPrompt.includes("heart")) {
-      setTherapeuticAreaFilters(["Cardiology"])
+      setTherapeuticAreaFilters(["CARDIO"])
     }
     if (lowerPrompt.includes("neuro")) {
-      setTherapeuticAreaFilters(["Neurology"])
+      setTherapeuticAreaFilters(["NEURO"])
     }
 
     // Auto-detect phase
