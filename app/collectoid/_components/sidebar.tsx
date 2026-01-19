@@ -79,7 +79,7 @@ export function Sidebar() {
         <nav className={cn("flex-1 space-y-1 py-6", isCollapsed ? "px-2" : "px-3")}>
           {navigation.map((item) => {
             const Icon = item.icon
-            let isActive = false
+            let isActive
 
             if (item.name === "Dashboard") {
               isActive =

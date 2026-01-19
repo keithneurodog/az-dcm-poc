@@ -1,20 +1,9 @@
-import { UX10Layout } from "@/app/ux/_components/ux10-layout"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import {
-  Search,
-  Download,
-  Eye,
-  Star,
-  Filter,
-} from "lucide-react"
+import {UX10Layout} from "@/app/ux/_components/ux10-layout"
+import {Card, CardContent, CardTitle,} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Badge} from "@/components/ui/badge"
+import {Download, Eye, Filter, Search, Star,} from "lucide-react"
 
 export default function UX10SearchPage() {
   return (
