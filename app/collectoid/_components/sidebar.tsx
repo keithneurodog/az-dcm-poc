@@ -68,8 +68,8 @@ export function Sidebar() {
             </div>
             {!isCollapsed && (
               <div>
-                <span className="font-light text-lg text-neutral-900 tracking-tight">Collectoid</span>
-                <p className="text-xs text-neutral-500">DCM Platform</p>
+                <span className="font-light text-lg text-neutral-900 tracking-tight">DCM Platform</span>
+                <p className="text-xs text-neutral-500">Prototype</p>
               </div>
             )}
           </div>

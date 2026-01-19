@@ -1,4 +1,5 @@
-import { UX2Layout } from "@/app/ux/_components/ux2-layout"
+"use client"
+
 import {
   Card,
   CardContent,
@@ -6,266 +7,282 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Database,
   Clock,
   CheckCircle2,
   Users,
-  TrendingUp,
-  Search,
-  FileStack,
+  Leaf,
+  Circle,
   Sparkles,
-  ArrowUpRight,
-  AlertCircle,
-  BarChart3,
-  Activity,
+  Wind,
 } from "lucide-react"
+import { useColorScheme } from "@/app/ux/_components/ux14-color-context"
+import { cn } from "@/lib/utils"
 
-export default function UX2DashboardPage() {
+export default function UX14DashboardPage() {
+  const { scheme } = useColorScheme()
   return (
-    <UX2Layout>
-      {/* Hero Section */}
-      <div className="-m-6 mb-8 bg-gradient-to-br from-[#a8006b] to-[#830051] px-6 py-12 shadow-lg rounded-b-lg">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-3 inline-block rounded-lg border border-[#F0AB00]/30 bg-[#F0AB00]/10 px-3 py-1.5">
-            <span className="text-xs font-medium text-[#F0AB00]">
-              Dashboard
-            </span>
-          </div>
-          <h1 className="mb-3 text-3xl font-bold text-white">
-            Welcome back, John
-          </h1>
-          <p className="text-base text-white/80">
-            Manage your data, track requests, and explore insights
-          </p>
+    <>
+      {/* Breathing Space */}
+      <div className="mb-20 text-center">
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <Circle className={cn("size-1.5 fill-current animate-pulse", scheme.from.replace("from-", "text-").replace("-500", "-400"))} />
+          <Circle className={cn("size-1.5 fill-current animate-pulse", scheme.to.replace("to-", "text-").replace("-500", "-400"))} style={{ animationDelay: "0.3s" }} />
+          <Circle className={cn("size-1.5 fill-current animate-pulse", scheme.from.replace("from-", "text-").replace("-500", "-400"))} style={{ animationDelay: "0.6s" }} />
+        </div>
+
+        <h1 className="text-6xl font-extralight text-neutral-800 mb-6 tracking-tight">
+          Welcome
+        </h1>
+        <p className="text-xl font-extralight text-neutral-500 max-w-xl mx-auto leading-relaxed">
+          A peaceful space for data exploration
+        </p>
+      </div>
+
+      {/* Search - Ultra Minimal */}
+      <div className="mb-24">
+        <div className="relative max-w-2xl mx-auto">
+          <Sparkles className={cn("absolute left-6 top-1/2 size-5 -translate-y-1/2", scheme.from.replace("from-", "text-").replace("-500", "-400/60"))} />
+          <Input
+            placeholder="What would you like to explore today?"
+            className={cn("h-16 pl-16 rounded-3xl bg-white/80 backdrop-blur-sm text-base font-extralight shadow-sm transition-all",
+              `border-${scheme.from.replace("from-", "").replace("-500", "-200/50")}`,
+              `shadow-${scheme.from.replace("from-", "").replace("-500", "-100/20")}`,
+              `focus:border-${scheme.from.replace("from-", "").replace("-500", "-300/50")}`,
+              `focus:shadow-${scheme.from.replace("from-", "").replace("-500", "-200/30")}`
+            )}
+          />
         </div>
       </div>
 
-      {/* Bento Box Grid */}
-      <div className="grid gap-4 md:grid-cols-12">
-        {/* Stats Row - 4 equal columns */}
-        <Card className="md:col-span-3 rounded-lg border border-neutral-200 shadow-brutal hover:shadow-brutal-lg hover:-translate-y-0.5 transition-all">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <Database className="size-6 text-[#830051]" />
-              <div className="rounded-lg bg-emerald-50 px-2.5 py-1">
-                <span className="text-xs font-medium text-emerald-700">+12%</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-neutral-900">1,284</div>
-            <p className="mt-1 text-sm text-neutral-600">
-              Total Datasets
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-3 rounded-lg border border-neutral-200 shadow-brutal hover:shadow-brutal-lg hover:-translate-y-0.5 transition-all">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <Clock className="size-6 text-[#F0AB00]" />
-              <div className="rounded-lg bg-amber-50 px-2.5 py-1">
-                <span className="text-xs font-medium text-amber-700">Active</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-neutral-900">8</div>
-            <p className="mt-1 text-sm text-neutral-600">
-              Pending Requests
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-3 rounded-lg border border-neutral-200 shadow-brutal hover:shadow-brutal-lg hover:-translate-y-0.5 transition-all">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CheckCircle2 className="size-6 text-green-600" />
-              <div className="rounded-lg bg-green-50 px-2.5 py-1">
-                <span className="text-xs font-medium text-green-700">+8%</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-neutral-900">23</div>
-            <p className="mt-1 text-sm text-neutral-600">
-              Approved This Month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-3 rounded-lg border border-neutral-200 shadow-brutal hover:shadow-brutal-lg hover:-translate-y-0.5 transition-all">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <Users className="size-6 text-blue-600" />
-              <div className="rounded-lg bg-blue-50 px-2.5 py-1">
-                <span className="text-xs font-medium text-blue-700">6 Dept</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-neutral-900">142</div>
-            <p className="mt-1 text-sm text-neutral-600">
-              Team Members
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Large Featured Card - Search */}
-        <Card className="md:col-span-8 rounded-lg border border-neutral-200 shadow-brutal bg-gradient-to-br from-neutral-700 to-neutral-600 text-white">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold">Explore Datasets</CardTitle>
-                <CardDescription className="text-neutral-300 mt-1">
-                  Search through 1,284 available datasets
-                </CardDescription>
-              </div>
-              <Search className="size-8 text-[#F0AB00]" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Search for datasets, topics, or keywords..."
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 rounded-lg"
-              />
-              <Button className="bg-[#F0AB00] hover:bg-[#F0AB00]/90 text-[#830051] font-semibold px-6 rounded-lg">
-                Search
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-neutral-400 font-medium">
-                Popular:
-              </span>
-              {["Clinical Trials", "Pharmacology", "Patient Data", "Research"].map((tag) => (
-                <Badge key={tag} variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-lg">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Stats Card */}
-        <Card className="md:col-span-4 rounded-lg border border-neutral-200 shadow-brutal bg-gradient-to-br from-[#F0AB00] to-[#e8a700]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-neutral-900 font-bold">
-              <TrendingUp className="size-5" />
-              Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {[
-              { label: "New datasets", value: "+15", color: "bg-green-600" },
-              { label: "Requests approved", value: "+23", color: "bg-blue-600" },
-              { label: "Team growth", value: "+8", color: "bg-purple-600" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg bg-white/50 p-3">
-                <span className="font-medium text-sm">{item.label}</span>
-                <div className={`${item.color} rounded-lg px-3 py-1 text-white text-sm font-semibold`}>
-                  {item.value}
+      {/* Stats - Soft Cards */}
+      <div className="grid grid-cols-4 gap-6 mb-20">
+        {[
+          { label: "Datasets", value: "1,284", icon: Database },
+          { label: "Pending", value: "8", icon: Clock },
+          { label: "Complete", value: "23", icon: CheckCircle2 },
+          { label: "Users", value: "142", icon: Users },
+        ].map((stat, i) => {
+          const Icon = stat.icon
+          return (
+            <div key={i}>
+              <div className={cn("bg-white/70 backdrop-blur-sm rounded-3xl p-8 border hover:shadow-lg transition-all duration-500 group",
+                `border-${scheme.from.replace("from-", "").replace("-500", "-100/50")}`,
+                `hover:shadow-${scheme.from.replace("from-", "").replace("-500", "-100/20")}`
+              )}>
+                <div className="flex items-center justify-center mb-6">
+                  <div className={cn("flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br border",
+                    scheme.from.replace("from-", "from-").replace("-500", "-400/10"),
+                    scheme.to.replace("to-", "to-").replace("-500", "-300/10"),
+                    `border-${scheme.from.replace("from-", "").replace("-500", "-200/30")}`
+                  )}>
+                    <Icon className={cn("size-6", scheme.from.replace("from-", "text-").replace("-500", "-600/70"))} />
+                  </div>
                 </div>
+                <p className={cn("text-sm font-extralight mb-2 text-center uppercase tracking-widest",
+                  scheme.from.replace("from-", "text-").replace("-500", "-600/60")
+                )}>
+                  {stat.label}
+                </p>
+                <p className="text-4xl font-extralight text-neutral-800 text-center">
+                  {stat.value}
+                </p>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* My Requests */}
-        <Card className="md:col-span-6 rounded-lg border border-neutral-200 shadow-brutal">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-bold">My Requests</CardTitle>
-              <FileStack className="size-5 text-[#830051]" />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {[
-              { title: "Clinical Trial Data 2024", status: "Pending", color: "amber" },
-              { title: "Research Archive Q3", status: "Approved", color: "green" },
-              { title: "Lab Results Dataset", status: "Action Required", color: "red" },
-            ].map((request, i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-neutral-200 p-3 hover:border-[#830051] transition-colors">
-                <div>
-                  <p className="font-medium text-sm">{request.title}</p>
-                  <p className="text-xs text-neutral-500 mt-0.5">{request.status}</p>
-                </div>
-                <ArrowUpRight className="size-4 text-neutral-400" />
-              </div>
-            ))}
-            <Button variant="outline" className="w-full border border-neutral-300 font-medium hover:bg-neutral-50 rounded-lg">
-              View All Requests
-            </Button>
-          </CardContent>
-        </Card>
+          )
+        })}
+      </div>
 
-        {/* AI Assistant */}
-        <Card className="md:col-span-6 border border-[#830051] shadow-brutal bg-gradient-to-br from-[#930060] to-[#a8006b] rounded-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white font-bold">
-              <Sparkles className="size-5 text-[#F0AB00]" />
-              AI Assistant
-            </CardTitle>
-            <CardDescription className="text-white/80">
-              Get intelligent help with your data queries
+      {/* Nature-Inspired Section */}
+      <div className="grid grid-cols-2 gap-8 mb-20">
+        {/* Calm Card */}
+        <Card className={cn("rounded-3xl overflow-hidden bg-white/70 backdrop-blur-sm shadow-sm",
+          `border-${scheme.from.replace("from-", "").replace("-500", "-100/50")}`,
+          `shadow-${scheme.from.replace("from-", "").replace("-500", "-100/10")}`
+        )}>
+          <CardHeader className={cn("border-b bg-gradient-to-br to-transparent pb-8",
+            `border-${scheme.from.replace("from-", "").replace("-500", "-50/50")}`,
+            scheme.bg.replace("from-", "from-").replace("-50", "-50/30")
+          )}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={cn("flex size-12 items-center justify-center rounded-2xl border",
+                scheme.from.replace("from-", "bg-").replace("-500", "-400/10"),
+                `border-${scheme.from.replace("from-", "").replace("-500", "-200/30")}`
+              )}>
+                <Leaf className={cn("size-6", scheme.from.replace("from-", "text-").replace("-500", "-600/70"))} />
+              </div>
+              <CardTitle className="text-xl font-extralight text-neutral-800">Recent Growth</CardTitle>
+            </div>
+            <CardDescription className="font-extralight text-neutral-500">
+              Your data ecosystem flourishing
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button className="w-full bg-[#F0AB00] hover:bg-[#F0AB00]/90 text-[#830051] font-semibold h-11 rounded-lg">
-              <Sparkles className="mr-2 size-4" />
-              Start Conversation
-            </Button>
-            <div className="mt-4 space-y-2">
-              <p className="text-xs text-white/70 font-medium">Suggested:</p>
-              {["Find clinical data", "Request access", "View analytics"].map((suggestion) => (
-                <button
-                  key={suggestion}
-                  className="block w-full text-left text-sm text-white/90 hover:text-white border border-white/20 hover:border-white/40 px-3 py-2 rounded-lg transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
+          <CardContent className="pt-8 space-y-5">
+            {[
+              { user: "Sarah", action: "cultivated", dataset: "Clinical Trial Data", time: "moments ago" },
+              { user: "Michael", action: "nurtured", dataset: "Research Archive", time: "recently" },
+              { user: "Emily", action: "explored", dataset: "Demographics", time: "earlier" },
+            ].map((activity, i) => (
+              <div key={i} className={cn("flex items-center gap-4 p-4 rounded-2xl transition-all duration-300",
+                `hover:bg-${scheme.from.replace("from-", "").replace("-500", "-50/30")}`
+              )}>
+                <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br border",
+                  scheme.from.replace("from-", "from-").replace("-500", "-400/20"),
+                  scheme.to.replace("to-", "to-").replace("-500", "-400/20"),
+                  `border-${scheme.from.replace("from-", "").replace("-500", "-200/40")}`
+                )}>
+                  <span className={cn("text-xs font-extralight", scheme.from.replace("from-", "text-").replace("-500", "-700"))}>
+                    {activity.user[0]}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-extralight text-neutral-700 mb-1">
+                    <span className="font-light">{activity.user}</span> {activity.action}
+                  </p>
+                  <p className="text-xs font-extralight text-neutral-500 truncate">{activity.dataset}</p>
+                </div>
+                <span className={cn("text-xs font-extralight", scheme.from.replace("from-", "text-").replace("-500", "-500/60"))}>{activity.time}</span>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        {/* Analytics Preview */}
-        <Card className="md:col-span-12 border border-neutral-200 shadow-brutal rounded-lg">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold">Analytics Overview</CardTitle>
-                <CardDescription>Dataset usage and trends</CardDescription>
+        {/* Breath Card */}
+        <Card className={cn("rounded-3xl overflow-hidden bg-white/70 backdrop-blur-sm shadow-sm",
+          `border-${scheme.to.replace("to-", "").replace("-500", "-100/50")}`,
+          `shadow-${scheme.to.replace("to-", "").replace("-500", "-100/10")}`
+        )}>
+          <CardHeader className={cn("border-b bg-gradient-to-br to-transparent pb-8",
+            `border-${scheme.to.replace("to-", "").replace("-500", "-50/50")}`,
+            scheme.bgHover.replace("to-", "from-").replace("-50", "-50/30")
+          )}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={cn("flex size-12 items-center justify-center rounded-2xl border",
+                scheme.to.replace("to-", "bg-").replace("-500", "-400/10"),
+                `border-${scheme.to.replace("to-", "").replace("-500", "-200/30")}`
+              )}>
+                <Wind className={cn("size-6", scheme.to.replace("to-", "text-").replace("-500", "-600/70"))} />
               </div>
-              <BarChart3 className="size-7 text-[#830051]" />
+              <CardTitle className="text-xl font-extralight text-neutral-800">Gentle Actions</CardTitle>
             </div>
+            <CardDescription className="font-extralight text-neutral-500">
+              Mindful next steps
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-4">
-              {[
-                { label: "Total Downloads", value: "2,847", trend: "+15%" },
-                { label: "Active Users", value: "892", trend: "+8%" },
-                { label: "Avg. Response Time", value: "2.3h", trend: "-12%" },
-                { label: "Satisfaction Rate", value: "94%", trend: "+3%" },
-              ].map((stat, i) => (
-                <div key={i} className="border-l-4 border-[#F0AB00] pl-4 py-2 rounded-sm">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{stat.value}</span>
-                    <span className="text-sm font-semibold text-green-600">{stat.trend}</span>
-                  </div>
-                  <p className="text-xs font-medium text-neutral-600 mt-1">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <CardContent className="pt-8 space-y-4">
+            {["Begin new journey", "Reflect on insights", "Share discoveries"].map((action, i) => (
+              <button
+                key={i}
+                className={cn("w-full flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r border transition-all duration-300 group",
+                  scheme.to.replace("to-", "from-").replace("-500", "-50/40"),
+                  scheme.from.replace("from-", "to-").replace("-500", "-50/40"),
+                  `border-${scheme.to.replace("to-", "").replace("-500", "-100/40")}`,
+                  `hover:from-${scheme.to.replace("to-", "").replace("-500", "-100/50")}`,
+                  `hover:to-${scheme.from.replace("from-", "").replace("-500", "-100/50")}`,
+                  `hover:border-${scheme.to.replace("to-", "").replace("-500", "-200/60")}`
+                )}
+              >
+                <span className="text-sm font-extralight text-neutral-700">{action}</span>
+                <Circle className={cn("size-2 fill-current group-hover:scale-150 transition-transform duration-300",
+                  scheme.to.replace("to-", "text-").replace("-500", "-400")
+                )} />
+              </button>
+            ))}
           </CardContent>
         </Card>
       </div>
-    </UX2Layout>
+
+      {/* Featured - Organic Layout */}
+      <div className="mb-20">
+        <h2 className="text-3xl font-extralight text-neutral-800 mb-10 text-center">Cultivated Collections</h2>
+        <div className="space-y-5">
+          {[
+            { name: "Clinical Trial Data Q4 2024", category: "Trials", growth: "Thriving" },
+            { name: "Pharmacology Research Archive", category: "Research", growth: "Growing" },
+            { name: "Patient Demographics Study 2024", category: "Demographics", growth: "Stable" },
+          ].map((dataset, i) => (
+            <div key={i} className="group">
+              <div className={cn("bg-white/70 backdrop-blur-sm rounded-3xl p-8 border hover:shadow-lg transition-all duration-500",
+                `border-${scheme.from.replace("from-", "").replace("-500", "-100/50")}`,
+                `hover:border-${scheme.from.replace("from-", "").replace("-500", "-200/60")}`,
+                `hover:shadow-${scheme.from.replace("from-", "").replace("-500", "-100/20")}`
+              )}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-5">
+                    <div className={cn("flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br border",
+                      scheme.from.replace("from-", "from-").replace("-500", "-400/10"),
+                      scheme.to.replace("to-", "to-").replace("-500", "-400/10"),
+                      `border-${scheme.from.replace("from-", "").replace("-500", "-200/40")}`
+                    )}>
+                      <span className={cn("text-lg font-extralight", scheme.from.replace("from-", "text-").replace("-500", "-700"))}>{i + 1}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-light text-neutral-800 mb-2">{dataset.name}</h3>
+                      <div className="flex items-center gap-3">
+                        <Badge
+                          variant="outline"
+                          className={cn("font-extralight rounded-full",
+                            `border-${scheme.from.replace("from-", "").replace("-500", "-200/50")}`,
+                            scheme.from.replace("from-", "text-").replace("-500", "-700/70"),
+                            scheme.from.replace("from-", "bg-").replace("-500", "-50/30")
+                          )}
+                        >
+                          {dataset.category}
+                        </Badge>
+                        <span className={cn("text-sm font-extralight", scheme.to.replace("to-", "text-").replace("-500", "-600/70"))}>{dataset.growth}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn("rounded-full font-extralight transition-all duration-300",
+                      `border-${scheme.from.replace("from-", "").replace("-500", "-200/50")}`,
+                      `hover:bg-${scheme.from.replace("from-", "").replace("-500", "-50/50")}`,
+                      `hover:border-${scheme.from.replace("from-", "").replace("-500", "-300/60")}`
+                    )}
+                  >
+                    Explore
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Closing Breath */}
+      <div className={cn("rounded-3xl p-16 text-center bg-gradient-to-br border",
+        scheme.bg.replace("from-", "from-").replace("-50", "-50/40"),
+        `via-${scheme.to.replace("to-", "").replace("-500", "-50/30")}`,
+        scheme.bg.replace("from-", "to-").replace("-50", "-50/40"),
+        `border-${scheme.from.replace("from-", "").replace("-500", "-100/50")}`
+      )}>
+        <div className={cn("flex size-20 items-center justify-center rounded-3xl bg-white/80 border mx-auto mb-8 shadow-sm",
+          `border-${scheme.from.replace("from-", "").replace("-500", "-200/40")}`,
+          `shadow-${scheme.from.replace("from-", "").replace("-500", "-100/20")}`
+        )}>
+          <Leaf className={cn("size-9", scheme.from.replace("from-", "text-").replace("-500", "-600/70"))} />
+        </div>
+        <h3 className="text-3xl font-extralight text-neutral-800 mb-4">System Harmony</h3>
+        <p className="text-neutral-600 font-extralight mb-8 max-w-md mx-auto leading-relaxed">
+          All systems flowing peacefully
+        </p>
+        <Button className={cn("bg-gradient-to-r text-white rounded-full px-10 py-6 font-extralight shadow-lg hover:shadow-xl transition-all duration-300",
+          scheme.from.replace("from-", "from-").replace("-500", "-500/90"),
+          scheme.to.replace("to-", "to-").replace("-500", "-500/90"),
+          `hover:from-${scheme.from.replace("from-", "").replace("-500", "-500")}`,
+          `hover:to-${scheme.to.replace("to-", "").replace("-500", "-500")}`,
+          `shadow-${scheme.from.replace("from-", "").replace("-500", "-200/30")}`,
+          `hover:shadow-${scheme.from.replace("from-", "").replace("-500", "-300/40")}`
+        )}>
+          View Insights
+        </Button>
+      </div>
+    </>
   )
 }

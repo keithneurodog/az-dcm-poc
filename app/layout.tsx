@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Collectoid UI Prototypes",
-  description: "UI prototypes for the Collectoid clinical trial data access platform",
+  title: "DCM UI Prototypes",
+  description: "UI prototypes for the DCM clinical trial data access platform",
 };
 
 export default function RootLayout({

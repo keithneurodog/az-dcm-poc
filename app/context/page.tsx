@@ -20,16 +20,16 @@ const uxThemes = [
   },
   {
     id: 2,
-    name: "Bold & Geometric",
-    description: "Striking design with bold AZ burgundy and gold colors, sharp geometric shapes, and dramatic brutal shadows. Features top-only navigation and bento-box layouts for a sophisticated, confident aesthetic.",
+    name: "Garden Zen",
+    description: "A different zen approach with nature-inspired serenity. Features soft sage greens and teals, organic rounded shapes, ultra-light typography, and abundant breathing space. Inspired by peaceful gardens with language like 'cultivate', 'nurture', and 'flourish' throughout.",
     status: "Implemented",
     route: "/ux/2/home",
     features: [
-      "Top Navigation Bar Only",
-      "AZ Burgundy & Gold Palette",
-      "Sharp Geometric Design",
-      "Bento-Box Grid Layouts",
-      "Brutal Shadows & Depth"
+      "Nature-Inspired Greens & Teals",
+      "Organic Rounded Shapes",
+      "Ultra-Light Typography",
+      "Abundant White Space",
+      "Garden-Themed Language"
     ]
   },
   {
@@ -48,16 +48,16 @@ const uxThemes = [
   },
   {
     id: 4,
-    name: "AI-Enhanced Data Explorer",
-    description: "Combines the best of UX 1 and 3 - dual navigation with vibrant, colorful widgets and data-focused tables. Features a prominent hero section promoting AI assistant and search exploration with engaging gradients.",
+    name: "Executive Suite",
+    description: "Sophisticated premium design with clean white backgrounds and refined gold accents. Inspired by luxury corporate environments with serif typography, elegant spacing, and refined details. Professional elegance with an upscale executive aesthetic.",
     status: "Implemented",
     route: "/ux/4/home",
     features: [
-      "Sidebar + Top Bar Navigation",
-      "Colorful Gradient Stat Cards",
-      "AI-Focused Hero Section",
-      "Table-Based Data Display",
-      "Data Exploration Emphasis"
+      "Clean Light Palette",
+      "Gold/Amber Accents",
+      "Serif Typography",
+      "Premium Sophistication",
+      "Executive Luxury Feel"
     ]
   },
   {
@@ -116,90 +116,6 @@ const uxThemes = [
       "Zen-Inspired Calm Design"
     ]
   },
-  {
-    id: 9,
-    name: "Vibrant Energy",
-    description: "Bold, playful design with saturated colors and high energy. Inspired by modern startups with bright gradients, emoji accents, heavy typography, and fun interactions. Features purple/pink/yellow color schemes with lots of personality and enthusiasm.",
-    status: "Implemented",
-    route: "/ux/9/home",
-    features: [
-      "Bold Saturated Colors",
-      "Black Font Weights",
-      "Playful Emoji Integration",
-      "Multi-Color Gradients",
-      "Energetic Startup Vibe"
-    ]
-  },
-  {
-    id: 10,
-    name: "Executive Suite",
-    description: "Sophisticated premium design with clean white backgrounds and refined gold accents. Inspired by luxury corporate environments with serif typography, elegant spacing, and refined details. Professional elegance with an upscale executive aesthetic.",
-    status: "Implemented",
-    route: "/ux/10/home",
-    features: [
-      "Clean Light Palette",
-      "Gold/Amber Accents",
-      "Serif Typography",
-      "Premium Sophistication",
-      "Executive Luxury Feel"
-    ]
-  },
-  {
-    id: 11,
-    name: "Premium Vibrant",
-    description: "Hybrid design combining executive sophistication with energetic colors. Features professional serif typography and refined spacing from Executive Suite, paired with bold vibrant gradients and colorful navigation from Vibrant Energy. Best of both worlds - professional yet lively.",
-    status: "Implemented",
-    route: "/ux/11/home",
-    features: [
-      "Vibrant Gradient Navigation",
-      "Professional Serif Typography",
-      "Multi-Color Card Accents",
-      "Executive Sophistication",
-      "Energetic Visual Elements"
-    ]
-  },
-  {
-    id: 12,
-    name: "Zen Explorer",
-    description: "Based on Minimal Zen (UX 8) with enhanced data exploration hero promoting AI chat and search. Includes a developer widget for real-time color scheme switching between 7 beautiful palettes (Coral, Purple, Teal, Blue, Emerald, Amber, AstraZeneca Brand). Perfect for finding your ideal aesthetic.",
-    status: "Implemented",
-    route: "/ux/12/home",
-    features: [
-      "AI Chat & Search Hero",
-      "7 Dynamic Color Schemes",
-      "Developer Color Picker",
-      "Minimal Zen Aesthetic",
-      "Real-Time Theme Switching"
-    ]
-  },
-  {
-    id: 13,
-    name: "Zen Dual Nav",
-    description: "Evolution of Zen Explorer with dual navigation layout. Features left sidebar navigation combined with top bar for quick actions and search. Maintains the minimal zen aesthetic with light typography and dynamic color scheme system. Best of both navigation worlds.",
-    status: "Implemented",
-    route: "/ux/13/home",
-    features: [
-      "Sidebar + Top Bar Navigation",
-      "7 Dynamic Color Schemes",
-      "Minimal Zen Aesthetic",
-      "Developer Color Picker",
-      "Enhanced Navigation UX"
-    ]
-  },
-  {
-    id: 14,
-    name: "Garden Zen",
-    description: "A different zen approach with nature-inspired serenity. Features soft sage greens and teals, organic rounded shapes, ultra-light typography, and abundant breathing space. Inspired by peaceful gardens with language like 'cultivate', 'nurture', and 'flourish' throughout.",
-    status: "Implemented",
-    route: "/ux/14/home",
-    features: [
-      "Nature-Inspired Greens & Teals",
-      "Organic Rounded Shapes",
-      "Ultra-Light Typography",
-      "Abundant White Space",
-      "Garden-Themed Language"
-    ]
-  }
 ]
 
 export default function ContextPage() {
@@ -297,7 +213,7 @@ export default function ContextPage() {
             UX Theme Concepts
           </h2>
           <p className="text-muted-foreground mb-6">
-            Explore different visual designs and interaction patterns
+            These themes were created to demonstrate the range of visual directions possible, from minimal and calm to bold and energetic, showing how different the same interface can feel with different design choices.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 max-w-7xl mx-auto">
@@ -358,7 +274,7 @@ export default function ContextPage() {
 
         {/* Footer */}
         <div className="mt-16 text-center text-sm text-muted-foreground">
-          <p>Prototyping Environment • AstraZeneca</p>
+          <p>Prototyping Environment</p>
         </div>
       </div>
     </div>

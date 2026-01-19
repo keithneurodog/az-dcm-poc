@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useCallback } from "react"
 import {
   Dialog,
   DialogContent,
@@ -9,34 +10,74 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, Workflow } from "lucide-react"
+import { ArrowRight, Play, Workflow, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import type { LucideIcon } from "lucide-react"
 
+export interface FeatureForPreview {
+  id: number
+  icon: LucideIcon
+  title: string
+  short: string
+  previewDescription: string
+  previewImagePath?: string
+  route: string
+  isFlowEmbedded: boolean
+  flowStartRoute?: string
+  stepNumber?: number
+  stepLabel?: string
+  category: "workflow" | "discovery" | "analytics"
+}
+
 interface FeaturePreviewDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  feature: {
-    icon: LucideIcon
-    title: string
-    previewDescription: string
-    previewImagePath?: string
-    route: string
-    isFlowEmbedded: boolean
-    flowStartRoute?: string
-    stepNumber?: number
-    stepLabel?: string
-    category: "workflow" | "discovery" | "analytics"
-  } | null
+  feature: FeatureForPreview | null
+  features?: FeatureForPreview[]
+  onNavigate?: (feature: FeatureForPreview) => void
 }
 
 export function FeaturePreviewDialog({
   open,
   onOpenChange,
   feature,
+  features = [],
+  onNavigate,
 }: FeaturePreviewDialogProps) {
+  const currentIndex = feature ? features.findIndex(f => f.id === feature.id) : -1
+  const hasPrev = currentIndex > 0
+  const hasNext = currentIndex >= 0 && currentIndex < features.length - 1
+
+  const goToNext = useCallback(() => {
+    if (hasNext && onNavigate && currentIndex >= 0) {
+      onNavigate(features[currentIndex + 1])
+    }
+  }, [hasNext, onNavigate, features, currentIndex])
+
+  const goToPrev = useCallback(() => {
+    if (hasPrev && onNavigate) {
+      onNavigate(features[currentIndex - 1])
+    }
+  }, [hasPrev, onNavigate, features, currentIndex])
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!open) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        goToPrev()
+      } else if (e.key === "ArrowRight") {
+        goToNext()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [open, goToPrev, goToNext])
+
   if (!feature) return null
 
   const Icon = feature.icon
@@ -64,7 +105,35 @@ export function FeaturePreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[90vw] lg:max-w-6xl max-h-[95vh] overflow-y-auto">
+        {/* Navigation buttons */}
+        {features.length > 1 && onNavigate && (
+          <>
+            <button
+              onClick={goToPrev}
+              disabled={!hasPrev}
+              className={cn(
+                "absolute left-2 top-1/2 -translate-y-1/2 z-10 size-10 rounded-full bg-white border border-neutral-200 flex items-center justify-center shadow-sm transition-all",
+                hasPrev ? "hover:bg-neutral-50 hover:border-neutral-300 cursor-pointer" : "opacity-30 cursor-not-allowed"
+              )}
+              aria-label="Previous feature"
+            >
+              <ChevronLeft className="size-5 text-neutral-600" strokeWidth={1.5} />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={!hasNext}
+              className={cn(
+                "absolute right-2 top-1/2 -translate-y-1/2 z-10 size-10 rounded-full bg-white border border-neutral-200 flex items-center justify-center shadow-sm transition-all",
+                hasNext ? "hover:bg-neutral-50 hover:border-neutral-300 cursor-pointer" : "opacity-30 cursor-not-allowed"
+              )}
+              aria-label="Next feature"
+            >
+              <ChevronRight className="size-5 text-neutral-600" strokeWidth={1.5} />
+            </button>
+          </>
+        )}
+
         <DialogHeader>
           <div className="flex items-start gap-3 mb-2">
             <div
@@ -82,14 +151,22 @@ export function FeaturePreviewDialog({
               <DialogTitle className="text-lg font-medium text-neutral-900">
                 {feature.title}
               </DialogTitle>
-              {feature.stepLabel && (
-                <div className="flex items-center gap-1 mt-1.5 text-xs text-neutral-500">
-                  <Workflow className="size-3" />
-                  <span>{feature.stepLabel}</span>
-                  <span className="text-neutral-300 mx-1">·</span>
-                  <span>DCM Wizard</span>
-                </div>
-              )}
+              <div className="flex items-center gap-1 mt-1.5 text-xs text-neutral-500">
+                {feature.stepLabel && (
+                  <>
+                    <Workflow className="size-3" />
+                    <span>{feature.stepLabel}</span>
+                    <span className="text-neutral-300 mx-1">·</span>
+                    <span>DCM Wizard</span>
+                  </>
+                )}
+                {features.length > 1 && (
+                  <>
+                    {feature.stepLabel && <span className="text-neutral-300 mx-1">·</span>}
+                    <span className="text-neutral-400">{currentIndex + 1} of {features.length}</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <DialogDescription className="text-sm text-neutral-600 leading-relaxed pt-2">
@@ -100,7 +177,8 @@ export function FeaturePreviewDialog({
         {/* Preview Image or Placeholder */}
         <div
           className={cn(
-            "relative aspect-video w-full rounded-lg overflow-hidden border",
+            "relative w-full rounded-lg overflow-hidden border",
+            !feature.previewImagePath && "aspect-video",
             !feature.previewImagePath && categoryStyles.bg,
             !feature.previewImagePath && categoryStyles.border,
             feature.previewImagePath && "border-neutral-200"
@@ -110,9 +188,10 @@ export function FeaturePreviewDialog({
             <Image
               src={feature.previewImagePath}
               alt={`${feature.title} preview`}
-              fill
-              className="object-cover object-top"
-              sizes="(max-width: 768px) 100vw, 768px"
+              width={1920}
+              height={1080}
+              className="w-full h-auto"
+              sizes="(max-width: 1024px) 90vw, 1152px"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center">

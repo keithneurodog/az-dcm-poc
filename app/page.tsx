@@ -7,7 +7,6 @@ import { FeaturePreviewDialog } from "@/components/feature-preview-dialog"
 import { FlowEmbeddedBadge } from "@/components/flow-embedded-badge"
 import {
   ArrowRight,
-  Sparkles,
   Tags,
   Activity,
   FileCheck,
@@ -20,7 +19,6 @@ import {
   Compass,
   BarChart3,
   Lightbulb,
-  ChevronRight,
   Eye,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
@@ -253,111 +251,35 @@ export default function IntroductionPage() {
         </div>
       </nav>
 
-      {/* Hero - editorial style */}
-      <header className="pt-32 pb-20 px-6">
+      {/* Header */}
+      <header className="pt-28 pb-12 px-6">
         <div className="max-w-4xl mx-auto">
-          {/* Main headline */}
-          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-light leading-[0.95] tracking-tight text-neutral-900 mb-8">
-            What if AI helped
-            <br />
-            <span className="text-neutral-400">without taking over?</span>
+          <h1 className="text-3xl font-light tracking-tight text-neutral-900 mb-3">
+            DCM UI Prototype
           </h1>
+          <p className="text-neutral-500 max-w-xl">
+            Exploring how AI assistance could be embedded into the data collection workflow.
+            This prototype demonstrates 12 features across collection creation, discovery, and analytics.
+          </p>
 
-          {/* Casual intro */}
-          <div className="max-w-xl">
-            <p className="text-lg text-neutral-600 leading-relaxed mb-6">
-              A concept exploration. Instead of a chatbot, AI is embedded into
-              the actual interface: suggesting, predicting, catching mistakes.
-              Users stay in the driver&apos;s seat.
-            </p>
-            <p className="text-sm text-neutral-500">
-              12 features. All working. Have a look around.
-            </p>
-          </div>
-
-          {/* Quick links */}
-          <div className="flex items-center gap-4 mt-10">
+          <div className="flex items-center gap-4 mt-8">
             <Link href="/collectoid">
-              <Button className="rounded-full h-11 px-6 bg-neutral-900 hover:bg-neutral-800 text-sm">
-                <Sparkles className="mr-2 size-4" />
-                Try the prototype
+              <Button className="rounded-full h-10 px-5 bg-neutral-900 hover:bg-neutral-800 text-sm">
+                Open Prototype
+                <ArrowRight className="ml-2 size-3.5" />
               </Button>
             </Link>
-            <Link
-              href="#features"
-              className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors flex items-center gap-1"
-            >
-              or scroll to explore
-              <ChevronRight className="size-3" />
+            <Link href="/context">
+              <Button
+                variant="outline"
+                className="rounded-full h-10 px-5 text-sm border-neutral-300 hover:border-neutral-400"
+              >
+                UX Variations
+              </Button>
             </Link>
           </div>
         </div>
       </header>
-
-      {/* The idea - conversational explanation */}
-      <section className="py-20 px-6 border-t border-neutral-200">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left column - the pitch */}
-            <div className="lg:col-span-5">
-              <span className="text-xs text-neutral-400 uppercase tracking-wider">
-                The idea
-              </span>
-              <h2 className="text-2xl font-light text-neutral-900 mt-3 leading-snug">
-                Most AI interfaces are either chatbots or &quot;magic
-                buttons.&quot; This explores something different.
-              </h2>
-            </div>
-
-            {/* Right column - comparison */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* What this isn't */}
-              <div className="bg-white rounded-2xl p-6 border border-neutral-200">
-                <div className="text-xs text-neutral-400 mb-4 uppercase tracking-wider">
-                  What this isn&apos;t
-                </div>
-                <div className="space-y-3">
-                  {[
-                    "A chatbot that asks 20 questions",
-                    "Black-box recommendations",
-                    "AI that auto-submits for you",
-                  ].map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-neutral-500"
-                    >
-                      <span className="text-neutral-300 mt-0.5">—</span>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* What this demonstrates */}
-              <div className="bg-neutral-900 rounded-2xl p-6 text-white">
-                <div className="text-xs text-neutral-500 mb-4 uppercase tracking-wider">
-                  What this demonstrates
-                </div>
-                <div className="space-y-3">
-                  {[
-                    "AI woven into familiar patterns",
-                    "Transparent suggestions you can edit",
-                    "Users stay in control",
-                  ].map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-neutral-300"
-                    >
-                      <span className="text-emerald-400 mt-0.5">→</span>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Features - browsable grid */}
       <section id="features" className="py-20 px-6 scroll-mt-10">
@@ -368,7 +290,7 @@ export default function IntroductionPage() {
                 Features
               </span>
               <h2 className="text-2xl font-light text-neutral-900 mt-2">
-                12 places where AI helps
+                Prototype Features
               </h2>
             </div>
             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-neutral-400">
@@ -474,36 +396,12 @@ export default function IntroductionPage() {
         </div>
       </section>
 
-      {/* Bottom CTA - casual */}
-      <section className="py-20 px-6 border-t border-neutral-200">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-neutral-500 mb-6">
-            That&apos;s the concept. Best way to understand it is to try it.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/collectoid">
-              <Button className="rounded-full h-11 px-6 bg-neutral-900 hover:bg-neutral-800 text-sm">
-                Open the prototype
-                <ArrowRight className="ml-2 size-4" />
-              </Button>
-            </Link>
-            <Link href="/context">
-              <Button
-                variant="ghost"
-                className="rounded-full h-11 px-6 text-sm text-neutral-500 hover:text-neutral-900"
-              >
-                See the UX variations
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Footer - minimal */}
       <footer className="py-8 px-6 border-t border-neutral-200">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-xs text-neutral-400">
-          <span>AstraZeneca · Internal Prototype</span>
-          <span>Collectoid POC · 2024</span>
+          <span>Internal Prototype</span>
+          <span>DCM POC · 2026</span>
         </div>
       </footer>
 
@@ -512,6 +410,8 @@ export default function IntroductionPage() {
         open={!!previewFeature}
         onOpenChange={(open) => !open && setPreviewFeature(null)}
         feature={previewFeature}
+        features={FEATURES}
+        onNavigate={setPreviewFeature}
       />
     </div>
   )

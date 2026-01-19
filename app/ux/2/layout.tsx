@@ -24,9 +24,9 @@ function UX14Header() {
           </div>
           <nav className="flex items-center gap-1">
             {[
-              { name: "Home", href: "/ux/14/home" },
-              { name: "Search", href: "/ux/14/search" },
-              { name: "Management", href: "/ux/14/management" },
+              { name: "Home", href: "/ux/2/home" },
+              { name: "Search", href: "/ux/2/search" },
+              { name: "Management", href: "/ux/2/management" },
             ].map((item) => (
               <a
                 key={item.name}

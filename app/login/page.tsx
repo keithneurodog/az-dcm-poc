@@ -101,7 +101,7 @@ export default function LoginPage() {
 
           <div className="mt-6 pt-4 border-t border-neutral-100 text-center">
             <p className="text-xs font-light text-neutral-500">
-              AstraZeneca - Internal Prototype
+              Internal Prototype
             </p>
           </div>
         </CardContent>
