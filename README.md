@@ -516,12 +516,21 @@ Pages can have multiple UI variations for A/B testing:
 app/collectoid/discover/ai/
 ├── page.tsx              # Variation loader
 └── _variations/
-    ├── index.ts          # Variation registry
-    ├── variation-1.tsx   # Default: Collection-focused
+    ├── index.ts          # Variation registry + default
+    ├── variation-1.tsx   # Collection-focused
     └── variation-datasets.tsx  # Dataset-first view
 ```
 
-Use the **DevWidget** (bottom-right) to switch variations per route.
+**Setting default variation** in `_variations/index.ts`:
+```typescript
+export const variations: VariationConfig[] = [
+  { id: "1", name: "Option A", component: VariationA },
+  { id: "datasets", name: "Option B", component: VariationB },
+]
+export const defaultVariation = "datasets"  // ← change this
+```
+
+User selections stored in sessionStorage, override default until cleared. Use **DevWidget** (bottom-right) to switch.
 
 ### Notes System
 

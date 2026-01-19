@@ -17,4 +17,4 @@ export const variations: VariationConfig[] = [
   },
 ]
 
-export const defaultVariation = "1"
+export const defaultVariation = "datasets"

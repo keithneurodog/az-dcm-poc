@@ -538,11 +538,11 @@ ${currentUser.email}`
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/collectoid")}
+          onClick={() => router.push("/collectoid/collections")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" strokeWidth={1.5} />
-          Back to Dashboard
+          Back to Collections
         </Button>
 
         <div className="flex items-start justify-between mb-6">

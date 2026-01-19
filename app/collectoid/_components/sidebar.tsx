@@ -82,9 +82,7 @@ export function Sidebar() {
             let isActive
 
             if (item.name === "Dashboard") {
-              isActive =
-                pathname === basePath ||
-                (pathname.startsWith(`${basePath}/dcm/progress`) && !pathname.startsWith(`${basePath}/dcm/create`))
+              isActive = pathname === basePath
             } else if (item.name === "Create Collection") {
               isActive = pathname.startsWith(`${basePath}/dcm/create`)
             } else if (item.name === "Discover Data") {
@@ -96,7 +94,7 @@ export function Sidebar() {
             } else if (item.name === "Analytics") {
               isActive = pathname.startsWith(`${basePath}/dcm/analytics`)
             } else if (item.name === "Browse Collections") {
-              isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`)
+              isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`) || pathname.startsWith(`${basePath}/dcm/progress`)
             } else {
               isActive = pathname === item.href
             }
