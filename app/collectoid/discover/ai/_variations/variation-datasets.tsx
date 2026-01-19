@@ -253,6 +253,18 @@ export default function VariationDatasets() {
       result = result.filter(d => accessPlatformFilters.includes(d.accessPlatform))
     }
 
+    // Simulate semantic/vector search filtering when smart filter is active
+    // This removes ~40-50% of results to demonstrate what AI filtering would feel like
+    if (smartFilterActive && smartFilterQuery) {
+      // Use a deterministic "hash" based on dataset id + query so results are consistent
+      const queryHash = smartFilterQuery.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      result = result.filter(d => {
+        const idHash = d.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+        // Keep datasets where (idHash + queryHash) % 10 < 6 (roughly 60% kept)
+        return (idHash + queryHash) % 10 < 6
+      })
+    }
+
     // Sort results
     if (sortBy === "name") {
       result = [...result].sort((a, b) => a.name.localeCompare(b.name))
@@ -263,7 +275,7 @@ export default function VariationDatasets() {
     }
 
     return result
-  }, [phaseFilters, statusFilters, therapeuticAreaFilters, geographyFilters, accessPlatformFilters, sortBy, smartFilterActive])
+  }, [phaseFilters, statusFilters, therapeuticAreaFilters, geographyFilters, accessPlatformFilters, sortBy, smartFilterActive, smartFilterQuery])
 
   // Group datasets by access status
   const groupedDatasets = useMemo(() => {
