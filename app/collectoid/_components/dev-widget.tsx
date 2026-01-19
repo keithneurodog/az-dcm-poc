@@ -1,22 +1,41 @@
 "use client"
 
-import { useState } from "react"
-import { Palette, X, Layers, Check, RotateCcw } from "lucide-react"
+import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
+import { Palette, X, Layers, Check, RotateCcw, HelpCircle } from "lucide-react"
 import { useColorScheme, colorSchemes } from "./color-context"
 import { useVariation } from "./variation-context"
 import { useRouteVariations } from "./use-route-variations"
+import { getHelpContent } from "./help-content"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function DevWidget() {
+  const pathname = usePathname()
   const [isColorOpen, setIsColorOpen] = useState(false)
   const [isVariationOpen, setIsVariationOpen] = useState(false)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [shouldWiggle, setShouldWiggle] = useState(false)
   const { scheme, schemeName, setScheme } = useColorScheme()
   const { getVariation, setVariation } = useVariation()
-  const { variations: routeVariations, hasVariations, pathname } = useRouteVariations()
+  const { variations: routeVariations, hasVariations, pathname: routePathname } = useRouteVariations()
+
+  const helpContent = getHelpContent(pathname)
+  const hasHelp = !!helpContent
+
+  // Trigger wiggle animation once when help becomes available
+  useEffect(() => {
+    if (hasHelp) {
+      const timer = setTimeout(() => {
+        setShouldWiggle(true)
+        setTimeout(() => setShouldWiggle(false), 600)
+      }, 500) // Delay slightly so user notices it
+      return () => clearTimeout(timer)
+    }
+  }, [pathname, hasHelp])
 
   const currentVariationId = hasVariations
-    ? getVariation(pathname) || routeVariations?.defaultVariation
+    ? getVariation(routePathname) || routeVariations?.defaultVariation
     : null
 
   const currentVariation = hasVariations && routeVariations
@@ -31,8 +50,33 @@ export function DevWidget() {
 
   const handleRevertToDefault = () => {
     if (routeVariations?.defaultVariation) {
-      setVariation(pathname, routeVariations.defaultVariation)
+      setVariation(routePathname, routeVariations.defaultVariation)
     }
+  }
+
+  // Helper to render markdown-like content
+  const renderContent = (content: string) => {
+    return content.split('\n\n').map((paragraph, i) => {
+      if (paragraph.startsWith('**') && paragraph.includes(':**')) {
+        const [title, ...rest] = paragraph.split(':**')
+        return (
+          <div key={i} className="mb-3">
+            <p className="text-xs font-medium text-neutral-800 mb-1">{title.replace(/\*\*/g, '')}:</p>
+            <p className="text-xs text-neutral-600 leading-relaxed">{rest.join(':**')}</p>
+          </div>
+        )
+      }
+      if (paragraph.startsWith('•')) {
+        return (
+          <ul key={i} className="text-xs text-neutral-600 space-y-1 mb-3">
+            {paragraph.split('\n').map((line, j) => (
+              <li key={j} className="leading-relaxed">{line}</li>
+            ))}
+          </ul>
+        )
+      }
+      return <p key={i} className="text-xs text-neutral-600 leading-relaxed mb-3">{paragraph}</p>
+    })
   }
 
   return (
@@ -114,7 +158,7 @@ export function DevWidget() {
               return (
                 <button
                   key={variation.id}
-                  onClick={() => setVariation(pathname, variation.id)}
+                  onClick={() => setVariation(routePathname, variation.id)}
                   className={cn(
                     "w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left border",
                     isActive
@@ -146,6 +190,36 @@ export function DevWidget() {
         </div>
       )}
 
+      {/* Help Panel - Only shown when route has help content */}
+      {isHelpOpen && helpContent && (
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-neutral-200 p-5 w-80">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-100">
+            <div className="flex items-center gap-2">
+              <HelpCircle className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+              <span className="font-light text-sm text-neutral-900">{helpContent.title}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsHelpOpen(false)}
+              className="h-6 w-6 p-0 hover:bg-neutral-100 rounded-full"
+            >
+              <X className="size-3" />
+            </Button>
+          </div>
+
+          <div className="max-h-64 overflow-y-auto">
+            {renderContent(helpContent.content)}
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-neutral-100">
+            <p className="text-[10px] font-light text-neutral-400 text-center">
+              This explains the prototype, not the application
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Buttons */}
       <div className="flex flex-col gap-2">
         {/* Variations Button - Only shown when route has variations */}
@@ -155,6 +229,7 @@ export function DevWidget() {
               onClick={() => {
                 setIsVariationOpen(!isVariationOpen)
                 setIsColorOpen(false)
+                setIsHelpOpen(false)
               }}
               className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg border transition-all",
@@ -190,6 +265,7 @@ export function DevWidget() {
           onClick={() => {
             setIsColorOpen(!isColorOpen)
             setIsVariationOpen(false)
+            setIsHelpOpen(false)
           }}
           className={cn(
             "flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg border transition-all",
@@ -203,6 +279,29 @@ export function DevWidget() {
             Colors
           </span>
         </button>
+
+        {/* Help Button - Only shown when route has help content */}
+        {hasHelp && (
+          <button
+            onClick={() => {
+              setIsHelpOpen(!isHelpOpen)
+              setIsColorOpen(false)
+              setIsVariationOpen(false)
+            }}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg border transition-all",
+              isHelpOpen
+                ? `bg-gradient-to-r ${scheme.from} ${scheme.to} text-white border-transparent`
+                : "bg-white/95 backdrop-blur-xl border-neutral-200 hover:bg-neutral-50",
+              shouldWiggle && "animate-wiggle-once"
+            )}
+          >
+            <HelpCircle className={cn("size-4", isHelpOpen ? "text-white" : scheme.from.replace("from-", "text-"))} />
+            <span className={cn("text-xs font-light", isHelpOpen ? "text-white" : "text-neutral-700")}>
+              About
+            </span>
+          </button>
+        )}
       </div>
     </div>
   )

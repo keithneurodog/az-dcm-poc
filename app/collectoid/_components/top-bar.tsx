@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, Search, HelpCircle } from "lucide-react"
+import { Bell, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -32,13 +32,6 @@ export function TopBar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative size-9 p-0 rounded-full hover:bg-neutral-100"
-            >
-              <HelpCircle className="size-5 text-neutral-600" />
-            </Button>
             <Button
               variant="ghost"
               size="sm"
