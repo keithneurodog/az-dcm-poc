@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useColorScheme } from "@/app/collectoid/_components"
-import { useNotifications } from "@/app/collectoid/_components"
+import { useColorScheme } from "@/app/collectoid-v2/_components"
+import { useNotifications } from "@/app/collectoid-v2/_components"
 import { cn } from "@/lib/utils"
 import {
   Clock,
@@ -131,7 +131,7 @@ export default function CollectoidDashboard() {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("dcm_current_collection_id", collectionId)
     }
-    router.push("/collectoid/dcm/progress")
+    router.push("/collectoid-v2/dcm/progress")
   }
 
   const getStatusInfo = (status: string) => {
@@ -170,7 +170,7 @@ export default function CollectoidDashboard() {
         {/* CTA */}
         <div className="flex items-center justify-center gap-4">
           <Button
-            onClick={() => router.push("/collectoid/collections")}
+            onClick={() => router.push("/collectoid-v2/collections")}
             variant="outline"
             className="rounded-full px-8 font-light h-14 text-base border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
           >
@@ -178,7 +178,7 @@ export default function CollectoidDashboard() {
             Browse Collections
           </Button>
           <Button
-            onClick={() => router.push("/collectoid/dcm/create")}
+            onClick={() => router.push("/collectoid-v2/dcm/create")}
             className={cn(
               "bg-gradient-to-r text-white rounded-full px-10 font-light h-14 text-base shadow-lg hover:shadow-xl transition-all",
               scheme.from,
@@ -196,7 +196,7 @@ export default function CollectoidDashboard() {
         {/* Critical Blockers */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/collectoid/notifications?filter=blocker")}
+          onClick={() => router.push("/collectoid-v2/notifications?filter=blocker")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -249,7 +249,7 @@ export default function CollectoidDashboard() {
         {/* Pending Mentions */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/collectoid/notifications?filter=mention")}
+          onClick={() => router.push("/collectoid-v2/notifications?filter=mention")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -302,7 +302,7 @@ export default function CollectoidDashboard() {
         {/* Nearing SLA */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/collectoid/collections?status=pending_approval")}
+          onClick={() => router.push("/collectoid-v2/collections?status=pending_approval")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -358,7 +358,7 @@ export default function CollectoidDashboard() {
         {/* Ready for Review */}
         <Card
           className="border-neutral-200 rounded-2xl overflow-hidden cursor-pointer transition-all hover:shadow-lg bg-white"
-          onClick={() => router.push("/collectoid/collections?status=completed")}
+          onClick={() => router.push("/collectoid-v2/collections?status=completed")}
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-2">
@@ -536,7 +536,7 @@ export default function CollectoidDashboard() {
                       if (typeof window !== "undefined") {
                         sessionStorage.setItem("dcm_current_collection_id", notification.collectionId)
                       }
-                      router.push("/collectoid/notifications")
+                      router.push("/collectoid-v2/notifications")
                     }}
                     className={cn(
                       "p-3 rounded-xl border cursor-pointer hover:shadow-md transition-all",
@@ -570,7 +570,7 @@ export default function CollectoidDashboard() {
 
             <Button
               variant="outline"
-              onClick={() => router.push("/collectoid/notifications")}
+              onClick={() => router.push("/collectoid-v2/notifications")}
               className="w-full rounded-xl font-light border-neutral-200"
             >
               View All Notifications
@@ -747,7 +747,7 @@ export default function CollectoidDashboard() {
           suggestions and smart bundling recommendations
         </p>
         <Button
-          onClick={() => router.push("/collectoid/dcm/create")}
+          onClick={() => router.push("/collectoid-v2/dcm/create")}
           className={cn(
             "bg-gradient-to-r text-white rounded-full px-8 font-light shadow-lg hover:shadow-xl transition-all",
             scheme.from,
