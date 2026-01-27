@@ -1,0 +1,186 @@
+Hi Beata, Divya, et al.
+
+@Partyka, Beata, @Dayanidhi, Divya - Thank you for your time and input provided. Please find notes from the call including actions, conclusions, (some) process steps, requirements etc. Please let me know if I missed or misunderstood anything.
+@Hayes, Keith (20/15 Visioneers) - Please review the below notes as I believe it provides quite relevant input to your work.
+All, please review and provide your feedback, suggestions etc.
+Purpose
+Define the handover process and requirements between:
+The team that defines data provisioning criteria (collection “initiators”/business owners)
+The team that sets up policy and executes data provisioning (DPO/provisioning operations)
+Focus covered both tactical (near-term) and future-state scenarios.
+Main decisions/suggestions
+Provisioning team wants early visibility of proposed collections to provide BAU perspective, challenge criteria, and flag user-group realities.
+The criteria must be clear enough that they can be turned into specific metadata concepts. No ambiguous terms (e.g., “yellow studies”).
+For the current Ranger-based provisioning process, a concrete list of study IDs/d-codes is mandatory. Criteria alone are insufficient.
+Avoid broad org-driven lists (e.g., “all statisticians in oncology”). Instead, use specific tagged teams that someone actively manages to control who has access.
+Until future system exists, an Excel-based tracker should/will be used.
+All collection decisions and changes must be captured in a system-of-record. Tactically, it is suggested to have a timestamped email + Excel tracker. Future vision is to have a metadata-driven system with version history.
+Define exactly which data modalities and from which source systems to provision, and where consumption is enabled (Domino/SCP/AI Bench/etc.). Boundaries of provisioning vs. consumption arrangements need a leadership decision.
+Use a collections visibility “tracker” to coordinate BAU ad-hoc requests vs. upcoming collections; advise requesters to wait when sensible.
+Roles in the process
+Data Consumer Lead. A person who defines intent, proposes criteria, supplies the list of assets, nominates a Collection Leader.
+Data Owner/Delegate Data Owner. A person who maintains the virtual team list (tags), validates collection criteria, monitors changes in user list, and communicates updates.
+Provisioning Operations (DPO). A team which validates due diligence completion or executes pending checks, configures policies (Ranger/Starburst), executes provisioning across modalities and environments, updates trackers.
+Systems Teams (Ranger/Immuta/Starburst/PDP/SCP/Domino/AI Bench/IO platform). Groups/Team/Platform Owners who execute changes as requested, support audit trails.
+Data Office leadership/Value Stream 2. A group or a individual who decides default provisioning boundaries and supported consumption environments. They should set standard metadata model and future system adoption.
+Based on the above and Requirements. Note that not all Acceptance Criteria (AC) have established yet. Background information is to be added. Jira numbers are added in the brackets (e.g. VS2-329)
+Criteria and rules for assets (VS2-329)
+As a DPO officer, I want access criteria to map to stable metadata fields so that asset lists are unambiguous and reproducible.
+AC:
+GIVEN an Open Data Collection access criteria WHEN defining them using metadata fields THEN the criteria to point to unambiguous list of assets AND the asset list is reproduceable.
+GIVEN an Open Data Collection access criteria WHEN they reference metadata fields THEN they are stable and explicit
+GIVEN Open Data Collection assets WHEN input criteria are provided THEN list of study d-codes OR Study IDs are listed.
+User scope for access model (VS2-330)
+As a Data Owner/Delegate Data Owner, I want to maintain a named virtual team of users so that access is set correctly for the collection.
+AC:
+GIVEN an Open Data Collection WHEN one is created THEN a “virtual team” list of users is provided.
+GIVEN an Open Data Collection User definition WHEN “virtual team” members are selected THEN individual User selection is enabled.
+GIVEN an existing “virtual team” WHEN it is being updated THEN addition of Users to the list is enabled.
+GIVEN an existing “virtual team” WHEN it is being updated THEN removal of Users from the list is enabled.
+Due diligence and compliance output (this requirement most likely will be divided into 2. First for recording the check and other for execution submission) (VS2-331)
+As a DPO Officer, I want to document ethical and legal status for each study and asset So that the collection meets all compliance requirements.
+AC:
+GIVEN an Open Access Collection WHEN compliance for each Study is verified THEN ethical status confirmation record is enabled.
+GIVEN an Open Access Collection WHEN compliance for each Study is verified THEN legal status confirmation record is enabled.
+GIVEN an Open Access Collection WHEN compliance for each Study is viewed THEN all remaining checks that are outstanding are listed.
+GIVEN an Open Access Collection WHEN it is submitted for execution THEN no outstanding legal or ethical checks are present.
+Data Collection modalities (VS2-332)
+As a Data Owner/Delegate Data Owner, I want to specify data modalities for each study so that data sourcing and access are clearly defined.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection of particular data modality is included or excluded for each study is enabled.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection plural data modalities for a single Study is enabled.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN no Study has blank data modality record.
+Data Collection sources (VS2-333)
+As a Data Owner/Delegate Data Owner, I want to specify data sources for each Data Collection so that data sourcing and access are clearly defined.
+AC:
+GIVEN defined data modality for a Study WHEN the source system for it is recorded THEN selection of data source for each data modality is enabled.
+GIVEN defined data modality for a Study WHEN it is submitted for execution THEN no blank data source for each modality is present.
+Consumption environments (VS2-334)
+As a Data Owner/Delegate Data Owner, I want to specify target analysis environments so that provisioning scope and boundaries are clearly defined.
+AC:
+GIVEN an Open Access Collection WHEN recording where User will access the data THEN target analysis environment selection is enabled.
+GIVEN a default provisioning boundary defined by Leadership WHEN a data collection is set THEN the default boundaries are applied (e.g., "Provision to Domino only").
+GIVEN a default provisioning boundary defined by Leadership WHEN a data collection analysis is needed in additional or other environments THEN additional ones are available for selection.
+Versioning and Change Management (VS2-335)
+As a Data Owner/Delegate Data Owner and DPO Officer, I want to maintain version history of collection definitions so that all changes are tracked.
+AC:
+GIVEN an existing Open Access Collection WHEN any changes are made to it THEN a version history is maintained.
+GIVEN a change to Open Access Collection WHEN the change is saved THEN a timestamped artifact is created.
+GIVEN a timestamped artifact for a change made to Open Access Collection WHEN the change is saved THEN it records what was changed, who made the change ad when the change was made.
+GIVEN an existing Open Access Collection WHEN an audit is performed THEN all changes are traceable through timestamped artifacts.
+Data Collection operations tracker (this requirement most likely will be divided into 2. First for reviewing requests and other for requests cross checks) VS2-336
+As a Data Owner/Delegate Data Owner and DPO Officer and Data Consumer Lead, I want to track operational details for data collection so that progress and status are visible and auditable.
+AC:
+GIVEN a request for Data Collection WHEN its information status is required THEN a tracking record is available.
+GIVEN an existing Data Collection WHEN operational tracking is required THEN a tracking record is available.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes due diligence status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes data source availability.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested modality-by-source provisioning status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes relevant dates (to be defined).
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional context.
+GIVEN multiple collections are being processed WHEN a new request is received THEN a cross-check against pending and existing collections is performed.
+GIVEN a cross-check output WHEN a duplicate is found THEN it is flagged for review.
+GIVEN a cross-check output WHEN a duplicate is found THEN Stakeholders are notified of the potential duplicates.
+Data Collection request tracker (VS2-337)
+As a Data Consumer, I want to track operational details for data collection requests so that progress and status are visible.
+AC:
+GIVEN a request for Data Collection WHEN its information status is required THEN a tracking record is available.
+GIVEN an existing Data Collection WHEN operational tracking is required THEN a tracking record is available.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected assets.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected Users OR User groups.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected asset data modalities.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected environment enablement status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes due diligence status.
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes relevant dates (to be defined).
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional
+DPO delivery tracker (VS2-338)
+As a DPO Officer, I want visibility of Open Access delivery so that that dependencies and risks are managed.
+AC:
+GIVEN a collection of approved Studies WHEN checking its status THEN track record of each individual Study is enabled.
+GIVEN a collection of approved Studies WHEN checking track records THEN each method availability (e.g. available in PDP) is enabled.
+GIVEN a collection of approved Studies WHEN particular availability method is not present THEN a mechanism to submit a request the addition is present.
+GIVEN a Study availability method WHEN tracking status is viewed THEN the count of studies that have been added and those are pending are present.
+GIVEN a collection of approved Studies WHEN checking its delivery progress THEN a report showing completed and uncompleted Study deliveries is present.
+Process Steps
+Business demand for a new collection or update to an existing one, or policy change (e.g., AI model training).
+Early notification to DPO with initial intent, draft criteria, and anticipated users.
+Translate draft criteria to meaningful (and static) metadata attributes.
+Produce definitive asset list (study d-codes).
+Identify and assign Data Consumer Lead, Data Owner
+Obtain approved Data Collection artefacts (Open Access Collection, Agreement of Terms, trainings)
+Confirm ethical/legal/data-owner approvals. If pending, assign actions and hold provisioning until cleared.
+Tactical approach is to use email with attachments that includes Excel list of studies, Excel list of users (virtual team tags), modalities per study, source systems per modality, consumption environments, due diligence confirmations. Register the collection in iDAP for traceability (ticket number).
+DPO configures Ranger/Starburst policies study-by-study. Executes data provisioning per modality and source.
+Enable access in specified analysis environments (as per boundary decision).
+Update tracker with per-modality, per-source, per-environment statuses.
+Use a collections visibility tracker (summary) to inform the requesters about the status.
+For conflicting requests (same data, different intents), cross-check tracker to avoid duplicates.
+When criteria/users/assets change, update version and notify impacted teams.
+If data owners revoke assets, auto-update policy where possible and notify the Data Collection Leader to cascade access revoke in other environments (e.g., AI Bench, SCP-EWF).
+Map and track all locations where access was enabled to ensure complete and consistent access revoke across systems.
+Maintain audit trail. Who approved what, when, and where provisioning occurred.
+Record metrics (assets provisioned, users enabled, modalities and sources).
+Next steps
+Marcin to set a follow up session as only a subset of questions and topics were covered
+Marcin to gather feedback regarding any of the above and adjust accordingly.
+
+Please do not hesitate to contact me in case of any questions or concerns.
+
+Kind regards
+Marcin
+
+-----Original Appointment-----
+From: Feistner, Marcin (The Bridge)
+Sent: 25 November 2025 15:58
+To: Feistner, Marcin (The Bridge); Partyka, Beata; Dayanidhi, Divya
+Subject: 90:10 Open Access data provisioning handover process
+When: 28 November 2025 08:30-09:30 (UTC+00:00) Dublin, Edinburgh, Lisbon, London.
+Where: Microsoft Teams Meeting
+
+Hi Divya, Beata,
+
+This call is dedicated to document the requirements and establish 90:10 Open Access handover process between VS2 team that defines data provisioning criteria and your teams to setup policy and execute data provisioning.
+Agenda and topics to discuss
+Handover workflow and documentation
+What triggers a handover between the teams?
+What documentation/artifacts is expected for policy setup and data provisioning?
+What format should the criteria documentation take?
+Where will handover documentation/artifacts be stored and maintained?
+How do we handle updates to existing criteria?
+Incoming request routing
+What is expected from the process when you receive a request for data already in the collection?
+Should you redirect users to 90:10 Open Access team?
+Should you handle it independently using existing documentation?
+Under what circumstances should you escalate to 90:10 Open Access team?
+How do we ensure you have visibility into what has already been defined?
+Do we need a process for Data Collection clarification?
+Policy setup requirements
+What information must be provided to set up policies?
+Data/list of studies
+User list/groups
+Data delivery method
+Usage restrictions
+What are the minimum requirements for the process to start?
+What validation/sign-off is needed before implementation?
+Edge cases and exception handling
+What happens if criteria are incomplete or ambiguous?
+How do we handle urgent requests that bypass normal process?
+What if you identify gaps or conflicts in the criteria?
+Who has authority to make decisions when criteria are unclear?
+Next steps/actions
+Schedule follow-up review session
+Identify any tooling or system needs
+
+Kind regards
+Marcin
