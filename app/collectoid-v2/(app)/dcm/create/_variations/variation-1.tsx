@@ -21,6 +21,11 @@ import {
   CheckCircle2,
   Zap,
   Info,
+  Lock,
+  Eye,
+  EyeOff,
+  Link2,
+  FileEdit,
 } from "lucide-react"
 
 export default function DCMCreateVariation1() {
@@ -100,7 +105,7 @@ export default function DCMCreateVariation1() {
             <Database className={cn("size-8", scheme.from.replace("from-", "text-"))} />
           </div>
           <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
-            Create New Collection
+            Start a New Concept Collection
           </h1>
           {fromAnalytics && (
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-light mb-3">
@@ -332,6 +337,35 @@ export default function DCMCreateVariation1() {
         </div>
       </div>
 
+      {/* Concept Privacy Panel */}
+      <div className={cn("rounded-2xl border p-5 mb-8", scheme.bg, scheme.from.replace("from-", "border-").replace("500", "100"))}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={cn("flex size-11 items-center justify-center rounded-xl bg-gradient-to-br", scheme.from, scheme.to)}>
+              <Lock className="size-5 text-white" />
+            </div>
+            <div>
+              <span className="text-sm font-normal text-neutral-900">This is a private concept</span>
+              <span className="text-sm font-light text-neutral-500 ml-2">— only you can see it</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-5 text-xs font-light text-neutral-600">
+            <div className="flex items-center gap-1.5">
+              <EyeOff className="size-3.5" />
+              <span>Hidden from browse</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Link2 className="size-3.5" />
+              <span>Share by link when ready</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <FileEdit className="size-3.5" />
+              <span>Save &amp; return anytime</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Intent Input Card */}
       <Card className="border-neutral-200 rounded-3xl overflow-hidden shadow-sm mb-8">
         <CardContent className="p-8">
@@ -438,7 +472,7 @@ export default function DCMCreateVariation1() {
           <span className="text-xs font-light text-neutral-600">Collection Purpose</span>
         </div>
         <p className="text-sm font-light text-neutral-500 text-center">
-          Our AI will analyze your intent and suggest relevant data categories from our 30+ category taxonomy
+          Your concept remains private until you choose to publish or share it
         </p>
       </div>
     </div>

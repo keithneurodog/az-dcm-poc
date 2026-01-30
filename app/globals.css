@@ -198,4 +198,8 @@
   .animate-wiggle-once {
     animation: wiggle 0.6s ease-in-out;
   }
+
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
 }

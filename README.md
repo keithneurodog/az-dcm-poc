@@ -564,3 +564,6 @@ See `/docs/INDEX.md` for the documentation entry point.
 ```
 
 **Active specs** have outstanding work. **Archived specs** are for reference only.
+
+
+users can have access to all data - but warnings if terms are not met - 

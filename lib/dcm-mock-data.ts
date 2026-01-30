@@ -562,12 +562,22 @@ export interface Dataset {
   name: string
   therapeuticArea: string[]
   phase: string
-  status: "Active" | "Closed"
+  status: "Active" | "Closed" | "Grey Zone" | "Archived"
   closedDate?: string
   geography: string[]
   patientCount: number
   description: string
   categories: string[] // Category IDs
+
+  // ROAM-specific fields (optional - will use defaults if not provided)
+  firstSubjectIn?: string // FSI date (YYYY-MM-DD) - must be after 2013-12-31 for '90-able
+  databaseLockDate?: string // DBL date (YYYY-MM-DD)
+  isLocked?: boolean // DBL > 6 months ago (convenient toggle)
+  dataProductRights?: "Research Allowed" | "Research Not Allowed" | "Under Review"
+  dataAvailability?: "In PDP" | "In entimICE" | "In CTDS" | "Location Unknown"
+  sponsorType?: "AZ Sponsored" | "ISMO" | "Externally Sponsored" | "Investigator-run"
+  complianceStatus?: "Fully Compliant" | "Ethical Review Pending" | "Legal Review Pending" | "DPR Under Review"
+  modalities?: ("Clinical" | "Genomic" | "Imaging" | "Biomarkers" | "Digital Devices" | "Real-World Data")[]
 
   // Clinical study metadata for preview
   clinicalMetadata?: ClinicalMetadata
@@ -631,6 +641,121 @@ export interface Dataset {
   childDatasets?: ChildDataset[]
 }
 
+// Type for dataset with all ROAM fields guaranteed to be present
+export type DatasetWithROAMFields = Dataset & {
+  firstSubjectIn: string
+  databaseLockDate: string
+  isLocked: boolean
+  dataProductRights: "Research Allowed" | "Research Not Allowed" | "Under Review"
+  dataAvailability: "In PDP" | "In entimICE" | "In CTDS" | "Location Unknown"
+  sponsorType: "AZ Sponsored" | "ISMO" | "Externally Sponsored" | "Investigator-run"
+  complianceStatus: "Fully Compliant" | "Ethical Review Pending" | "Legal Review Pending" | "DPR Under Review"
+  modalities: ("Clinical" | "Genomic" | "Imaging" | "Biomarkers" | "Digital Devices" | "Real-World Data")[]
+}
+
+/**
+ * Enriches a dataset with default ROAM field values derived from existing data.
+ * Used when datasets don't have explicit ROAM fields set.
+ */
+export function enrichDatasetWithROAMDefaults(dataset: Dataset): DatasetWithROAMFields {
+  // Calculate firstSubjectIn from clinicalMetadata or use a reasonable default
+  const firstSubjectIn = dataset.firstSubjectIn ||
+    dataset.clinicalMetadata?.enrollmentStartDate ||
+    "2018-01-01" // Default to post-2013 to be '90-able
+
+  // Calculate databaseLockDate from clinicalMetadata or closedDate
+  const databaseLockDate = dataset.databaseLockDate ||
+    dataset.clinicalMetadata?.studyLockDate ||
+    dataset.closedDate ||
+    undefined
+
+  // Calculate isLocked: DBL > 6 months ago
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+  const isLocked = dataset.isLocked ??
+    (databaseLockDate ? new Date(databaseLockDate) < sixMonthsAgo : false)
+
+  // Derive dataProductRights from aotMetadata or default to "Research Allowed" for closed studies
+  const dataProductRights = dataset.dataProductRights ||
+    (dataset.aotMetadata?.restrictML || dataset.aotMetadata?.restrictSoftwareDev
+      ? "Research Not Allowed"
+      : dataset.status === "Closed" ? "Research Allowed" : "Under Review")
+
+  // Derive dataAvailability from dataLocation
+  const dataAvailability = dataset.dataAvailability ||
+    (dataset.dataLocation?.clinical || dataset.dataLocation?.genomics
+      ? "In PDP" // Assume PDP if any location is specified
+      : "Location Unknown")
+
+  // Derive sponsorType - default to AZ Sponsored
+  const sponsorType = dataset.sponsorType || "AZ Sponsored"
+
+  // Derive complianceStatus from various metadata
+  const complianceStatus = dataset.complianceStatus ||
+    (dataset.aotMetadata?.requireLegalReview
+      ? "Legal Review Pending"
+      : dataset.status === "Closed" ? "Fully Compliant" : "Ethical Review Pending")
+
+  // Derive modalities from categories
+  const modalities = dataset.modalities || deriveModalitiesFromCategories(dataset.categories)
+
+  return {
+    ...dataset,
+    firstSubjectIn,
+    databaseLockDate: databaseLockDate || "Unknown",
+    isLocked,
+    dataProductRights,
+    dataAvailability,
+    sponsorType,
+    complianceStatus,
+    modalities,
+  }
+}
+
+/**
+ * Helper function to derive modalities from category IDs
+ */
+function deriveModalitiesFromCategories(
+  categories: string[]
+): ("Clinical" | "Genomic" | "Imaging" | "Biomarkers" | "Digital Devices" | "Real-World Data")[] {
+  const modalities: Set<"Clinical" | "Genomic" | "Imaging" | "Biomarkers" | "Digital Devices" | "Real-World Data"> = new Set()
+
+  for (const cat of categories) {
+    if (cat.startsWith("sdtm-") || cat.startsWith("adam-")) {
+      modalities.add("Clinical")
+    }
+    if (cat.includes("omics") || cat.includes("genomic") || cat.includes("ctdna")) {
+      modalities.add("Genomic")
+    }
+    if (cat.includes("imaging") || cat.includes("radiology") || cat.includes("scan")) {
+      modalities.add("Imaging")
+    }
+    if (cat.includes("biomarker") || cat.includes("specimen") || cat.includes("lab")) {
+      modalities.add("Biomarkers")
+    }
+    if (cat.includes("device") || cat.includes("wearable") || cat.includes("sensor")) {
+      modalities.add("Digital Devices")
+    }
+    if (cat.includes("rwd") || cat.includes("real-world") || cat.includes("ehr") || cat.includes("claims")) {
+      modalities.add("Real-World Data")
+    }
+  }
+
+  // Default to Clinical if nothing was detected
+  if (modalities.size === 0) {
+    modalities.add("Clinical")
+  }
+
+  return Array.from(modalities)
+}
+
+/**
+ * Get all datasets with ROAM fields enriched
+ */
+export function getEnrichedDatasets(): DatasetWithROAMFields[] {
+  return MOCK_DATASETS.map(enrichDatasetWithROAMDefaults)
+}
+
 export const MOCK_DATASETS: Dataset[] = [
   {
     id: "dcode-042",
@@ -643,6 +768,15 @@ export const MOCK_DATASETS: Dataset[] = [
     geography: ["US", "EU", "Asia"],
     patientCount: 890,
     description: "Longitudinal ctDNA monitoring in non-small cell lung cancer patients receiving immunotherapy. Includes pembrolizumab + chemotherapy vs chemotherapy alone arms.",
+    // ROAM fields
+    firstSubjectIn: "2021-03-15",
+    databaseLockDate: "2024-03-15",
+    isLocked: true,
+    dataProductRights: "Research Allowed",
+    dataAvailability: "In PDP",
+    sponsorType: "AZ Sponsored",
+    complianceStatus: "Fully Compliant",
+    modalities: ["Clinical", "Genomic", "Biomarkers"],
     clinicalMetadata: {
       enrollmentStartDate: "2021-03-15",
       primaryCompletionDate: "2023-09-20",
@@ -3583,13 +3717,15 @@ export interface Collection {
   id: string
   name: string
   description: string
-  status: "provisioning" | "completed" | "pending_approval"
+  status: "concept" | "draft" | "pending_approval" | "provisioning" | "completed"
   progress: number
   totalUsers: number
   usersWithAccess: number
   totalDatasets: number
   createdAt: Date
   createdBy: string
+  creatorId: string // User ID of the creator for filtering "my collections"
+  isDraft: boolean // Draft collections are private and hidden from browse
   therapeuticAreas: string[] // For filtering
   tags: string[] // Additional metadata
   accessLevel: "member" | "public" | "restricted" | "request" // User's access status
@@ -3632,6 +3768,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 6,
     createdAt: new Date("2025-11-11T10:30:00"),
     createdBy: "Jennifer Martinez",
+    creatorId: "user-current",
+    isDraft: false,
     therapeuticAreas: ["Oncology", "Immunology"],
     tags: ["ctDNA", "biomarkers", "Phase III", "lung cancer"],
     accessLevel: "member",
@@ -3731,6 +3869,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 8,
     createdAt: new Date("2025-10-28T14:15:00"),
     createdBy: "Dr. Sarah Martinez",
+    creatorId: "user-sarah",
+    isDraft: false,
     therapeuticAreas: ["Cardiovascular"],
     tags: ["outcomes", "Phase II", "Phase III", "Phase IV", "safety"],
     accessLevel: "member",
@@ -3780,6 +3920,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 5,
     createdAt: new Date("2025-10-15T09:45:00"),
     createdBy: "Dr. Michael Chen",
+    creatorId: "user-michael",
+    isDraft: false,
     therapeuticAreas: ["Oncology", "Immunology"],
     tags: ["immunotherapy", "checkpoint inhibitors", "biomarkers", "imaging"],
     accessLevel: "member",
@@ -3829,6 +3971,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 4,
     createdAt: new Date("2025-09-20T08:30:00"),
     createdBy: "Emily Rodriguez",
+    creatorId: "user-emily",
+    isDraft: false,
     therapeuticAreas: ["Metabolic", "Endocrinology"],
     tags: ["diabetes", "real world evidence", "patient outcomes", "adherence"],
     accessLevel: "public",
@@ -3868,6 +4012,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 7,
     createdAt: new Date("2025-11-10T14:00:00"),
     createdBy: "Dr. David Kumar",
+    creatorId: "user-david",
+    isDraft: false,
     therapeuticAreas: ["Rare Diseases", "Genetics"],
     tags: ["natural history", "genetic disorders", "longitudinal", "sequencing"],
     accessLevel: "restricted",
@@ -3910,6 +4056,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 12,
     createdAt: new Date("2025-08-15T11:20:00"),
     createdBy: "Dr. Sarah Martinez",
+    creatorId: "user-sarah",
+    isDraft: false,
     therapeuticAreas: ["Infectious Disease", "Vaccines"],
     tags: ["COVID-19", "vaccines", "safety", "post-market surveillance"],
     accessLevel: "public",
@@ -3949,6 +4097,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 6,
     createdAt: new Date("2025-11-08T09:15:00"),
     createdBy: "Dr. Michael Chen",
+    creatorId: "user-michael",
+    isDraft: false,
     therapeuticAreas: ["Neurology", "Neuroscience"],
     tags: ["Alzheimer's", "Parkinson's", "biomarkers", "CSF", "PET imaging"],
     accessLevel: "request",
@@ -3995,6 +4145,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 9,
     createdAt: new Date("2025-07-22T16:45:00"),
     createdBy: "Lisa Thompson",
+    creatorId: "user-lisa",
+    isDraft: false,
     therapeuticAreas: ["Oncology", "Pediatrics"],
     tags: ["pediatric", "clinical trials", "neuroblastoma", "leukemia"],
     accessLevel: "member",
@@ -4034,6 +4186,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 5,
     createdAt: new Date("2025-11-09T13:30:00"),
     createdBy: "Emily Rodriguez",
+    creatorId: "user-current",
+    isDraft: false,
     therapeuticAreas: ["Respiratory", "Epidemiology"],
     tags: ["COPD", "asthma", "epidemiology", "environmental", "pulmonary"],
     accessLevel: "request",
@@ -4080,6 +4234,8 @@ export const MOCK_COLLECTIONS: Collection[] = [
     totalDatasets: 3,
     createdAt: new Date("2025-06-10T10:00:00"),
     createdBy: "Dr. David Kumar",
+    creatorId: "user-david",
+    isDraft: false,
     therapeuticAreas: ["Gastroenterology", "Immunology"],
     tags: ["IBD", "Crohn's disease", "ulcerative colitis", "outcomes", "QoL"],
     accessLevel: "public",
@@ -4107,7 +4263,101 @@ export const MOCK_COLLECTIONS: Collection[] = [
       },
     ],
   },
+  // Draft collections - private to the creator
+  {
+    id: "col-draft-1",
+    name: "Breast Cancer Genomics Study (Draft)",
+    description:
+      "Work in progress - exploring genomic profiling data from breast cancer trials for biomarker discovery research.",
+    status: "draft",
+    progress: 0,
+    totalUsers: 0,
+    usersWithAccess: 0,
+    totalDatasets: 3,
+    createdAt: new Date("2026-01-25T14:30:00"),
+    createdBy: "Jennifer Martinez",
+    creatorId: "user-current",
+    isDraft: true,
+    therapeuticAreas: ["Oncology"],
+    tags: ["breast cancer", "genomics", "biomarkers", "draft"],
+    accessLevel: "restricted",
+    commentCount: 0,
+    isFavorite: false,
+    selectedDatasets: MOCK_DATASETS.slice(0, 3),
+    accessBreakdown: {
+      immediate: 0,
+      instantGrant: 0,
+      pendingApproval: 0,
+      dataDiscovery: 0,
+    },
+    instantGrantProgress: 0,
+    approvalRequests: [],
+    milestones: [],
+  },
+  {
+    id: "col-draft-2",
+    name: "COPD Treatment Response Analysis",
+    description:
+      "Early exploration of COPD treatment response patterns - still selecting datasets and defining scope.",
+    status: "concept",
+    progress: 0,
+    totalUsers: 0,
+    usersWithAccess: 0,
+    totalDatasets: 2,
+    createdAt: new Date("2026-01-20T09:15:00"),
+    createdBy: "Jennifer Martinez",
+    creatorId: "user-current",
+    isDraft: true,
+    therapeuticAreas: ["Respiratory"],
+    tags: ["COPD", "treatment response", "draft"],
+    accessLevel: "restricted",
+    commentCount: 0,
+    isFavorite: false,
+    selectedDatasets: MOCK_DATASETS.slice(2, 4),
+    accessBreakdown: {
+      immediate: 0,
+      instantGrant: 0,
+      pendingApproval: 0,
+      dataDiscovery: 0,
+    },
+    instantGrantProgress: 0,
+    approvalRequests: [],
+    milestones: [],
+  },
 ]
+
+// Current user ID - in a real app this would come from auth
+export const CURRENT_USER_ID = "user-current"
+
+// Get collections that are visible to the current user (excludes other users' drafts)
+export function getVisibleCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => !col.isDraft || col.creatorId === CURRENT_USER_ID)
+}
+
+// Get only published (non-draft) collections for browse
+export function getPublishedCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => !col.isDraft)
+}
+
+// Get current user's collections (both drafts and published)
+export function getMyCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => col.creatorId === CURRENT_USER_ID)
+}
+
+// Get current user's draft collections (both concept and draft stages)
+export function getMyDraftCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => col.creatorId === CURRENT_USER_ID && col.isDraft)
+}
+
+// Get current user's concept-stage collections (earliest stage, workspace view)
+export function getMyConceptCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => col.creatorId === CURRENT_USER_ID && col.status === "concept")
+}
+
+// Get current user's draft-stage collections (after concept, has full dashboard with discussions)
+export function getMyDraftStageCollections(): Collection[] {
+  return MOCK_COLLECTIONS.filter(col => col.creatorId === CURRENT_USER_ID && col.status === "draft")
+}
 
 export function getCollectionById(id: string): Collection | undefined {
   return MOCK_COLLECTIONS.find((col) => col.id === id)

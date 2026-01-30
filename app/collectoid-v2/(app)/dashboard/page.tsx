@@ -29,8 +29,10 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  FileEdit,
+  EyeOff,
 } from "lucide-react"
-import { MOCK_COLLECTIONS } from "@/lib/dcm-mock-data"
+import { MOCK_COLLECTIONS, CURRENT_USER_ID, getMyCollections, getMyDraftCollections, getMyConceptCollections, getMyDraftStageCollections } from "@/lib/dcm-mock-data"
 import { useMemo, useState } from "react"
 
 export default function CollectoidDashboard() {
@@ -102,36 +104,37 @@ export default function CollectoidDashboard() {
       .slice(0, 10)
   }, [getActiveNotifications])
 
-  // Curated collections for dashboard - pick 4 with diverse states
+  // My collections for dashboard - prioritize user's own collections, especially drafts
   const dashboardCollections = useMemo(() => {
-    const byStatus: Record<string, typeof MOCK_COLLECTIONS[0][]> = {}
-    MOCK_COLLECTIONS.forEach(col => {
-      if (!byStatus[col.status]) byStatus[col.status] = []
-      byStatus[col.status].push(col)
-    })
+    const myCollections = getMyCollections()
+    const myDrafts = getMyDraftCollections()
 
-    // Pick one from each status for diversity, up to 4
-    const selected: typeof MOCK_COLLECTIONS[0][] = []
-    const statusOrder = ["provisioning", "pending_approval", "completed"]
-    for (const status of statusOrder) {
-      if (byStatus[status]?.[0] && selected.length < 4) {
-        selected.push(byStatus[status][0])
-      }
+    // Start with user's drafts (highest priority)
+    const selected: typeof MOCK_COLLECTIONS[0][] = [...myDrafts]
+
+    // Then add user's non-draft collections
+    const myPublished = myCollections.filter(col => !col.isDraft)
+    for (const col of myPublished) {
+      if (selected.length >= 5) break
+      selected.push(col)
     }
-    // Fill remaining slots if needed
-    for (const col of MOCK_COLLECTIONS) {
-      if (selected.length >= 4) break
+
+    // If user has fewer than 5, fill with other collections they have access to
+    const otherCollections = MOCK_COLLECTIONS.filter(
+      col => !col.isDraft && col.creatorId !== CURRENT_USER_ID
+    ).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+
+    for (const col of otherCollections) {
+      if (selected.length >= 5) break
       if (!selected.includes(col)) selected.push(col)
     }
-    return selected.slice(0, 4)
+
+    return selected.slice(0, 5)
   }, [])
 
   const handleViewCollection = (collectionId: string) => {
-    // Store collection ID in sessionStorage for the progress page
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("dcm_current_collection_id", collectionId)
-    }
-    router.push("/collectoid-v2/dcm/progress")
+    // Route to collection detail page - it will handle concept vs draft routing
+    router.push(`/collectoid-v2/collections/${collectionId}`)
   }
 
   const getStatusInfo = (status: string) => {
@@ -411,15 +414,33 @@ export default function CollectoidDashboard() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6 mb-8">
-        {/* Recent Collections */}
+        {/* My Collections */}
         <Card className="lg:col-span-2 border-neutral-200 rounded-2xl overflow-hidden">
           <CardHeader className="border-b border-neutral-100 bg-white">
-            <CardTitle className="text-lg font-light text-neutral-900">
-              My Collections
-            </CardTitle>
-            <CardDescription className="font-light">
-              Collections you&apos;re currently managing
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-light text-neutral-900">
+                  My Collections
+                </CardTitle>
+                <CardDescription className="font-light">
+                  Collections you&apos;ve created and are managing
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                {getMyConceptCollections().length > 0 && (
+                  <Badge className="bg-purple-100 text-purple-800 border border-purple-200 font-light">
+                    <FileEdit className="size-3 mr-1" />
+                    {getMyConceptCollections().length} concept{getMyConceptCollections().length !== 1 ? 's' : ''}
+                  </Badge>
+                )}
+                {getMyDraftStageCollections().length > 0 && (
+                  <Badge className="bg-amber-100 text-amber-800 border border-amber-200 font-light">
+                    <FileEdit className="size-3 mr-1" />
+                    {getMyDraftStageCollections().length} draft{getMyDraftStageCollections().length !== 1 ? 's' : ''}
+                  </Badge>
+                )}
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             {dashboardCollections.map((collection) => {
@@ -441,7 +462,18 @@ export default function CollectoidDashboard() {
                         <h3 className="text-sm font-normal text-neutral-900">
                           {collection.name}
                         </h3>
-                        {collectionNotifications.length > 0 && (
+                        {collection.isDraft && (
+                          <div className={cn(
+                            "flex items-center gap-1",
+                            collection.status === "concept" ? "text-purple-600" : "text-amber-600"
+                          )}>
+                            <EyeOff className="size-3" strokeWidth={1.5} />
+                            <span className="text-xs font-light">
+                              {collection.status === "concept" ? "Concept" : "Draft"}
+                            </span>
+                          </div>
+                        )}
+                        {collectionNotifications.length > 0 && !collection.isDraft && (
                           <div className="flex items-center gap-1">
                             <Bell className={cn("size-3", hasCritical ? "text-red-600" : "text-amber-600")} strokeWidth={1.5} />
                             <span className={cn("text-xs font-light", hasCritical ? "text-red-600" : "text-amber-600")}>
@@ -451,48 +483,110 @@ export default function CollectoidDashboard() {
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-xs font-light text-neutral-500">
-                        <span>{collection.totalUsers} users</span>
-                        <span>•</span>
-                        <span suppressHydrationWarning>Created {collection.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                        {collection.isDraft ? (
+                          <>
+                            <span>Draft</span>
+                            <span>•</span>
+                            <span suppressHydrationWarning>Started {collection.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>{collection.totalUsers} users</span>
+                            <span>•</span>
+                            <span suppressHydrationWarning>Created {collection.createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge
                         className={cn(
                           "font-light border",
-                          getStatusInfo(collection.status).color
+                          collection.status === "concept"
+                            ? "bg-purple-50 text-purple-700 border-purple-200"
+                            : collection.status === "draft"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : getStatusInfo(collection.status).color
                         )}
                       >
-                        {getStatusInfo(collection.status).text}
+                        {collection.status === "concept" ? (
+                          <>
+                            <FileEdit className="size-3 mr-1" />
+                            Concept
+                          </>
+                        ) : collection.status === "draft" ? (
+                          <>
+                            <FileEdit className="size-3 mr-1" />
+                            Draft
+                          </>
+                        ) : (
+                          getStatusInfo(collection.status).text
+                        )}
                       </Badge>
                     </div>
                   </div>
-                {/* Progress Bar */}
-                <div className="w-full bg-neutral-100 rounded-full h-2 mb-2">
-                  <div
-                    className={cn(
-                      "h-2 rounded-full bg-gradient-to-r transition-all",
-                      scheme.from,
-                      scheme.to
-                    )}
-                    style={{ width: `${collection.progress}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs font-light text-neutral-500">
-                  <span>{collection.progress}% Complete</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs font-light rounded-full"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleViewCollection(collection.id)
-                    }}
-                  >
-                    View Details
-                    <ArrowRight className="ml-1 size-3" strokeWidth={1.5} />
-                  </Button>
-                </div>
+                {/* Progress Bar - only show for non-drafts */}
+                {collection.status === "concept" ? (
+                  <div className="flex items-center justify-between text-xs font-light text-neutral-500">
+                    <span className="text-purple-600">Building concept — add datasets and terms</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs font-light rounded-full text-purple-600"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/collectoid-v2/collections/${collection.id}`)
+                      }}
+                    >
+                      Open Workspace
+                      <ArrowRight className="ml-1 size-3" strokeWidth={1.5} />
+                    </Button>
+                  </div>
+                ) : collection.status === "draft" ? (
+                  <div className="flex items-center justify-between text-xs font-light text-neutral-500">
+                    <span className="text-amber-600">Ready to submit for approval</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs font-light rounded-full text-amber-600"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/collectoid-v2/collections/${collection.id}`)
+                      }}
+                    >
+                      Continue
+                      <ArrowRight className="ml-1 size-3" strokeWidth={1.5} />
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="w-full bg-neutral-100 rounded-full h-2 mb-2">
+                      <div
+                        className={cn(
+                          "h-2 rounded-full bg-gradient-to-r transition-all",
+                          scheme.from,
+                          scheme.to
+                        )}
+                        style={{ width: `${collection.progress}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-light text-neutral-500">
+                      <span>{collection.progress}% Complete</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs font-light rounded-full"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleViewCollection(collection.id)
+                        }}
+                      >
+                        View Details
+                        <ArrowRight className="ml-1 size-3" strokeWidth={1.5} />
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
               )
             })}

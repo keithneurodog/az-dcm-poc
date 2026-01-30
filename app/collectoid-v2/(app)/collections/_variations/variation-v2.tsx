@@ -37,11 +37,17 @@ import {
   Table2,
   Kanban,
   Check,
+  FileEdit,
+  Eye,
+  EyeOff,
 } from "lucide-react"
 import {
   MOCK_COLLECTIONS,
   getAllTherapeuticAreas,
   getAllOwners,
+  CURRENT_USER_ID,
+  getPublishedCollections,
+  getMyDraftCollections,
 } from "@/lib/dcm-mock-data"
 
 // Constants
@@ -51,7 +57,7 @@ const DATA_TYPES = ["Clinical", "Genomics", "Imaging", "Real World", "Biomarker"
 const REGIONS = ["North America", "Europe", "Asia Pacific", "Latin America", "Global", "Multi-regional"]
 const TIME_PERIODS = ["Last 7 days", "Last 30 days", "Last 90 days", "Last year"]
 
-// Extended collection data
+// Extended collection data - only published collections by default
 const COLLECTIONS_WITH_AOT = MOCK_COLLECTIONS.map((col, i) => ({
   ...col,
   agreementOfTerms: { aiResearch: i % 3 !== 2, softwareDevelopment: i % 4 === 0, externalPublication: i % 2 === 0, internalPublication: true },
@@ -75,6 +81,10 @@ export default function CollectionsBrowserV2() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const [sortBy, setSortBy] = useState<string>("recent")
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false)
+  const [showMyDrafts, setShowMyDrafts] = useState(false)
+
+  // Get my draft collections count
+  const myDraftsCount = getMyDraftCollections().length
 
   // All filter state
   const [filters, setFilters] = useState({
@@ -119,7 +129,10 @@ export default function CollectionsBrowserV2() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    let filtered = [...COLLECTIONS_WITH_AOT]
+    // Start with either drafts or published collections
+    let filtered = showMyDrafts
+      ? COLLECTIONS_WITH_AOT.filter(c => c.isDraft && c.creatorId === CURRENT_USER_ID)
+      : COLLECTIONS_WITH_AOT.filter(c => !c.isDraft)
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
@@ -184,7 +197,7 @@ export default function CollectionsBrowserV2() {
     })
 
     return filtered.sort((a, b) => (a.isFavorite === b.isFavorite ? 0 : a.isFavorite ? -1 : 1))
-  }, [searchQuery, filters, sortBy])
+  }, [searchQuery, filters, sortBy, showMyDrafts])
 
   const handleViewCollection = (id: string) => {
     sessionStorage.setItem("dcm_current_collection_id", id)
@@ -231,7 +244,7 @@ export default function CollectionsBrowserV2() {
 
   // Status indicator
   const StatusDot = ({ status }: { status: string }) => {
-    const color = status === "completed" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : "bg-amber-500"
+    const color = status === "completed" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : status === "draft" ? "bg-amber-400" : "bg-amber-500"
     return <div className={cn("size-3 rounded-full", color)} />
   }
 
@@ -249,11 +262,40 @@ export default function CollectionsBrowserV2() {
                 <ArrowLeft className="size-5" />
               </button>
               <div>
-                <h1 className="text-3xl font-light text-neutral-900">Collections</h1>
-                <p className="text-sm font-light text-neutral-500 mt-1">{filteredCollections.length} results</p>
+                <h1 className="text-3xl font-light text-neutral-900">
+                  {showMyDrafts ? "My Draft Collections" : "Collections"}
+                </h1>
+                <p className="text-sm font-light text-neutral-500 mt-1">
+                  {showMyDrafts
+                    ? `${filteredCollections.length} private draft${filteredCollections.length !== 1 ? 's' : ''}`
+                    : `${filteredCollections.length} results`
+                  }
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
+              {/* My Drafts Toggle */}
+              <button
+                onClick={() => setShowMyDrafts(!showMyDrafts)}
+                className={cn(
+                  "inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-normal transition-all",
+                  showMyDrafts
+                    ? "bg-amber-100 text-amber-800 border border-amber-300"
+                    : "bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300"
+                )}
+              >
+                <FileEdit className="size-4" />
+                My Drafts
+                {myDraftsCount > 0 && (
+                  <Badge className={cn(
+                    "ml-1 h-5 px-1.5 text-xs",
+                    showMyDrafts ? "bg-amber-200 text-amber-900" : "bg-neutral-100 text-neutral-600"
+                  )}>
+                    {myDraftsCount}
+                  </Badge>
+                )}
+              </button>
+
               {/* View Toggle */}
               <div className="flex bg-neutral-100 rounded-lg p-1">
                 {[
@@ -452,10 +494,29 @@ export default function CollectionsBrowserV2() {
       <div className="p-8">
         {filteredCollections.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24">
-            <Database className="size-20 text-neutral-300 mb-6" />
-            <h3 className="text-xl font-light text-neutral-900 mb-3">No collections found</h3>
-            <p className="text-base font-light text-neutral-500 mb-6">Try adjusting your filters</p>
-            <Button variant="outline" size="lg" onClick={clearAllFilters} className="rounded-full text-base">Clear Filters</Button>
+            {showMyDrafts ? (
+              <>
+                <FileEdit className="size-20 text-neutral-300 mb-6" />
+                <h3 className="text-xl font-light text-neutral-900 mb-3">No draft collections</h3>
+                <p className="text-base font-light text-neutral-500 mb-6">
+                  Start creating a collection to see your drafts here
+                </p>
+                <Button
+                  onClick={() => router.push("/collectoid-v2/dcm/create")}
+                  size="lg"
+                  className={cn("rounded-full text-base bg-gradient-to-r text-white", scheme.from, scheme.to)}
+                >
+                  Create Collection
+                </Button>
+              </>
+            ) : (
+              <>
+                <Database className="size-20 text-neutral-300 mb-6" />
+                <h3 className="text-xl font-light text-neutral-900 mb-3">No collections found</h3>
+                <p className="text-base font-light text-neutral-500 mb-6">Try adjusting your filters</p>
+                <Button variant="outline" size="lg" onClick={clearAllFilters} className="rounded-full text-base">Clear Filters</Button>
+              </>
+            )}
           </div>
         ) : viewMode === "cards" ? (
           /* Card Grid View */
@@ -470,8 +531,17 @@ export default function CollectionsBrowserV2() {
                   {/* Top Row */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2.5">
-                      <StatusDot status={col.status} />
-                      <Badge variant="outline" className="text-xs font-normal py-1 px-2">{col.studyPhase}</Badge>
+                      {col.isDraft ? (
+                        <Badge className="text-xs font-normal py-1 px-2 bg-amber-100 text-amber-800 border border-amber-200">
+                          <FileEdit className="size-3 mr-1" />
+                          Draft
+                        </Badge>
+                      ) : (
+                        <>
+                          <StatusDot status={col.status} />
+                          <Badge variant="outline" className="text-xs font-normal py-1 px-2">{col.studyPhase}</Badge>
+                        </>
+                      )}
                     </div>
                     {col.isFavorite && <Star className="size-5 fill-amber-400 text-amber-400" />}
                   </div>

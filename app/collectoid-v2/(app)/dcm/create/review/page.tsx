@@ -75,12 +75,13 @@ export default function DCMReviewPage() {
       const storedUsers = sessionStorage.getItem("dcm_total_users")
       const storedAoT = sessionStorage.getItem("dcm_agreement_of_terms")
 
-      if (!storedDatasets) {
+      // Redirect to workspace if no collection name (haven't started yet)
+      if (!storedName) {
         router.push("/collectoid-v2/dcm/create")
         return
       }
 
-      setSelectedDatasets(JSON.parse(storedDatasets))
+      if (storedDatasets) setSelectedDatasets(JSON.parse(storedDatasets))
       if (storedActivities) setSelectedActivities(JSON.parse(storedActivities))
       if (storedName) setCollectionName(storedName)
       if (storedDescription) setDescription(storedDescription)
@@ -125,8 +126,8 @@ export default function DCMReviewPage() {
     router.push("/collectoid-v2/dcm/create/publishing")
   }
 
-  if (selectedDatasets.length === 0) {
-    return <div>Loading...</div>
+  if (!collectionName) {
+    return <div className="max-w-5xl mx-auto py-8 text-center text-neutral-500">Loading...</div>
   }
 
   const accessBreakdown = calculateAccessBreakdown()
@@ -142,19 +143,12 @@ export default function DCMReviewPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push("/collectoid-v2/dcm/create/agreements")}
+          onClick={() => router.push("/collectoid-v2/dcm/create/workspace")}
           className="rounded-full font-light mb-4"
         >
           <ArrowLeft className="size-4 mr-2" />
-          Back to Agreements
+          Back to Workspace
         </Button>
-
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 6 of 7</span>
-          <span className="text-xs text-neutral-300">|</span>
-          <span className="text-xs font-light text-neutral-600">Review & Publish</span>
-        </div>
 
         <div className="text-center mb-6">
           <div
@@ -862,34 +856,26 @@ export default function DCMReviewPage() {
       </div>
 
       {/* Footer */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 6 of 7</span>
-          <span className="text-xs text-neutral-300">|</span>
-          <span className="text-xs font-light text-neutral-600">Review & Publish</span>
-        </div>
-
-        <div className="flex gap-4">
-          <Button
-            variant="outline"
-            onClick={() => router.push("/collectoid-v2/dcm/create/agreements")}
-            className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
-          >
-            <ArrowLeft className="size-4 mr-2" />
-            Back to Agreements
-          </Button>
-          <Button
-            onClick={handlePublish}
-            className={cn(
-              "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
-              scheme.from,
-              scheme.to
-            )}
-          >
-            <Sparkles className="size-4 mr-2" />
-            Publish Collection & Execute
-          </Button>
-        </div>
+      <div className="flex gap-4">
+        <Button
+          variant="outline"
+          onClick={() => router.push("/collectoid-v2/dcm/create/workspace")}
+          className="flex-1 h-12 rounded-2xl font-light border-neutral-200"
+        >
+          <ArrowLeft className="size-4 mr-2" />
+          Back to Workspace
+        </Button>
+        <Button
+          onClick={handlePublish}
+          className={cn(
+            "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
+            scheme.from,
+            scheme.to
+          )}
+        >
+          <Sparkles className="size-4 mr-2" />
+          Submit for Approval
+        </Button>
       </div>
     </div>
   )

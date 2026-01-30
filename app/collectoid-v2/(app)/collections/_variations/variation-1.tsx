@@ -15,6 +15,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 import { useColorScheme } from "@/app/collectoid-v2/(app)/_components"
 import { cn } from "@/lib/utils"
 import {
@@ -35,9 +41,25 @@ import {
   AlertTriangle,
   Sparkles,
   ArrowLeft,
+  ArrowRight,
   Lock,
   Unlock,
   UserCheck,
+  FileEdit,
+  EyeOff,
+  Layers,
+  Plus,
+  Check,
+  Minus,
+  Sliders,
+  Globe,
+  Target,
+  Microscope,
+  Building,
+  HelpCircle,
+  FileText,
+  Zap,
+  Clock,
 } from "lucide-react"
 import {
   MOCK_COLLECTIONS,
@@ -45,6 +67,12 @@ import {
   getAllTherapeuticAreas,
   getAllOwners,
   Collection,
+  Dataset,
+  MOCK_DATASETS,
+  CURRENT_USER_ID,
+  getMyDraftCollections,
+  getMyConceptCollections,
+  getMyDraftStageCollections,
 } from "@/lib/dcm-mock-data"
 
 // Available user groups for filtering
@@ -128,6 +156,175 @@ export default function CollectionsBrowserVariation1() {
     internalPublication: false,
   })
 
+  // Draft collections filter
+  const [showMyDrafts, setShowMyDrafts] = useState(false)
+  const myDraftsCount = getMyDraftCollections().length
+  const myConceptsCount = getMyConceptCollections().length
+  const myDraftStageCount = getMyDraftStageCollections().length
+
+  // Workspace mode is now handled by /dcm/create/workspace/datasets
+  // This page is purely for browsing collections, not dataset selection
+  const isWorkspaceMode = false // Deprecated: workspace mode moved to dedicated sub-page
+  const [workspaceCollectionName, setWorkspaceCollectionName] = useState("")
+  const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([])
+
+  // Workspace mode filters
+  const [wsPhaseFilters, setWsPhaseFilters] = useState<string[]>(["Phase III"])
+  const [wsStatusFilters, setWsStatusFilters] = useState<string[]>(["Closed"])
+  const [wsGeographyFilters, setWsGeographyFilters] = useState<string[]>([])
+  const [wsTherapeuticFilters, setWsTherapeuticFilters] = useState<string[]>([])
+  const [wsModalityFilters, setWsModalityFilters] = useState<string[]>([])
+  const [wsSponsorFilters, setWsSponsorFilters] = useState<string[]>([])
+  const [wsSharingFilters, setWsSharingFilters] = useState<string[]>([])
+  const [wsCrossoverFilters, setWsCrossoverFilters] = useState<string[]>(["moderate"])
+  const [wsUsageFilters, setWsUsageFilters] = useState<string[]>(["high", "medium"])
+  const [wsSearchQuery, setWsSearchQuery] = useState("")
+  const [wsNctIdentifier, setWsNctIdentifier] = useState("")
+  const [wsEudraCTIdentifier, setWsEudraCTIdentifier] = useState("")
+
+  // Load workspace context and selected datasets from sessionStorage
+  useEffect(() => {
+    if (isWorkspaceMode && typeof window !== "undefined") {
+      const storedName = sessionStorage.getItem("dcm_collection_name")
+      const storedDatasets = sessionStorage.getItem("dcm_selected_datasets")
+      if (storedName) setWorkspaceCollectionName(storedName)
+      if (storedDatasets) setSelectedDatasets(JSON.parse(storedDatasets))
+    }
+  }, [isWorkspaceMode])
+
+  // Workspace mode filter logic
+  const toggleWsFilter = (
+    filterArray: string[],
+    setFilter: (arr: string[]) => void,
+    value: string
+  ) => {
+    if (filterArray.includes(value)) {
+      setFilter(filterArray.filter((v) => v !== value))
+    } else {
+      setFilter([...filterArray, value])
+    }
+  }
+
+  const clearAllWsFilters = () => {
+    setWsPhaseFilters([])
+    setWsStatusFilters([])
+    setWsGeographyFilters([])
+    setWsTherapeuticFilters([])
+    setWsModalityFilters([])
+    setWsSponsorFilters([])
+    setWsSharingFilters([])
+    setWsCrossoverFilters([])
+    setWsUsageFilters([])
+    setWsSearchQuery("")
+    setWsNctIdentifier("")
+    setWsEudraCTIdentifier("")
+  }
+
+  const hasActiveWsFilters = wsPhaseFilters.length > 0 || wsStatusFilters.length > 0 ||
+    wsGeographyFilters.length > 0 || wsTherapeuticFilters.length > 0 ||
+    wsModalityFilters.length > 0 || wsSponsorFilters.length > 0 ||
+    wsSharingFilters.length > 0 || wsCrossoverFilters.length > 0 ||
+    wsUsageFilters.length > 0 || wsSearchQuery.trim() !== "" ||
+    wsNctIdentifier.trim() !== "" || wsEudraCTIdentifier.trim() !== ""
+
+  // Filtered datasets for workspace mode
+  const filteredWsDatasets = useMemo(() => {
+    let datasets = [...MOCK_DATASETS]
+
+    // Search filter
+    if (wsSearchQuery.trim()) {
+      const query = wsSearchQuery.toLowerCase()
+      datasets = datasets.filter(d =>
+        d.name.toLowerCase().includes(query) ||
+        d.code.toLowerCase().includes(query) ||
+        d.description.toLowerCase().includes(query)
+      )
+    }
+
+    // Phase filter
+    if (wsPhaseFilters.length > 0) {
+      datasets = datasets.filter(d => wsPhaseFilters.includes(d.phase))
+    }
+
+    // Status filter
+    if (wsStatusFilters.length > 0) {
+      datasets = datasets.filter(d => wsStatusFilters.includes(d.status))
+    }
+
+    // Geography filter
+    if (wsGeographyFilters.length > 0) {
+      datasets = datasets.filter(d =>
+        d.geography.some(g => wsGeographyFilters.includes(g))
+      )
+    }
+
+    // Therapeutic area filter
+    if (wsTherapeuticFilters.length > 0) {
+      datasets = datasets.filter(d =>
+        d.therapeuticArea.some(t => wsTherapeuticFilters.includes(t))
+      )
+    }
+
+    return datasets
+  }, [wsSearchQuery, wsPhaseFilters, wsStatusFilters, wsGeographyFilters, wsTherapeuticFilters])
+
+  const addAllWsDatasets = () => {
+    const allIds = new Set(selectedDatasets.map(d => d.id))
+    const newDatasets = filteredWsDatasets.filter(d => !allIds.has(d.id))
+    setSelectedDatasets([...selectedDatasets, ...newDatasets])
+  }
+
+  // Calculate aggregate access breakdown for workspace mode
+  const wsAccessBreakdown = useMemo(() => {
+    if (selectedDatasets.length === 0) return null
+
+    const total = selectedDatasets.length
+    const breakdown = {
+      alreadyOpen: 0,
+      readyToGrant: 0,
+      needsApproval: 0,
+      missingLocation: 0,
+    }
+
+    selectedDatasets.forEach((dataset) => {
+      breakdown.alreadyOpen += dataset.accessBreakdown.alreadyOpen
+      breakdown.readyToGrant += dataset.accessBreakdown.readyToGrant
+      breakdown.needsApproval += dataset.accessBreakdown.needsApproval
+      breakdown.missingLocation += dataset.accessBreakdown.missingLocation
+    })
+
+    return {
+      alreadyOpen: Math.round(breakdown.alreadyOpen / total),
+      readyToGrant: Math.round(breakdown.readyToGrant / total),
+      needsApproval: Math.round(breakdown.needsApproval / total),
+      missingLocation: Math.round(breakdown.missingLocation / total),
+    }
+  }, [selectedDatasets])
+
+  // Save selected datasets to sessionStorage
+  const saveAndReturn = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("dcm_selected_datasets", JSON.stringify(selectedDatasets))
+    }
+    router.push("/collectoid-v2/dcm/create/workspace")
+  }
+
+  // Toggle dataset selection
+  const toggleDatasetSelection = (dataset: Dataset) => {
+    setSelectedDatasets(prev => {
+      const exists = prev.some(d => d.id === dataset.id)
+      if (exists) {
+        return prev.filter(d => d.id !== dataset.id)
+      } else {
+        return [...prev, dataset]
+      }
+    })
+  }
+
+  const isDatasetSelected = (datasetId: string) => {
+    return selectedDatasets.some(d => d.id === datasetId)
+  }
+
   // Get filter options
   const allAreas = useMemo(() => getAllTherapeuticAreas(), [])
   const allOwners = useMemo(() => getAllOwners(), [])
@@ -160,7 +357,12 @@ export default function CollectionsBrowserVariation1() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    let filtered = filterCollections(COLLECTIONS_WITH_AOT as unknown as typeof MOCK_COLLECTIONS, {
+    // First filter by draft status
+    const baseCollections = showMyDrafts
+      ? COLLECTIONS_WITH_AOT.filter(c => c.isDraft && c.creatorId === CURRENT_USER_ID)
+      : COLLECTIONS_WITH_AOT.filter(c => !c.isDraft)
+
+    let filtered = filterCollections(baseCollections as unknown as typeof MOCK_COLLECTIONS, {
       search: searchQuery,
       status: selectedStatus,
       therapeuticAreas: selectedAreas,
@@ -230,7 +432,7 @@ export default function CollectionsBrowserVariation1() {
       if (!a.isFavorite && b.isFavorite) return 1
       return 0
     })
-  }, [searchQuery, selectedStatus, selectedAreas, accessLevel, sortBy, selectedIntents, myAccessFilter, userGroupFilter, pridFilter])
+  }, [searchQuery, selectedStatus, selectedAreas, accessLevel, sortBy, selectedIntents, myAccessFilter, userGroupFilter, pridFilter, showMyDrafts])
 
   // Toggle filters
   const toggleStatus = (status: string) => {
@@ -342,35 +544,106 @@ export default function CollectionsBrowserVariation1() {
 
   return (
     <div className="py-8">
+      {/* Workspace Context Bar - Fixed at top when in workspace mode */}
+      {isWorkspaceMode && (
+        <div className={cn(
+          "fixed top-0 left-0 right-0 z-50 border-b shadow-sm",
+          "bg-white/95 backdrop-blur-sm"
+        )}>
+          <div className="max-w-7xl mx-auto px-6 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={saveAndReturn}
+                  className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 transition-colors"
+                >
+                  <ArrowLeft className="size-4" />
+                  Back to Workspace
+                </button>
+                <div className="h-5 w-px bg-neutral-200" />
+                <div className="flex items-center gap-2">
+                  <div className={cn("flex size-8 items-center justify-center rounded-lg bg-gradient-to-br", scheme.from, scheme.to)}>
+                    <Layers className="size-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-normal text-neutral-900">{workspaceCollectionName || "Untitled Concept"}</p>
+                    <p className="text-xs font-light text-neutral-500">Select datasets to add</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl",
+                  selectedDatasets.length > 0 ? scheme.bg : "bg-neutral-100"
+                )}>
+                  <Database className={cn("size-4", selectedDatasets.length > 0 ? scheme.from.replace("from-", "text-") : "text-neutral-500")} />
+                  <span className={cn(
+                    "text-sm font-normal",
+                    selectedDatasets.length > 0 ? scheme.from.replace("from-", "text-").replace("500", "700") : "text-neutral-600"
+                  )}>
+                    {selectedDatasets.length} dataset{selectedDatasets.length !== 1 ? "s" : ""} selected
+                  </span>
+                </div>
+                <Button
+                  onClick={saveAndReturn}
+                  className={cn(
+                    "rounded-xl font-light bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
+                    scheme.from,
+                    scheme.to
+                  )}
+                >
+                  <Check className="size-4 mr-2" />
+                  Done
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add top padding when workspace bar is shown */}
+      {isWorkspaceMode && <div className="h-16" />}
+
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => router.push("/collectoid-v2/discover")}
+          onClick={() => isWorkspaceMode ? saveAndReturn() : router.push("/collectoid-v2/discover")}
           className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
         >
           <ArrowLeft className="size-4" />
-          Back to Discovery
+          {isWorkspaceMode ? "Back to Workspace" : "Back to Discovery"}
         </button>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-4xl font-extralight text-neutral-900 tracking-tight mb-2">
-              Browse Collections
+              {isWorkspaceMode
+                ? "Select Datasets"
+                : showMyDrafts
+                ? "My Private Collections"
+                : "Browse Collections"}
             </h1>
             <p className="text-base font-light text-neutral-600">
-              Explore curated data collections and find what matches your research needs
+              {isWorkspaceMode
+                ? "Choose datasets to include in your collection concept"
+                : showMyDrafts
+                ? `${filteredCollections.length} private collection${filteredCollections.length !== 1 ? 's' : ''} — concepts and drafts only visible to you`
+                : "Explore curated data collections and find what matches your research needs"
+              }
             </p>
           </div>
-          <Button
-            onClick={() => router.push("/collectoid-v2/discover/ai")}
-            className={cn(
-              "h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
-              scheme.from,
-              scheme.to
-            )}
-          >
-            <Sparkles className="size-4 mr-2" />
-            AI-Assisted Search
-          </Button>
+          {!isWorkspaceMode && (
+            <Button
+              onClick={() => router.push("/collectoid-v2/discover/ai")}
+              className={cn(
+                "h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
+                scheme.from,
+                scheme.to
+              )}
+            >
+              <Sparkles className="size-4 mr-2" />
+              AI-Assisted Search
+            </Button>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -444,6 +717,47 @@ export default function CollectionsBrowserVariation1() {
                 <SheetTitle className="font-light">Filters</SheetTitle>
               </SheetHeader>
               <div className="space-y-6 mt-6">
+                {/* My Drafts Panel - Mobile */}
+                <Card className={cn(
+                  "border-2 rounded-2xl overflow-hidden",
+                  showMyDrafts
+                    ? "border-amber-300 bg-amber-50"
+                    : "border-neutral-200"
+                )}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileEdit className={cn("size-4", showMyDrafts ? "text-amber-600" : "text-neutral-600")} />
+                      <h3 className="text-sm font-normal text-neutral-900">My Private Collections</h3>
+                      {myDraftsCount > 0 && (
+                        <Badge className="ml-auto bg-amber-100 text-amber-800 border border-amber-200 font-light text-xs">
+                          {myDraftsCount}
+                        </Badge>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setShowMyDrafts(!showMyDrafts)}
+                      className={cn(
+                        "w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-light transition-all",
+                        showMyDrafts
+                          ? "bg-amber-200 text-amber-900 border border-amber-300"
+                          : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
+                      )}
+                    >
+                      {showMyDrafts ? (
+                        <>
+                          <EyeOff className="size-4" />
+                          Viewing Private
+                        </>
+                      ) : (
+                        <>
+                          <FileEdit className="size-4" />
+                          View My Private
+                        </>
+                      )}
+                    </button>
+                  </CardContent>
+                </Card>
+
                 {/* Intent Filter */}
                 <Card className={cn(
                   "border-2 rounded-2xl overflow-hidden",
@@ -578,9 +892,66 @@ export default function CollectionsBrowserVariation1() {
       </div>
 
       <div className="flex gap-4 xl:gap-6">
-        {/* Filters Sidebar - Hidden on smaller screens */}
-        {showFilters && (
+        {/* Filters Sidebar - Hidden on smaller screens and in workspace mode */}
+        {showFilters && !isWorkspaceMode && (
           <div className="hidden xl:block w-72 shrink-0 space-y-6">
+            {/* My Drafts Panel */}
+            <Card className={cn(
+              "border-2 rounded-2xl overflow-hidden",
+              showMyDrafts
+                ? "border-amber-300 bg-amber-50"
+                : "border-neutral-200"
+            )}>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <FileEdit className={cn("size-4", showMyDrafts ? "text-amber-600" : "text-neutral-600")} />
+                  <h3 className="text-sm font-normal text-neutral-900">My Private Collections</h3>
+                  {myDraftsCount > 0 && (
+                    <Badge className="ml-auto bg-amber-100 text-amber-800 border border-amber-200 font-light text-xs">
+                      {myDraftsCount}
+                    </Badge>
+                  )}
+                </div>
+                {myDraftsCount > 0 && (
+                  <div className="flex items-center gap-2 mb-3 text-xs font-light text-neutral-500">
+                    {myConceptsCount > 0 && (
+                      <span className="flex items-center gap-1">
+                        <span className="size-2 rounded-full bg-purple-400" />
+                        {myConceptsCount} concept{myConceptsCount !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    {myDraftStageCount > 0 && (
+                      <span className="flex items-center gap-1">
+                        <span className="size-2 rounded-full bg-amber-400" />
+                        {myDraftStageCount} draft{myDraftStageCount !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <button
+                  onClick={() => setShowMyDrafts(!showMyDrafts)}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-light transition-all",
+                    showMyDrafts
+                      ? "bg-amber-200 text-amber-900 border border-amber-300"
+                      : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
+                  )}
+                >
+                  {showMyDrafts ? (
+                    <>
+                      <EyeOff className="size-4" />
+                      Viewing Private
+                    </>
+                  ) : (
+                    <>
+                      <FileEdit className="size-4" />
+                      View My Private
+                    </>
+                  )}
+                </button>
+              </CardContent>
+            </Card>
+
             {/* Intent Filter - Most Important for End Users */}
             <Card className={cn(
               "border-2 rounded-2xl overflow-hidden",
@@ -966,28 +1337,953 @@ export default function CollectionsBrowserVariation1() {
           {filteredCollections.length === 0 && (
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-12 text-center">
-                <Database className="size-16 text-neutral-300 mx-auto mb-4" />
-                <h3 className="text-xl font-light text-neutral-900 mb-2">No collections found</h3>
-                <p className="text-sm font-light text-neutral-600 mb-6">
-                  {hasActiveFilters
-                    ? "Try adjusting your filters or search query"
-                    : "No collections available"}
-                </p>
-                {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    onClick={clearAllFilters}
-                    className="rounded-xl font-light border-neutral-200"
-                  >
-                    Clear Filters
-                  </Button>
+                {showMyDrafts ? (
+                  <>
+                    <FileEdit className="size-16 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-light text-neutral-900 mb-2">No draft collections</h3>
+                    <p className="text-sm font-light text-neutral-600 mb-6">
+                      Start creating a collection to see your drafts here
+                    </p>
+                    <Button
+                      onClick={() => router.push("/collectoid-v2/dcm/create")}
+                      className={cn("rounded-xl font-light bg-gradient-to-r text-white", scheme.from, scheme.to)}
+                    >
+                      <PlusCircle className="size-4 mr-2" />
+                      Create Collection
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Database className="size-16 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-light text-neutral-900 mb-2">No collections found</h3>
+                    <p className="text-sm font-light text-neutral-600 mb-6">
+                      {hasActiveFilters
+                        ? "Try adjusting your filters or search query"
+                        : "No collections available"}
+                    </p>
+                    {hasActiveFilters && (
+                      <Button
+                        variant="outline"
+                        onClick={clearAllFilters}
+                        className="rounded-xl font-light border-neutral-200"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
           )}
 
-          {/* Grid View */}
-          {viewMode === "grid" && filteredCollections.length > 0 && (
+          {/* Dataset Selection - Workspace Mode (Full Page Layout) */}
+          {isWorkspaceMode && (
+            <div className="flex gap-6">
+              {/* Main Content */}
+              <div className="flex-1 max-w-4xl">
+                {/* Centered Header */}
+                <div className="text-center mb-8">
+                  <div
+                    className={cn(
+                      "inline-flex items-center justify-center size-16 rounded-2xl mb-4 bg-gradient-to-br",
+                      scheme.bg
+                    )}
+                  >
+                    <Database className={cn("size-8", scheme.from.replace("from-", "text-"))} />
+                  </div>
+                  <h1 className="text-3xl font-extralight text-neutral-900 mb-3 tracking-tight">
+                    Refine Your Dataset Selection
+                  </h1>
+                  <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
+                    Filter and select the datasets you need for your collection
+                  </p>
+                  <button className={cn(
+                    "inline-flex items-center gap-2 text-sm font-light transition-colors",
+                    scheme.from.replace("from-", "text-"),
+                    "hover:underline"
+                  )}>
+                    <HelpCircle className="size-4" />
+                    Learn about smart filtering
+                  </button>
+                </div>
+
+                {/* Compact Filter Panel */}
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-sm mb-6">
+                  <CardContent className="p-4">
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <Sliders className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                          <span className="text-sm font-normal text-neutral-900">Filters</span>
+                        </div>
+                        <Separator orientation="vertical" className="h-5" />
+                        <div className="flex items-center gap-2">
+                          <Database className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                          <span className="text-2xl font-light text-neutral-900">{filteredWsDatasets.length}</span>
+                          <span className="text-sm font-light text-neutral-600">datasets match</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {hasActiveWsFilters && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearAllWsFilters}
+                            className="h-8 rounded-lg font-light text-xs text-neutral-500 hover:text-neutral-700"
+                          >
+                            <X className="size-3 mr-1" />
+                            Clear All
+                          </Button>
+                        )}
+                        {filteredWsDatasets.length > 0 && (
+                          <Button
+                            size="sm"
+                            onClick={addAllWsDatasets}
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs bg-gradient-to-r text-white shadow-md hover:shadow-lg transition-all",
+                              scheme.from,
+                              scheme.to
+                            )}
+                          >
+                            <Check className="size-3.5 mr-1.5" />
+                            Add All {filteredWsDatasets.length}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Filter Dropdowns Row */}
+                    <div className="flex flex-wrap gap-2">
+                      {/* Phase Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsPhaseFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            Phase
+                            {wsPhaseFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsPhaseFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-40 p-2" align="start">
+                          <div className="space-y-1">
+                            {["Phase I", "Phase II", "Phase III", "Phase IV"].map((phase) => (
+                              <label key={phase} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsPhaseFilters.includes(phase)}
+                                  onCheckedChange={() => toggleWsFilter(wsPhaseFilters, setWsPhaseFilters, phase)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{phase}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Status Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsStatusFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            Status
+                            {wsStatusFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsStatusFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-36 p-2" align="start">
+                          <div className="space-y-1">
+                            {["Active", "Closed"].map((status) => (
+                              <label key={status} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsStatusFilters.includes(status)}
+                                  onCheckedChange={() => toggleWsFilter(wsStatusFilters, setWsStatusFilters, status)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{status}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Geography Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsGeographyFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <Globe className="size-3 mr-1" />
+                            Geography
+                            {wsGeographyFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsGeographyFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-44 p-2" align="start">
+                          <div className="space-y-1 max-h-48 overflow-y-auto">
+                            {["North America", "Europe", "Asia Pacific", "Latin America", "Global"].map((geo) => (
+                              <label key={geo} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsGeographyFilters.includes(geo)}
+                                  onCheckedChange={() => toggleWsFilter(wsGeographyFilters, setWsGeographyFilters, geo)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{geo}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Therapeutic Area Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsTherapeuticFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <Target className="size-3 mr-1" />
+                            Therapeutic
+                            {wsTherapeuticFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsTherapeuticFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-48 p-2" align="start">
+                          <div className="space-y-1 max-h-48 overflow-y-auto">
+                            {["Oncology", "Cardiovascular", "Neurology", "Immunology", "Respiratory", "Rare Disease"].map((area) => (
+                              <label key={area} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsTherapeuticFilters.includes(area)}
+                                  onCheckedChange={() => toggleWsFilter(wsTherapeuticFilters, setWsTherapeuticFilters, area)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{area}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Data Modality Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsModalityFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <Microscope className="size-3 mr-1" />
+                            Modality
+                            {wsModalityFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsModalityFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-52 p-2" align="start">
+                          <div className="space-y-1">
+                            {["Clinical", "Genomic", "Imaging", "Biomarker", "PRO"].map((modality) => (
+                              <label key={modality} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsModalityFilters.includes(modality)}
+                                  onCheckedChange={() => toggleWsFilter(wsModalityFilters, setWsModalityFilters, modality)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{modality}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Sponsor Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsSponsorFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <Building className="size-3 mr-1" />
+                            Sponsor
+                            {wsSponsorFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsSponsorFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-48 p-2" align="start">
+                          <div className="space-y-1">
+                            {["Sponsor", "Investigator-Initiated", "Academic", "Government"].map((sponsor) => (
+                              <label key={sponsor} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsSponsorFilters.includes(sponsor)}
+                                  onCheckedChange={() => toggleWsFilter(wsSponsorFilters, setWsSponsorFilters, sponsor)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{sponsor}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* Sharing Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              wsSharingFilters.length > 0 && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <Shield className="size-3 mr-1" />
+                            Sharing
+                            {wsSharingFilters.length > 0 && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {wsSharingFilters.length}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56 p-2" align="start">
+                          <div className="space-y-1">
+                            {["Research allowed", "Research not allowed", "Research with restriction"].map((sharing) => (
+                              <label key={sharing} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                                <Checkbox
+                                  checked={wsSharingFilters.includes(sharing)}
+                                  onCheckedChange={() => toggleWsFilter(wsSharingFilters, setWsSharingFilters, sharing)}
+                                  className="size-3.5"
+                                />
+                                <span className="text-sm font-light text-neutral-700">{sharing}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      {/* IDs Filter */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={cn(
+                              "h-8 rounded-lg font-light text-xs border-neutral-200",
+                              (wsNctIdentifier || wsEudraCTIdentifier) && cn(scheme.from.replace("from-", "border-"), scheme.from.replace("from-", "bg-").replace("500", "50"))
+                            )}
+                          >
+                            <FileText className="size-3 mr-1" />
+                            IDs
+                            {(wsNctIdentifier || wsEudraCTIdentifier) && (
+                              <Badge className={cn("ml-1.5 h-4 px-1.5 text-[10px]", scheme.from.replace("from-", "bg-"), "text-white")}>
+                                {(wsNctIdentifier ? 1 : 0) + (wsEudraCTIdentifier ? 1 : 0)}
+                              </Badge>
+                            )}
+                            <ChevronDown className="size-3 ml-1 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3" align="start">
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-xs font-medium text-neutral-500 mb-1.5 block">NCT Identifier</label>
+                              <Input
+                                value={wsNctIdentifier}
+                                onChange={(e) => setWsNctIdentifier(e.target.value)}
+                                placeholder="e.g., NCT03456789"
+                                className="h-8 text-xs font-light"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-neutral-500 mb-1.5 block">EudraCT Identifier</label>
+                              <Input
+                                value={wsEudraCTIdentifier}
+                                onChange={(e) => setWsEudraCTIdentifier(e.target.value)}
+                                placeholder="e.g., 2019-001234-56"
+                                className="h-8 text-xs font-light"
+                              />
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Active Filters Summary */}
+                {hasActiveWsFilters && (
+                  <div className="space-y-2 mb-6">
+                    <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Active Filters</p>
+                    <div className="flex flex-wrap gap-2">
+                      {/* Phase Filters */}
+                      {wsPhaseFilters.map((phase) => (
+                        <Badge
+                          key={phase}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsPhaseFilters, setWsPhaseFilters, phase)}
+                        >
+                          {phase}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+
+                      {/* Status Filters */}
+                      {wsStatusFilters.map((status) => (
+                        <Badge
+                          key={status}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsStatusFilters, setWsStatusFilters, status)}
+                        >
+                          {status}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+
+                      {/* Crossover Filters */}
+                      {wsCrossoverFilters.map((crossover) => (
+                        <Badge
+                          key={crossover}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsCrossoverFilters, setWsCrossoverFilters, crossover)}
+                        >
+                          Crossover: {crossover}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+
+                      {/* Usage Filters */}
+                      {wsUsageFilters.map((usage) => (
+                        <Badge
+                          key={usage}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsUsageFilters, setWsUsageFilters, usage)}
+                        >
+                          Usage: {usage}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+
+                      {/* Geography Filters */}
+                      {wsGeographyFilters.map((geo) => (
+                        <Badge
+                          key={geo}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsGeographyFilters, setWsGeographyFilters, geo)}
+                        >
+                          {geo}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+
+                      {/* Therapeutic Area Filters */}
+                      {wsTherapeuticFilters.map((ta) => (
+                        <Badge
+                          key={ta}
+                          variant="outline"
+                          className="font-light pl-3 pr-2 py-1 group cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          onClick={() => toggleWsFilter(wsTherapeuticFilters, setWsTherapeuticFilters, ta)}
+                        >
+                          {ta}
+                          <X className="size-3 ml-1.5 inline" />
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* AI Smart Filter */}
+                <button
+                  className={cn(
+                    "w-full rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-50 hover:bg-neutral-100 transition-all p-6 text-left group mb-6"
+                  )}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "flex size-12 items-center justify-center rounded-xl bg-gradient-to-r text-white shadow-lg",
+                      scheme.from,
+                      scheme.to
+                    )}>
+                      <Sparkles className="size-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-normal text-neutral-900 mb-1 flex items-center gap-2">
+                        AI Smart Filter
+                        <Badge className={cn(
+                          "font-light text-xs",
+                          scheme.from.replace("from-", "bg-").replace("500", "100"),
+                          scheme.from.replace("from-", "text-")
+                        )}>
+                          Beta
+                        </Badge>
+                      </h3>
+                      <p className="text-sm font-light text-neutral-600">
+                        Describe what you&apos;re looking for in natural language and let AI refine your search
+                      </p>
+                    </div>
+                    <ArrowRight className="size-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+                  </div>
+                </button>
+
+                {/* Dataset List */}
+                <div className="space-y-4">
+                  {filteredWsDatasets.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Database className="size-12 text-neutral-300 mx-auto mb-3" />
+                      <p className="text-sm font-light text-neutral-600">No datasets match your filters</p>
+                      {hasActiveWsFilters && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={clearAllWsFilters}
+                          className="mt-4 rounded-xl font-light border-neutral-200"
+                        >
+                          Clear All Filters
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    filteredWsDatasets.map((dataset) => {
+                      const isSelected = isDatasetSelected(dataset.id)
+                      return (
+                        <Card
+                          key={dataset.id}
+                          className="border-neutral-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all"
+                        >
+                          <CardContent className="px-4 py-3">
+                            {/* Header */}
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-1">
+                                  <h3 className="text-lg font-normal text-neutral-900">{dataset.name}</h3>
+                                  <Badge variant="outline" className="font-light">
+                                    {dataset.code}
+                                  </Badge>
+                                  <Badge
+                                    className={cn(
+                                      "font-light",
+                                      dataset.status === "Closed"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-amber-100 text-amber-800"
+                                    )}
+                                  >
+                                    {dataset.status}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm font-light text-neutral-600 mb-1.5">
+                                  {dataset.description}
+                                </p>
+                                <div className="flex items-center gap-4 text-xs font-light text-neutral-500">
+                                  <span>{dataset.patientCount.toLocaleString()} patients</span>
+                                  <span>•</span>
+                                  <span>{dataset.phase}</span>
+                                  {dataset.closedDate && (
+                                    <>
+                                      <span>•</span>
+                                      <span>Closed {dataset.closedDate}</span>
+                                    </>
+                                  )}
+                                  <span>•</span>
+                                  <span>{dataset.geography.join(", ")}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Collection Crossover */}
+                            {dataset.collections.length > 0 && (
+                              <div
+                                className={cn("rounded-xl p-2.5 mb-2.5", scheme.bg.replace("500", "50"))}
+                              >
+                                <div className="flex items-start gap-2">
+                                  <Layers
+                                    className={cn(
+                                      "size-4 shrink-0 mt-0.5",
+                                      scheme.from.replace("from-", "text-")
+                                    )}
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-normal text-neutral-900 mb-1">
+                                      In {dataset.collections.length} collection
+                                      {dataset.collections.length !== 1 ? "s" : ""}
+                                    </p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {dataset.collections.slice(0, 3).map((collection, i) => (
+                                        <Badge
+                                          key={i}
+                                          variant="outline"
+                                          className="text-xs font-light border-neutral-200"
+                                        >
+                                          {collection}
+                                        </Badge>
+                                      ))}
+                                      {dataset.collections.length > 3 && (
+                                        <Badge variant="outline" className="text-xs font-light">
+                                          +{dataset.collections.length - 3} more
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Usage Analytics */}
+                            <div className="grid grid-cols-3 gap-3 mb-2.5">
+                              <div className="flex items-center gap-2">
+                                <Users className="size-4 text-neutral-400" />
+                                <div>
+                                  <p className="text-xs font-light text-neutral-500">Active Users</p>
+                                  <p className="text-sm font-normal text-neutral-900">
+                                    {dataset.activeUsers}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Building className="size-4 text-neutral-400" />
+                                <div>
+                                  <p className="text-xs font-light text-neutral-500">Organizations</p>
+                                  <p className="text-sm font-normal text-neutral-900">
+                                    {dataset.organizations}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Globe className="size-4 text-neutral-400" />
+                                <div>
+                                  <p className="text-xs font-light text-neutral-500">Data Location</p>
+                                  <p className="text-sm font-normal text-neutral-900">
+                                    {Object.values(dataset.dataLocation).join(", ")}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Access Eligibility RAG Bar */}
+                            <div className="mb-2.5">
+                              <p className="text-xs font-light text-neutral-600 mb-2 uppercase tracking-wider">
+                                Access Eligibility
+                              </p>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 bg-neutral-100 rounded-full h-2 overflow-hidden">
+                                    <div className="flex h-full">
+                                      <div
+                                        className="bg-green-500"
+                                        style={{ width: `${dataset.accessBreakdown.alreadyOpen}%` }}
+                                      />
+                                      <div
+                                        className={cn("bg-gradient-to-r", scheme.from, scheme.to)}
+                                        style={{ width: `${dataset.accessBreakdown.readyToGrant}%` }}
+                                      />
+                                      <div
+                                        className="bg-amber-500"
+                                        style={{ width: `${dataset.accessBreakdown.needsApproval}%` }}
+                                      />
+                                      <div
+                                        className="bg-neutral-400"
+                                        style={{ width: `${dataset.accessBreakdown.missingLocation}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between text-xs font-light text-neutral-600">
+                                  <span>{dataset.accessBreakdown.alreadyOpen}% open</span>
+                                  <span>{dataset.accessBreakdown.readyToGrant}% ready</span>
+                                  <span>{dataset.accessBreakdown.needsApproval}% needs approval</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Frequently Bundled With + Actions */}
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                {dataset.frequentlyBundledWith.length > 0 && (
+                                  <>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <Sparkles className="size-3 text-neutral-400" />
+                                      <p className="text-xs font-light text-neutral-600">
+                                        Frequently bundled with:
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {dataset.frequentlyBundledWith.map((code) => (
+                                        <Badge key={code} variant="outline" className="text-xs font-light">
+                                          {code}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => toggleDatasetSelection(dataset)}
+                                className={cn(
+                                  "rounded-xl font-light transition-all shrink-0",
+                                  isSelected
+                                    ? "bg-neutral-200 text-neutral-700 hover:bg-neutral-300"
+                                    : cn("bg-gradient-to-r text-white shadow-md hover:shadow-lg", scheme.from, scheme.to)
+                                )}
+                              >
+                                {isSelected ? (
+                                  <>
+                                    <X className="size-4 mr-1" />
+                                    Remove
+                                  </>
+                                ) : (
+                                  <>
+                                    <Zap className="size-4 mr-1" />
+                                    Add to Collection
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* Right Sidebar - Selected Datasets */}
+              <div className="w-80 shrink-0">
+                <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-lg sticky top-24">
+                  <CardContent className="p-6">
+                    {/* Header with icon */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className={cn(
+                          "flex size-10 items-center justify-center rounded-full bg-gradient-to-r text-white",
+                          scheme.from,
+                          scheme.to
+                        )}
+                      >
+                        <Database className="size-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-normal text-neutral-900">Selected Datasets</h3>
+                        <p className="text-2xl font-light text-neutral-900">{selectedDatasets.length}</p>
+                      </div>
+                    </div>
+
+                    {/* Access Eligibility RAG Bar */}
+                    {wsAccessBreakdown && selectedDatasets.length > 0 && (
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-light text-neutral-500 uppercase tracking-wider">Access Eligibility</p>
+                          <p className="text-xs font-medium text-green-600">{wsAccessBreakdown.alreadyOpen + wsAccessBreakdown.readyToGrant}% ready</p>
+                        </div>
+                        <div className="flex gap-0.5 h-3 rounded-full overflow-hidden bg-neutral-100">
+                          <div
+                            className="bg-green-500 transition-all duration-500"
+                            style={{ width: `${wsAccessBreakdown.alreadyOpen}%` }}
+                            title={`Already Open: ${wsAccessBreakdown.alreadyOpen}%`}
+                          />
+                          <div
+                            className={cn("bg-gradient-to-r transition-all duration-500", scheme.from, scheme.to)}
+                            style={{ width: `${wsAccessBreakdown.readyToGrant}%` }}
+                            title={`Awaiting Policy: ${wsAccessBreakdown.readyToGrant}%`}
+                          />
+                          <div
+                            className="bg-amber-500 transition-all duration-500"
+                            style={{ width: `${wsAccessBreakdown.needsApproval}%` }}
+                            title={`Needs Approval: ${wsAccessBreakdown.needsApproval}%`}
+                          />
+                          <div
+                            className="bg-neutral-400 transition-all duration-500"
+                            style={{ width: `${wsAccessBreakdown.missingLocation}%` }}
+                            title={`Missing Location: ${wsAccessBreakdown.missingLocation}%`}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <div className="flex items-center gap-3 text-xs font-light text-neutral-500">
+                            <span className="flex items-center gap-1">
+                              <span className="size-2 rounded-full bg-green-500" /> Open
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className={cn("size-2 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} /> Policy
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="size-2 rounded-full bg-amber-500" /> Review
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <Separator className="mb-6" />
+
+                    {/* Access Breakdown Details */}
+                    {wsAccessBreakdown && selectedDatasets.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100">
+                            <CheckCircle2 className="size-4 text-green-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-sm font-normal text-neutral-900">Already Open</p>
+                              <Badge className="bg-green-100 text-green-800 font-light text-xs">{wsAccessBreakdown.alreadyOpen}%</Badge>
+                            </div>
+                            <p className="text-xs font-light text-neutral-600">Instant access</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                          <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
+                            <Zap className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-sm font-normal text-neutral-900">Awaiting Policy</p>
+                              <Badge className={cn("font-light text-xs", scheme.from.replace("from-", "bg-").replace("500", "100"), scheme.from.replace("from-", "text-"))}>{wsAccessBreakdown.readyToGrant}%</Badge>
+                            </div>
+                            <p className="text-xs font-light text-neutral-600">Auto-provisioned</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-3">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                            <Clock className="size-4 text-amber-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-sm font-normal text-neutral-900">Needs Approval</p>
+                              <Badge className="bg-amber-100 text-amber-800 font-light text-xs">{wsAccessBreakdown.needsApproval}%</Badge>
+                            </div>
+                            <p className="text-xs font-light text-neutral-600">Requires review</p>
+                          </div>
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        {/* Selected datasets list */}
+                        <div className="max-h-[200px] overflow-y-auto space-y-2">
+                          {selectedDatasets.slice(0, 5).map((dataset) => (
+                            <div
+                              key={dataset.id}
+                              className="flex items-center justify-between p-2 rounded-lg bg-neutral-50 group"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-normal text-neutral-900 truncate">{dataset.code}</p>
+                                <p className="text-xs font-light text-neutral-500 truncate">{dataset.name}</p>
+                              </div>
+                              <button
+                                onClick={() => toggleDatasetSelection(dataset)}
+                                className="h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="size-3 text-neutral-500 hover:text-red-600" />
+                              </button>
+                            </div>
+                          ))}
+                          {selectedDatasets.length > 5 && (
+                            <p className="text-xs font-light text-neutral-500 text-center py-2">
+                              +{selectedDatasets.length - 5} more datasets
+                            </p>
+                          )}
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        <Button
+                          variant="outline"
+                          onClick={() => setSelectedDatasets([])}
+                          className="w-full rounded-xl font-light border-neutral-200"
+                        >
+                          Clear All
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Database className="size-12 text-neutral-200 mx-auto mb-3" />
+                        <p className="text-sm font-light text-neutral-500">No datasets selected yet</p>
+                        <p className="text-xs font-light text-neutral-400 mt-1">Click on datasets to add them</p>
+                      </div>
+                    )}
+                  </CardContent>
+
+                  {/* Fixed footer with Continue Button */}
+                  <div className="p-4 border-t border-neutral-100 bg-white">
+                    <p className="text-xs font-light text-neutral-500 mb-3 text-center">
+                      Access provisioning times vary based on approval requirements.
+                    </p>
+                    <Button
+                      onClick={saveAndReturn}
+                      disabled={selectedDatasets.length === 0}
+                      className={cn(
+                        "w-full rounded-xl font-light transition-all",
+                        selectedDatasets.length > 0
+                          ? cn("bg-gradient-to-r text-white shadow-md hover:shadow-lg", scheme.from, scheme.to)
+                          : "bg-neutral-100 text-neutral-400"
+                      )}
+                    >
+                      Continue with {selectedDatasets.length} datasets
+                      <ArrowRight className="size-4 ml-2" />
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {/* Grid View - Collections (when not in workspace mode) */}
+          {!isWorkspaceMode && viewMode === "grid" && filteredCollections.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredCollections.map((collection) => {
                 const statusBadge = getStatusBadge(collection.status)
@@ -1170,8 +2466,8 @@ export default function CollectionsBrowserVariation1() {
             </div>
           )}
 
-          {/* List View */}
-          {viewMode === "list" && filteredCollections.length > 0 && (
+          {/* List View - Collections (when not in workspace mode) */}
+          {!isWorkspaceMode && viewMode === "list" && filteredCollections.length > 0 && (
             <Card className="border-neutral-200 rounded-2xl overflow-hidden">
               <CardContent className="p-0">
                 <table className="w-full">
