@@ -112,6 +112,7 @@ export default function WorkspaceLayout({
       const storedActivities = sessionStorage.getItem("dcm_selected_activities")
       const storedAoT = sessionStorage.getItem("dcm_agreement_of_terms")
       const storedStatus = sessionStorage.getItem("dcm_collection_status")
+      const storedAiAnalysis = sessionStorage.getItem("dcm_ai_analysis")
 
       if (storedName) setCollectionName(storedName)
       if (storedDescription) setDescription(storedDescription)
@@ -119,6 +120,12 @@ export default function WorkspaceLayout({
       if (storedActivities) setSelectedActivities(JSON.parse(storedActivities))
       if (storedAoT) setHasAgreementOfTerms(true)
       if (storedStatus === "draft") setStatus("draft")
+
+      // Restore AI analysis if it was already completed
+      if (storedAiAnalysis) {
+        setAiAnalysisResult(JSON.parse(storedAiAnalysis))
+        setAiAnalysisStatus("complete")
+      }
 
       // If no name, redirect to create
       if (!storedName) {
@@ -132,15 +139,21 @@ export default function WorkspaceLayout({
 
   // Simulate AI analysis when workspace loads with content
   useEffect(() => {
-    if (!isLoading && collectionName && description && aiAnalysisStatus === "idle") {
+    if (!isLoading && collectionName && aiAnalysisStatus === "idle") {
       // Start analysis
       setAiAnalysisStatus("analyzing")
+    }
+  }, [isLoading, collectionName, aiAnalysisStatus])
 
-      // Simulate AI processing (6-8 seconds)
-      const analysisTime = 6000 + Math.random() * 2000
-      const timer = setTimeout(() => {
+  // Run the actual analysis timer separately to avoid cleanup issues
+  useEffect(() => {
+    if (aiAnalysisStatus !== "analyzing") return
+
+    // Simulate AI processing (6-8 seconds)
+    const analysisTime = 6000 + Math.random() * 2000
+    const timer = setTimeout(() => {
         // Generate mock results based on content keywords
-        const lowerDesc = description.toLowerCase()
+        const lowerDesc = (description || "").toLowerCase()
         const lowerName = collectionName.toLowerCase()
         const combined = `${lowerName} ${lowerDesc}`
 
@@ -155,48 +168,65 @@ export default function WorkspaceLayout({
           confidence: 0.85 + Math.random() * 0.1,
         }
 
-        // Detect therapeutic areas
+        // Detect therapeutic areas (must match data codes)
         if (combined.includes("oncology") || combined.includes("cancer") || combined.includes("tumor")) {
-          result.suggestedFilters.therapeuticAreas.push("Oncology")
+          result.suggestedFilters.therapeuticAreas.push("ONC")
+        }
+        if (combined.includes("immuno-onc") || combined.includes("immunotherapy") || combined.includes("checkpoint") || combined.includes("io ")) {
+          result.suggestedFilters.therapeuticAreas.push("IMMUNONC")
         }
         if (combined.includes("cardio") || combined.includes("cvrm") || combined.includes("heart")) {
-          result.suggestedFilters.therapeuticAreas.push("CVRM")
+          result.suggestedFilters.therapeuticAreas.push("CARDIO")
         }
-        if (combined.includes("immuno") || combined.includes("checkpoint") || combined.includes("io ")) {
-          result.suggestedFilters.therapeuticAreas.push("Immuno-Oncology")
+        if (combined.includes("neuro") || combined.includes("brain") || combined.includes("cns")) {
+          result.suggestedFilters.therapeuticAreas.push("NEURO")
         }
-        if (combined.includes("biopharma") || combined.includes("r&i") || combined.includes("v&i")) {
-          result.suggestedFilters.therapeuticAreas.push("BioPharma")
+        if (combined.includes("immuno") && !combined.includes("immuno-onc")) {
+          result.suggestedFilters.therapeuticAreas.push("IMMUNO")
         }
 
-        // Detect phases
+        // Detect phases (must match data values)
         if (combined.includes("phase ii") || combined.includes("phase 2")) {
-          result.suggestedFilters.phases.push("Phase II")
+          result.suggestedFilters.phases.push("II")
         }
         if (combined.includes("phase iii") || combined.includes("phase 3")) {
-          result.suggestedFilters.phases.push("Phase III")
+          result.suggestedFilters.phases.push("III")
         }
 
-        // Detect study status
+        // Detect study status (must match dropdown values exactly)
         if (combined.includes("closed")) {
           result.suggestedFilters.studyStatus.push("Closed")
         }
         if (combined.includes("ongoing") || combined.includes("active")) {
-          result.suggestedFilters.studyStatus.push("Ongoing")
+          result.suggestedFilters.studyStatus.push("Active")
         }
 
-        // Detect modalities
-        if (combined.includes("ctdna") || combined.includes("biomarker") || combined.includes("genomic")) {
-          result.suggestedFilters.modalities.push("Biomarker/Genomic")
+        // Detect modalities (must match data values exactly)
+        if (combined.includes("ctdna") || combined.includes("biomarker")) {
+          result.suggestedFilters.modalities.push("Biomarkers")
         }
-        if (combined.includes("sdtm") || combined.includes("clinical data")) {
-          result.suggestedFilters.modalities.push("Clinical (SDTM)")
+        if (combined.includes("genomic") || combined.includes("dna") || combined.includes("sequencing")) {
+          result.suggestedFilters.modalities.push("Genomic")
         }
-        if (combined.includes("safety") || combined.includes("adverse")) {
-          result.suggestedFilters.modalities.push("Safety/AE")
+        if (combined.includes("sdtm") || combined.includes("clinical data") || combined.includes("clinical")) {
+          result.suggestedFilters.modalities.push("Clinical")
         }
-        if (combined.includes("imaging") || combined.includes("scan")) {
+        if (combined.includes("imaging") || combined.includes("scan") || combined.includes("recist")) {
           result.suggestedFilters.modalities.push("Imaging")
+        }
+
+        // If no specific matches found, add some default demo suggestions
+        if (result.suggestedFilters.therapeuticAreas.length === 0) {
+          result.suggestedFilters.therapeuticAreas.push("ONC")
+        }
+        if (result.suggestedFilters.phases.length === 0) {
+          result.suggestedFilters.phases.push("II", "III")
+        }
+        if (result.suggestedFilters.studyStatus.length === 0) {
+          result.suggestedFilters.studyStatus.push("Closed")
+        }
+        if (result.suggestedFilters.modalities.length === 0) {
+          result.suggestedFilters.modalities.push("Clinical", "Biomarkers")
         }
 
         // Extract keywords
@@ -208,18 +238,19 @@ export default function WorkspaceLayout({
         if (combined.includes("response")) keywords.push("treatment response")
         if (combined.includes("ctdna")) keywords.push("ctDNA")
         if (combined.includes("cross-study") || combined.includes("portfolio")) keywords.push("cross-study")
+        if (keywords.length === 0) keywords.push("clinical research", "data analysis")
         result.suggestedKeywords = keywords.slice(0, 5)
 
         setAiAnalysisResult(result)
         setAiAnalysisStatus("complete")
 
-        // Store in session for other pages
-        sessionStorage.setItem("dcm_ai_analysis", JSON.stringify(result))
-      }, analysisTime)
+      // Store in session for other pages
+      sessionStorage.setItem("dcm_ai_analysis", JSON.stringify(result))
+    }, analysisTime)
 
-      return () => clearTimeout(timer)
-    }
-  }, [isLoading, collectionName, description, aiAnalysisStatus])
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiAnalysisStatus])
 
   // Save name/description when changed
   useEffect(() => {

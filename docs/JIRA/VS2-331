@@ -1,14 +1,17 @@
 [VS2-331] Due diligence output
 
 Background:
-TBC
+When provisioning Users with data they require ethical and legal confirmation checks to be performed. These check outcomes ought to be documented with reasons for non-accessibility, and support auto-approvals where pre-approved criteria match. Due diligence checks are not sufficient for the data to be provisioned as these operations must respect metadata status verifications. This story purpose is to enable due diligence check output to be documented for each verified study as one of the mandatory data provisioning verification activities.
 
 User Story:
-As a DPO Officer, I want to document ethical and legal status for each study and asset So that the collection meets all compliance requirements.
+As a DPO Officer, I want to document ethical and legal status for each study and asset so that the collection meets all compliance requirements.
 
 Acceptance criteria:
 GIVEN an Open Access Collection WHEN compliance for each Study is verified THEN ethical status confirmation record is enabled.
 GIVEN an Open Access Collection WHEN compliance for each Study is verified THEN legal status confirmation record is enabled.
 GIVEN an Open Access Collection WHEN compliance for each Study is viewed THEN all remaining checks that are outstanding are listed.
 GIVEN an Open Access Collection WHEN a request matches the pre-approved criteria THEN it is auto-approved for provisioning.
+GIVEN a non-accessible study WHEN their compliance value is viewed THEN a reason (e.g., data lost, quality incident) is logged in the record.
 GIVEN a bulk approval request WHEN their compliance is verified THEN multiple collections/studies can be approved based on metadata status.
+GIVEN a Study undergoing due diligence WHEN all required signoffs are obtained THEN ethical, legal, and owner signoffs are recorded with timestamps and Approver identities.
+GIVEN due diligence outcomes WHEN they are finalised THEN they are stored as part of the versioned collection artifacts for audit purposes.

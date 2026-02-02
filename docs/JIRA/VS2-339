@@ -7,4 +7,12 @@ User Story:
 As a DPO Officer, I want data of an approved Open Access Collection to be provisioned so that User can access it.
 
 Acceptance criteria:
-GIVEN an Open Access Collection WHEN it is submitted for execution THEN no outstanding legal or ethical checks are present.
+GIVEN an Open Access Collection WHEN capturing TA Lead approvals THEN formal signatures with complete audit trail documentation and timestamps are recorded.
+GIVEN a cross-TA data collection WHEN TA Lead approvals are required THEN all relevant TA Leads must provide signatures for their applicable study lists before provisioning can proceed.
+GIVEN a cross-TA approval process WHEN any single TA Lead fails to provide signature approval THEN the data collection cannot be enabled for users in any therapeutic area involved.
+GIVEN an approved Open Access Collection WHEN no outstanding legal or ethical checks are present THEN it is submitted for execution.
+GIVEN an approved Open Access Collection WHEN required signed documentation is present (AoT, User training, version baseline) THEN it is submitted for execution.
+GIVEN an approved Open Access Collection WHEN required other minimum info gates are met (definitive asset list, modalities/sources, environments, virtual team/Users) THEN it is submitted for execution.
+GIVEN a metadata change WHEN detection of access invalidates its entry THEN policy auto-revokes and stakeholders are notified.
+GIVEN an approved AoT WHEN all required TA Lead signatures are obtained THEN Collectoid automatically provisions authorised studies to specified users.
+GIVEN cross-TA approval requirements WHEN all TA Lead signatures are collected THEN provisioning proceeds only after all approvals are received.

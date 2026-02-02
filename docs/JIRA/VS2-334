@@ -1,7 +1,7 @@
 [VS2-334] Consumption environments
 
 Background:
-TBC
+It is crucial that data is provisioned to end Users is consumed only in designated for it analytical platforms that fulfil particular security and other critical functionalities.  These consumption environments must be clearly defined to support data provisioning process. The ROAM model requires clarity on which environments are available for each collection and therefore such consumption environment specification is needed to support the process.
 
 User Story:
 As a Data Owner/Delegate Data Owner, I want to specify target analysis environments so that provisioning scope and boundaries are clearly defined.
@@ -10,3 +10,4 @@ Acceptance criteria:
 GIVEN an Open Access Collection WHEN recording where User will access the data THEN target analysis environment selection is enabled.
 GIVEN a default provisioning boundary defined by Leadership WHEN a data collection is set THEN the default boundaries are applied (e.g., "Provision to Domino only").
 GIVEN a default provisioning boundary defined by Leadership WHEN a data collection analysis is needed in additional or other environments THEN additional ones are available for selection.
+GIVEN Open Access Collection environments WHEN defining other than the default one THEN the selection includes all approved environment options.

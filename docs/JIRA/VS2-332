@@ -1,12 +1,13 @@
 [VS2-332] Collection data modalities
 
 Background:
-TBC
+Data modalities are one of the critical elements required when a Data Collection is built. It must be explicitly defined per study to support the ROAM handover artifact requirements and enable accurate source system mapping.
 
 User Story:
 As a Data Consumer Lead, I want to specify data modalities for each study so that data sourcing and access are clearly defined.
 
 Acceptance criteria:
-GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection of particular data modality is included or excluded for each study is enabled.
-GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection plural data modalities for a single Study is enabled.
+GIVEN an Open Access Collection data modality definition WHEN it is recorded for a Study THEN the associated source path requires input.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection of particular data modality that can be included or excluded for each study is enabled.
+GIVEN an Open Access Collection WHEN recording data modalities for it THEN selection multiple data modalities for a single Study is enabled.
 GIVEN an Open Access Collection WHEN recording data modalities for it THEN no Study has blank data modality record.

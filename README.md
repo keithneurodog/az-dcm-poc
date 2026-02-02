@@ -566,4 +566,6 @@ See `/docs/INDEX.md` for the documentation entry point.
 **Active specs** have outstanding work. **Archived specs** are for reference only.
 
 
-users can have access to all data - but warnings if terms are not met - 
+users can have access to all data - but warnings if terms are not met
+have a process outline for colelctions that are not live yet? (new page or widget in the collections overview)
+split users view into a 'users' (like the existing one) and a 'training overview' page

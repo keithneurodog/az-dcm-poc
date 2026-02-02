@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -58,8 +58,30 @@ import {
   Pencil,
   ChevronLeft,
   ChevronRight,
+  Columns3,
+  Eye,
+  EyeOff,
 } from "lucide-react"
 import { getEnrichedDatasets, DatasetWithROAMFields } from "@/lib/dcm-mock-data"
+
+// Display label mappings for codes
+const THERAPEUTIC_AREA_LABELS: Record<string, string> = {
+  ONC: "Oncology",
+  IMMUNONC: "Immuno-Oncology",
+  CARDIO: "Cardiovascular",
+  NEURO: "Neurology",
+  IMMUNO: "Immunology",
+  ENDO: "Endocrinology",
+  GASTRO: "Gastroenterology",
+  INFECT: "Infectious Disease",
+}
+
+const PHASE_LABELS: Record<string, string> = {
+  I: "Phase I",
+  II: "Phase II",
+  III: "Phase III",
+  IV: "Phase IV",
+}
 
 export default function WorkspaceDatasetsPage() {
   const { scheme } = useColorScheme()
@@ -94,15 +116,63 @@ export default function WorkspaceDatasetsPage() {
   const [refineModalOpen, setRefineModalOpen] = useState(false)
   const [refineSelection, setRefineSelection] = useState<DatasetWithROAMFields[]>([])
   const [refineFilter, setRefineFilter] = useState("")
-  const [refineSortField, setRefineSortField] = useState<"code" | "name" | "phase" | "status" | "patientCount" | "therapeuticArea" | "geography" | "modalities" | "dataAvailability" | "isLocked" | "dataProductRights">("code")
+  const [refineSortField, setRefineSortField] = useState<string>("code")
   const [refineSortDirection, setRefineSortDirection] = useState<"asc" | "desc">("asc")
+
+  // Column configuration for refine modal
+  type RefineColumn = {
+    id: string
+    label: string
+    width: string
+    sortable: boolean
+    default: boolean
+    align?: "left" | "right"
+  }
+
+  const allRefineColumns: RefineColumn[] = useMemo(() => [
+    { id: "code", label: "Code", width: "w-24", sortable: true, default: true },
+    { id: "name", label: "Name", width: "flex-1 min-w-[150px]", sortable: true, default: true },
+    { id: "therapeuticArea", label: "Area", width: "w-24", sortable: true, default: true },
+    { id: "phase", label: "Phase", width: "w-20", sortable: true, default: true },
+    { id: "status", label: "Status", width: "w-20", sortable: true, default: true },
+    { id: "isLocked", label: "Locked", width: "w-20", sortable: true, default: true },
+    { id: "dataProductRights", label: "Rights", width: "w-24", sortable: true, default: true },
+    { id: "dataAvailability", label: "Platform", width: "w-24", sortable: true, default: false },
+    { id: "modalities", label: "Modalities", width: "w-28", sortable: true, default: false },
+    { id: "patientCount", label: "Patients", width: "w-20", sortable: true, default: true, align: "right" },
+    { id: "geography", label: "Geography", width: "w-28", sortable: true, default: false },
+    { id: "sponsorType", label: "Sponsor Type", width: "w-28", sortable: true, default: false },
+    { id: "complianceStatus", label: "Compliance", width: "w-32", sortable: true, default: false },
+    { id: "closedDate", label: "Closed Date", width: "w-24", sortable: true, default: false },
+    { id: "firstSubjectIn", label: "First Subject In", width: "w-28", sortable: true, default: false },
+    { id: "databaseLockDate", label: "DB Lock Date", width: "w-28", sortable: true, default: false },
+    { id: "collections", label: "Collections", width: "w-24", sortable: true, default: false },
+    { id: "activeUsers", label: "Active Users", width: "w-24", sortable: true, default: false, align: "right" },
+    { id: "accessPlatform", label: "Access Platform", width: "w-28", sortable: true, default: false },
+  ], [])
+
+  // Visible columns state (initialized with defaults)
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() =>
+    allRefineColumns.filter(c => c.default).map(c => c.id)
+  )
+  const [columnSelectorOpen, setColumnSelectorOpen] = useState(false)
 
   // Smart filter state
   const [smartFilterInput, setSmartFilterInput] = useState("")
   const [smartFilterActive, setSmartFilterActive] = useState(false)
   const [smartFilterQuery, setSmartFilterQuery] = useState("")
+  const smartFilterInputRef = useRef<HTMLTextAreaElement>(null)
   const [isSmartFiltering, setIsSmartFiltering] = useState(false)
   const [showSmartInput, setShowSmartInput] = useState(false)
+
+  // AI suggestions state
+  const [aiSuggestionsDismissed, setAiSuggestionsDismissed] = useState(false)
+  const [aiAppliedFilters, setAiAppliedFilters] = useState<{
+    therapeuticAreas: string[]
+    phases: string[]
+    modalities: string[]
+    studyStatus: string[]
+  }>({ therapeuticAreas: [], phases: [], modalities: [], studyStatus: [] })
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
@@ -148,13 +218,13 @@ export default function WorkspaceDatasetsPage() {
           comparison = a.patientCount - b.patientCount
           break
         case "therapeuticArea":
-          comparison = a.therapeuticArea[0]?.localeCompare(b.therapeuticArea[0] || "") || 0
+          comparison = (a.therapeuticArea[0] || "").localeCompare(b.therapeuticArea[0] || "")
           break
         case "geography":
-          comparison = a.geography[0]?.localeCompare(b.geography[0] || "") || 0
+          comparison = (a.geography[0] || "").localeCompare(b.geography[0] || "")
           break
         case "modalities":
-          comparison = a.modalities[0]?.localeCompare(b.modalities[0] || "") || 0
+          comparison = (a.modalities[0] || "").localeCompare(b.modalities[0] || "")
           break
         case "dataAvailability":
           comparison = a.dataAvailability.localeCompare(b.dataAvailability)
@@ -165,13 +235,37 @@ export default function WorkspaceDatasetsPage() {
         case "dataProductRights":
           comparison = a.dataProductRights.localeCompare(b.dataProductRights)
           break
+        case "sponsorType":
+          comparison = a.sponsorType.localeCompare(b.sponsorType)
+          break
+        case "complianceStatus":
+          comparison = a.complianceStatus.localeCompare(b.complianceStatus)
+          break
+        case "closedDate":
+          comparison = (a.closedDate || "").localeCompare(b.closedDate || "")
+          break
+        case "firstSubjectIn":
+          comparison = a.firstSubjectIn.localeCompare(b.firstSubjectIn)
+          break
+        case "databaseLockDate":
+          comparison = a.databaseLockDate.localeCompare(b.databaseLockDate)
+          break
+        case "collections":
+          comparison = a.collections.length - b.collections.length
+          break
+        case "activeUsers":
+          comparison = a.activeUsers - b.activeUsers
+          break
+        case "accessPlatform":
+          comparison = a.accessPlatform.localeCompare(b.accessPlatform)
+          break
       }
       return refineSortDirection === "asc" ? comparison : -comparison
     })
   }, [refineSelection, refineFilter, refineSortField, refineSortDirection])
 
   // Toggle sort
-  const toggleSort = (field: typeof refineSortField) => {
+  const toggleSort = (field: string) => {
     if (refineSortField === field) {
       setRefineSortDirection(refineSortDirection === "asc" ? "desc" : "asc")
     } else {
@@ -179,6 +273,21 @@ export default function WorkspaceDatasetsPage() {
       setRefineSortDirection("asc")
     }
   }
+
+  // Toggle column visibility
+  const toggleColumn = (columnId: string) => {
+    setVisibleColumns(prev =>
+      prev.includes(columnId)
+        ? prev.filter(id => id !== columnId)
+        : [...prev, columnId]
+    )
+  }
+
+  // Get visible column configs in order
+  const visibleColumnConfigs = useMemo(() =>
+    allRefineColumns.filter(c => visibleColumns.includes(c.id)),
+    [allRefineColumns, visibleColumns]
+  )
 
   // Remove from refine selection
   const removeFromRefineSelection = (datasetId: string) => {
@@ -222,6 +331,105 @@ export default function WorkspaceDatasetsPage() {
     setSmartFilterQuery("")
     setSmartFilterActive(false)
     setShowSmartInput(false)
+  }
+
+  // Apply AI suggestion helpers
+  const applyAiTherapeuticArea = (area: string) => {
+    if (!therapeuticFilters.includes(area)) {
+      setTherapeuticFilters([...therapeuticFilters, area])
+      setAiAppliedFilters(prev => ({
+        ...prev,
+        therapeuticAreas: [...prev.therapeuticAreas, area]
+      }))
+    }
+  }
+
+  const applyAiPhase = (phase: string) => {
+    if (!phaseFilters.includes(phase)) {
+      setPhaseFilters([...phaseFilters, phase])
+      setAiAppliedFilters(prev => ({
+        ...prev,
+        phases: [...prev.phases, phase]
+      }))
+    }
+  }
+
+  const applyAiModality = (modality: string) => {
+    if (!modalityFilters.includes(modality)) {
+      setModalityFilters([...modalityFilters, modality])
+      setAiAppliedFilters(prev => ({
+        ...prev,
+        modalities: [...prev.modalities, modality]
+      }))
+    }
+  }
+
+  const applyAiStatus = (status: string) => {
+    if (!statusFilters.includes(status)) {
+      setStatusFilters([...statusFilters, status])
+      setAiAppliedFilters(prev => ({
+        ...prev,
+        studyStatus: [...prev.studyStatus, status]
+      }))
+    }
+  }
+
+  const applyAllAiSuggestions = () => {
+    const result = workspace.aiAnalysisResult
+    if (!result) return
+
+    // Batch all filter updates to avoid stale state issues
+    const newTherapeutic = [...new Set([...therapeuticFilters, ...result.suggestedFilters.therapeuticAreas])]
+    const newPhases = [...new Set([...phaseFilters, ...result.suggestedFilters.phases])]
+    const newModalities = [...new Set([...modalityFilters, ...result.suggestedFilters.modalities])]
+    const newStatus = [...new Set([...statusFilters, ...result.suggestedFilters.studyStatus])]
+
+    setTherapeuticFilters(newTherapeutic)
+    setPhaseFilters(newPhases)
+    setModalityFilters(newModalities)
+    setStatusFilters(newStatus)
+
+    // Track which were AI-applied
+    setAiAppliedFilters(prev => ({
+      therapeuticAreas: [...new Set([...prev.therapeuticAreas, ...result.suggestedFilters.therapeuticAreas])],
+      phases: [...new Set([...prev.phases, ...result.suggestedFilters.phases])],
+      modalities: [...new Set([...prev.modalities, ...result.suggestedFilters.modalities])],
+      studyStatus: [...new Set([...prev.studyStatus, ...result.suggestedFilters.studyStatus])],
+    }))
+  }
+
+  // Check if an AI suggestion is already applied
+  const isAiSuggestionApplied = (type: string, value: string) => {
+    switch (type) {
+      case 'therapeuticArea': return therapeuticFilters.includes(value)
+      case 'phase': return phaseFilters.includes(value)
+      case 'modality': return modalityFilters.includes(value)
+      case 'status': return statusFilters.includes(value)
+      default: return false
+    }
+  }
+
+  // Check if filter was applied via AI
+  const isAiAppliedFilter = (type: string, value: string) => {
+    switch (type) {
+      case 'therapeuticArea': return aiAppliedFilters.therapeuticAreas.includes(value)
+      case 'phase': return aiAppliedFilters.phases.includes(value)
+      case 'modality': return aiAppliedFilters.modalities.includes(value)
+      case 'status': return aiAppliedFilters.studyStatus.includes(value)
+      default: return false
+    }
+  }
+
+  // Check if a value is an AI suggestion (for dropdown highlighting)
+  const isAiSuggested = (type: string, value: string) => {
+    if (!workspace.aiAnalysisResult) return false
+    switch (type) {
+      case 'therapeuticArea': return workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas.includes(value)
+      case 'phase': return workspace.aiAnalysisResult.suggestedFilters.phases.includes(value)
+      case 'modality': return workspace.aiAnalysisResult.suggestedFilters.modalities.includes(value)
+      case 'status': return workspace.aiAnalysisResult.suggestedFilters.studyStatus.includes(value)
+      default: return false
+    }
   }
 
   // Load from workspace context on mount
@@ -586,16 +794,32 @@ export default function WorkspaceDatasetsPage() {
                     <ChevronDown className="size-3 ml-1 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-40 p-2" align="start">
+                <PopoverContent className="w-48 p-2" align="start">
                   <div className="space-y-1">
-                    {["Phase I", "Phase II", "Phase III", "Phase IV"].map((phase) => (
-                      <label key={phase} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                    {[
+                      { value: "I", label: "Phase I" },
+                      { value: "II", label: "Phase II" },
+                      { value: "III", label: "Phase III" },
+                      { value: "IV", label: "Phase IV" },
+                    ].map((phase) => (
+                      <label
+                        key={phase.value}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors",
+                          isAiSuggested('phase', phase.value) && !phaseFilters.includes(phase.value)
+                            ? cn(scheme.bg, scheme.bgHover)
+                            : "hover:bg-neutral-50"
+                        )}
+                      >
                         <Checkbox
-                          checked={phaseFilters.includes(phase)}
-                          onCheckedChange={() => toggleFilter(phaseFilters, setPhaseFilters, phase)}
+                          checked={phaseFilters.includes(phase.value)}
+                          onCheckedChange={() => toggleFilter(phaseFilters, setPhaseFilters, phase.value)}
                           className="size-3.5"
                         />
-                        <span className="text-sm font-light text-neutral-700">{phase}</span>
+                        <span className="text-sm font-light text-neutral-700 flex-1">{phase.label}</span>
+                        {isAiSuggested('phase', phase.value) && !phaseFilters.includes(phase.value) && (
+                          <Sparkles className={cn("size-3", scheme.from.replace("from-", "text-"))} />
+                        )}
                       </label>
                     ))}
                   </div>
@@ -622,22 +846,33 @@ export default function WorkspaceDatasetsPage() {
                     <ChevronDown className="size-3 ml-1 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-40 p-2" align="start">
+                <PopoverContent className="w-48 p-2" align="start">
                   <div className="space-y-1">
                     {(["Active", "Closed", "Grey Zone", "Archived"] as const).map((status) => (
-                      <label key={status} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                      <label
+                        key={status}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors",
+                          isAiSuggested('status', status) && !statusFilters.includes(status)
+                            ? cn(scheme.bg, scheme.bgHover)
+                            : "hover:bg-neutral-50"
+                        )}
+                      >
                         <Checkbox
                           checked={statusFilters.includes(status)}
                           onCheckedChange={() => toggleFilter(statusFilters, setStatusFilters, status)}
                           className="size-3.5"
                         />
                         <span className={cn(
-                          "text-sm font-light",
+                          "text-sm font-light flex-1",
                           status === "Active" ? "text-amber-700" :
                           status === "Closed" ? "text-green-700" :
                           status === "Grey Zone" ? "text-orange-600" :
                           "text-neutral-500"
                         )}>{status}</span>
+                        {isAiSuggested('status', status) && !statusFilters.includes(status) && (
+                          <Sparkles className={cn("size-3", scheme.from.replace("from-", "text-"))} />
+                        )}
                       </label>
                     ))}
                   </div>
@@ -702,16 +937,36 @@ export default function WorkspaceDatasetsPage() {
                     <ChevronDown className="size-3 ml-1 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-48 p-2" align="start">
+                <PopoverContent className="w-52 p-2" align="start">
                   <div className="space-y-1 max-h-48 overflow-y-auto">
-                    {["Oncology", "Cardiovascular", "Neurology", "Immunology", "Respiratory", "Rare Disease"].map((area) => (
-                      <label key={area} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                    {[
+                      { value: "ONC", label: "Oncology" },
+                      { value: "IMMUNONC", label: "Immuno-Oncology" },
+                      { value: "CARDIO", label: "Cardiovascular" },
+                      { value: "NEURO", label: "Neurology" },
+                      { value: "IMMUNO", label: "Immunology" },
+                      { value: "ENDO", label: "Endocrinology" },
+                      { value: "GASTRO", label: "Gastroenterology" },
+                      { value: "INFECT", label: "Infectious Disease" },
+                    ].map((area) => (
+                      <label
+                        key={area.value}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors",
+                          isAiSuggested('therapeuticArea', area.value) && !therapeuticFilters.includes(area.value)
+                            ? cn(scheme.bg, scheme.bgHover)
+                            : "hover:bg-neutral-50"
+                        )}
+                      >
                         <Checkbox
-                          checked={therapeuticFilters.includes(area)}
-                          onCheckedChange={() => toggleFilter(therapeuticFilters, setTherapeuticFilters, area)}
+                          checked={therapeuticFilters.includes(area.value)}
+                          onCheckedChange={() => toggleFilter(therapeuticFilters, setTherapeuticFilters, area.value)}
                           className="size-3.5"
                         />
-                        <span className="text-sm font-light text-neutral-700">{area}</span>
+                        <span className="text-sm font-light text-neutral-700 flex-1">{area.label}</span>
+                        {isAiSuggested('therapeuticArea', area.value) && !therapeuticFilters.includes(area.value) && (
+                          <Sparkles className={cn("size-3", scheme.from.replace("from-", "text-"))} />
+                        )}
                       </label>
                     ))}
                   </div>
@@ -741,14 +996,25 @@ export default function WorkspaceDatasetsPage() {
                 </PopoverTrigger>
                 <PopoverContent className="w-52 p-2" align="start">
                   <div className="space-y-1">
-                    {["Clinical", "Genomic", "Imaging", "Biomarker", "PRO"].map((modality) => (
-                      <label key={modality} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-neutral-50 cursor-pointer">
+                    {["Clinical", "Genomic", "Imaging", "Biomarkers", "Digital Devices", "Real-World Data"].map((modality) => (
+                      <label
+                        key={modality}
+                        className={cn(
+                          "flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors",
+                          isAiSuggested('modality', modality) && !modalityFilters.includes(modality)
+                            ? cn(scheme.bg, scheme.bgHover)
+                            : "hover:bg-neutral-50"
+                        )}
+                      >
                         <Checkbox
                           checked={modalityFilters.includes(modality)}
                           onCheckedChange={() => toggleFilter(modalityFilters, setModalityFilters, modality)}
                           className="size-3.5"
                         />
-                        <span className="text-sm font-light text-neutral-700">{modality}</span>
+                        <span className="text-sm font-light text-neutral-700 flex-1">{modality}</span>
+                        {isAiSuggested('modality', modality) && !modalityFilters.includes(modality) && (
+                          <Sparkles className={cn("size-3", scheme.from.replace("from-", "text-"))} />
+                        )}
                       </label>
                     ))}
                   </div>
@@ -1191,10 +1457,16 @@ export default function WorkspaceDatasetsPage() {
                 <Badge
                   key={phase}
                   variant="outline"
-                  className="font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                  className={cn(
+                    "font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors",
+                    isAiAppliedFilter('phase', phase) && cn(scheme.bg, scheme.from.replace("from-", "border-").replace("500", "200"))
+                  )}
                   onClick={() => toggleFilter(phaseFilters, setPhaseFilters, phase)}
                 >
-                  {phase}
+                  {isAiAppliedFilter('phase', phase) && (
+                    <Sparkles className={cn("size-3 mr-1 inline", scheme.from.replace("from-", "text-"))} />
+                  )}
+                  {PHASE_LABELS[phase] || phase}
                   <X className="size-3 ml-1.5 inline" />
                 </Badge>
               ))}
@@ -1202,9 +1474,15 @@ export default function WorkspaceDatasetsPage() {
                 <Badge
                   key={status}
                   variant="outline"
-                  className="font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                  className={cn(
+                    "font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors",
+                    isAiAppliedFilter('status', status) && cn(scheme.bg, scheme.from.replace("from-", "border-").replace("500", "200"))
+                  )}
                   onClick={() => toggleFilter(statusFilters, setStatusFilters, status)}
                 >
+                  {isAiAppliedFilter('status', status) && (
+                    <Sparkles className={cn("size-3 mr-1 inline", scheme.from.replace("from-", "text-"))} />
+                  )}
                   {status}
                   <X className="size-3 ml-1.5 inline" />
                 </Badge>
@@ -1224,10 +1502,33 @@ export default function WorkspaceDatasetsPage() {
                 <Badge
                   key={ta}
                   variant="outline"
-                  className="font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                  className={cn(
+                    "font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors",
+                    isAiAppliedFilter('therapeuticArea', ta) && cn(scheme.bg, scheme.from.replace("from-", "border-").replace("500", "200"))
+                  )}
                   onClick={() => toggleFilter(therapeuticFilters, setTherapeuticFilters, ta)}
                 >
-                  {ta}
+                  {isAiAppliedFilter('therapeuticArea', ta) && (
+                    <Sparkles className={cn("size-3 mr-1 inline", scheme.from.replace("from-", "text-"))} />
+                  )}
+                  {THERAPEUTIC_AREA_LABELS[ta] || ta}
+                  <X className="size-3 ml-1.5 inline" />
+                </Badge>
+              ))}
+              {modalityFilters.map((modality) => (
+                <Badge
+                  key={modality}
+                  variant="outline"
+                  className={cn(
+                    "font-light pl-3 pr-2 py-1 cursor-pointer hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors",
+                    isAiAppliedFilter('modality', modality) && cn(scheme.bg, scheme.from.replace("from-", "border-").replace("500", "200"))
+                  )}
+                  onClick={() => toggleFilter(modalityFilters, setModalityFilters, modality)}
+                >
+                  {isAiAppliedFilter('modality', modality) && (
+                    <Sparkles className={cn("size-3 mr-1 inline", scheme.from.replace("from-", "text-"))} />
+                  )}
+                  {modality}
                   <X className="size-3 ml-1.5 inline" />
                 </Badge>
               ))}
@@ -1283,6 +1584,226 @@ export default function WorkspaceDatasetsPage() {
                   <X className="size-3 ml-1.5 inline" />
                 </Badge>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* AI Suggestions Panel - appears when analysis is complete */}
+        {workspace.aiAnalysisStatus === "complete" &&
+         workspace.aiAnalysisResult &&
+         !aiSuggestionsDismissed &&
+         (workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas.length > 0 ||
+          workspace.aiAnalysisResult.suggestedFilters.phases.length > 0 ||
+          workspace.aiAnalysisResult.suggestedFilters.modalities.length > 0 ||
+          workspace.aiAnalysisResult.suggestedFilters.studyStatus.length > 0) && (
+          <div className={cn(
+            "mb-6 rounded-2xl border bg-gradient-to-r p-[1px]",
+            scheme.from.replace("from-", "from-").replace("500", "200"),
+            scheme.to.replace("to-", "to-").replace("500", "200")
+          )}>
+            <div className="rounded-2xl bg-white p-4">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "flex size-6 items-center justify-center rounded-lg bg-gradient-to-r",
+                    scheme.from,
+                    scheme.to
+                  )}>
+                    <Sparkles className="size-3 text-white" />
+                  </div>
+                  <span className="text-sm font-normal text-neutral-900">AI Suggestions</span>
+                  <Badge className={cn(
+                    "font-light text-xs px-1.5 py-0",
+                    scheme.from.replace("from-", "bg-").replace("500", "100"),
+                    scheme.from.replace("from-", "text-")
+                  )}>
+                    Based on your description
+                  </Badge>
+                </div>
+                <button
+                  onClick={() => setAiSuggestionsDismissed(true)}
+                  className="text-neutral-400 hover:text-neutral-600 transition-colors"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <p className="text-xs font-light text-neutral-500 mb-3">
+                Click to apply suggested filters based on your collection description
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {/* Therapeutic Areas */}
+                {workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas.map(area => (
+                  <button
+                    key={`ta-${area}`}
+                    onClick={() => applyAiTherapeuticArea(area)}
+                    disabled={isAiSuggestionApplied('therapeuticArea', area)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-light transition-all",
+                      isAiSuggestionApplied('therapeuticArea', area)
+                        ? "bg-neutral-100 text-neutral-400 cursor-default"
+                        : cn(
+                            "border hover:shadow-sm cursor-pointer",
+                            scheme.bg,
+                            scheme.from.replace("from-", "border-").replace("500", "200"),
+                            scheme.from.replace("from-", "text-"),
+                            scheme.bgHover
+                          )
+                    )}
+                  >
+                    <Sparkles className="size-3" />
+                    {THERAPEUTIC_AREA_LABELS[area] || area}
+                    {isAiSuggestionApplied('therapeuticArea', area) && (
+                      <Check className="size-3" />
+                    )}
+                  </button>
+                ))}
+
+                {/* Phases */}
+                {workspace.aiAnalysisResult.suggestedFilters.phases.map(phase => (
+                  <button
+                    key={`phase-${phase}`}
+                    onClick={() => applyAiPhase(phase)}
+                    disabled={isAiSuggestionApplied('phase', phase)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-light transition-all",
+                      isAiSuggestionApplied('phase', phase)
+                        ? "bg-neutral-100 text-neutral-400 cursor-default"
+                        : cn(
+                            "border hover:shadow-sm cursor-pointer",
+                            scheme.bg,
+                            scheme.from.replace("from-", "border-").replace("500", "200"),
+                            scheme.from.replace("from-", "text-"),
+                            scheme.bgHover
+                          )
+                    )}
+                  >
+                    <Sparkles className="size-3" />
+                    {PHASE_LABELS[phase] || phase}
+                    {isAiSuggestionApplied('phase', phase) && (
+                      <Check className="size-3" />
+                    )}
+                  </button>
+                ))}
+
+                {/* Modalities */}
+                {workspace.aiAnalysisResult.suggestedFilters.modalities.map(modality => (
+                  <button
+                    key={`mod-${modality}`}
+                    onClick={() => applyAiModality(modality)}
+                    disabled={isAiSuggestionApplied('modality', modality)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-light transition-all",
+                      isAiSuggestionApplied('modality', modality)
+                        ? "bg-neutral-100 text-neutral-400 cursor-default"
+                        : cn(
+                            "border hover:shadow-sm cursor-pointer",
+                            scheme.bg,
+                            scheme.from.replace("from-", "border-").replace("500", "200"),
+                            scheme.from.replace("from-", "text-"),
+                            scheme.bgHover
+                          )
+                    )}
+                  >
+                    <Sparkles className="size-3" />
+                    {modality}
+                    {isAiSuggestionApplied('modality', modality) && (
+                      <Check className="size-3" />
+                    )}
+                  </button>
+                ))}
+
+                {/* Study Status */}
+                {workspace.aiAnalysisResult.suggestedFilters.studyStatus.map(status => (
+                  <button
+                    key={`status-${status}`}
+                    onClick={() => applyAiStatus(status)}
+                    disabled={isAiSuggestionApplied('status', status)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-light transition-all",
+                      isAiSuggestionApplied('status', status)
+                        ? "bg-neutral-100 text-neutral-400 cursor-default"
+                        : cn(
+                            "border hover:shadow-sm cursor-pointer",
+                            scheme.bg,
+                            scheme.from.replace("from-", "border-").replace("500", "200"),
+                            scheme.from.replace("from-", "text-"),
+                            scheme.bgHover
+                          )
+                    )}
+                  >
+                    <Sparkles className="size-3" />
+                    {status}
+                    {isAiSuggestionApplied('status', status) && (
+                      <Check className="size-3" />
+                    )}
+                  </button>
+                ))}
+                {/* Apply All button inline */}
+                {(workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas.some(a => !isAiSuggestionApplied('therapeuticArea', a)) ||
+                  workspace.aiAnalysisResult.suggestedFilters.phases.some(p => !isAiSuggestionApplied('phase', p)) ||
+                  workspace.aiAnalysisResult.suggestedFilters.modalities.some(m => !isAiSuggestionApplied('modality', m)) ||
+                  workspace.aiAnalysisResult.suggestedFilters.studyStatus.some(s => !isAiSuggestionApplied('status', s))) && (
+                  <button
+                    onClick={applyAllAiSuggestions}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-all shadow-sm hover:shadow-md bg-gradient-to-r text-white",
+                      scheme.from,
+                      scheme.to
+                    )}
+                  >
+                    <Check className="size-3" />
+                    Apply all
+                  </button>
+                )}
+              </div>
+
+              {/* Suggested Smart Filter Query */}
+              {workspace.aiAnalysisResult.suggestedKeywords.length > 0 && !smartFilterQuery && (
+                <div className="mt-3 pt-3 border-t border-neutral-100">
+                  <p className="text-xs font-light text-neutral-500 mb-2">
+                    Or use a natural language query — click to populate, then review and apply
+                  </p>
+                  <button
+                    onClick={() => {
+                      // Build a suggested query from keywords and filters (using labels)
+                      const areas = workspace.aiAnalysisResult!.suggestedFilters.therapeuticAreas.map(a => THERAPEUTIC_AREA_LABELS[a] || a)
+                      const phases = workspace.aiAnalysisResult!.suggestedFilters.phases.map(p => PHASE_LABELS[p] || p)
+                      const statuses = workspace.aiAnalysisResult!.suggestedFilters.studyStatus
+                      const keywords = workspace.aiAnalysisResult!.suggestedKeywords
+
+                      let query = "Find "
+                      if (statuses.length > 0) query += statuses.join(" or ").toLowerCase() + " "
+                      if (phases.length > 0) query += phases.join("/") + " "
+                      if (areas.length > 0) query += areas.join(" and ") + " "
+                      query += "studies"
+                      if (keywords.length > 0) query += " related to " + keywords.slice(0, 3).join(", ")
+
+                      setSmartFilterInput(query)
+                      setShowSmartInput(true)
+                      // Focus the input after it renders
+                      setTimeout(() => smartFilterInputRef.current?.focus(), 100)
+                    }}
+                    className={cn(
+                      "w-full text-left px-3 py-2 rounded-lg border text-sm font-light transition-all",
+                      "hover:shadow-sm cursor-pointer",
+                      scheme.bg,
+                      scheme.from.replace("from-", "border-").replace("500", "200"),
+                      scheme.from.replace("from-", "text-").replace("500", "700"),
+                      scheme.bgHover
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className={cn("size-3.5 shrink-0", scheme.from.replace("from-", "text-"))} />
+                      <span className="italic truncate">
+                        &quot;Find {workspace.aiAnalysisResult.suggestedFilters.studyStatus[0]?.toLowerCase() || ""} {PHASE_LABELS[workspace.aiAnalysisResult.suggestedFilters.phases[0]] || workspace.aiAnalysisResult.suggestedFilters.phases[0] || ""} {THERAPEUTIC_AREA_LABELS[workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas[0]] || workspace.aiAnalysisResult.suggestedFilters.therapeuticAreas[0] || ""} studies...&quot;
+                      </span>
+                      <ArrowRight className="size-3.5 shrink-0 ml-auto opacity-50" />
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1440,6 +1961,7 @@ export default function WorkspaceDatasetsPage() {
                     Describe what you&apos;re looking for and AI will intelligently filter your datasets
                   </p>
                   <Textarea
+                    ref={smartFilterInputRef}
                     value={smartFilterInput}
                     onChange={(e) => setSmartFilterInput(e.target.value)}
                     placeholder='e.g., "Show me recent oncology studies with imaging data in Europe" or "Find small patient population studies that need data sharing approvals"'
@@ -1818,7 +2340,7 @@ export default function WorkspaceDatasetsPage() {
       {/* Right Sidebar - Selected Datasets */}
       <div className="w-80 shrink-0 mt-[192px]">
         <Card className="border-neutral-200 rounded-2xl overflow-hidden shadow-lg sticky top-24">
-          <CardContent className="p-6">
+          <CardContent className="p-6 pb-0">
             {/* Header with icon */}
             <div className="flex items-center gap-3 mb-4">
               <div
@@ -1885,72 +2407,46 @@ export default function WorkspaceDatasetsPage() {
 
             {/* Access Breakdown Details */}
             {accessBreakdown && localSelectedDatasets.length > 0 ? (
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100">
-                    <CheckCircle2 className="size-4 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-normal text-neutral-900">Already Open</p>
-                      <Badge className="bg-green-100 text-green-800 font-light text-xs">{accessBreakdown.alreadyOpen}%</Badge>
+              <div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-green-100">
+                      <CheckCircle2 className="size-4 text-green-600" />
                     </div>
-                    <p className="text-xs font-light text-neutral-600">Instant access</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
-                    <Zap className={cn("size-4", scheme.from.replace("from-", "text-"))} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-normal text-neutral-900">Awaiting Policy</p>
-                      <Badge className={cn("font-light text-xs", scheme.from.replace("from-", "bg-").replace("500", "100"), scheme.from.replace("from-", "text-"))}>{accessBreakdown.readyToGrant}%</Badge>
-                    </div>
-                    <p className="text-xs font-light text-neutral-600">Auto-provisioned</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
-                    <Clock className="size-4 text-amber-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-normal text-neutral-900">Needs Approval</p>
-                      <Badge className="bg-amber-100 text-amber-800 font-light text-xs">{accessBreakdown.needsApproval}%</Badge>
-                    </div>
-                    <p className="text-xs font-light text-neutral-600">Requires review</p>
-                  </div>
-                </div>
-
-                <Separator className="my-4" />
-
-                {/* Selected datasets list */}
-                <div className="max-h-[200px] overflow-y-auto space-y-2">
-                  {localSelectedDatasets.slice(0, 5).map((dataset) => (
-                    <div
-                      key={dataset.id}
-                      className="flex items-center justify-between p-2 rounded-lg bg-neutral-50 group"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-normal text-neutral-900 truncate">{dataset.code}</p>
-                        <p className="text-xs font-light text-neutral-500 truncate">{dataset.name}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-normal text-neutral-900">Already Open</p>
+                        <Badge className="bg-green-100 text-green-800 font-light text-xs">{accessBreakdown.alreadyOpen}%</Badge>
                       </div>
-                      <button
-                        onClick={() => toggleDataset(dataset)}
-                        className="h-6 w-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="size-3 text-neutral-500 hover:text-red-600" />
-                      </button>
+                      <p className="text-xs font-light text-neutral-600">Instant access</p>
                     </div>
-                  ))}
-                  {localSelectedDatasets.length > 5 && (
-                    <p className="text-xs font-light text-neutral-500 text-center py-2">
-                      +{localSelectedDatasets.length - 5} more datasets
-                    </p>
-                  )}
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", scheme.from.replace("from-", "bg-").replace("500", "100"))}>
+                      <Zap className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-normal text-neutral-900">Awaiting Policy</p>
+                        <Badge className={cn("font-light text-xs", scheme.from.replace("from-", "bg-").replace("500", "100"), scheme.from.replace("from-", "text-"))}>{accessBreakdown.readyToGrant}%</Badge>
+                      </div>
+                      <p className="text-xs font-light text-neutral-600">Auto-provisioned</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                      <Clock className="size-4 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-normal text-neutral-900">Needs Approval</p>
+                        <Badge className="bg-amber-100 text-amber-800 font-light text-xs">{accessBreakdown.needsApproval}%</Badge>
+                      </div>
+                      <p className="text-xs font-light text-neutral-600">Requires review</p>
+                    </div>
+                  </div>
                 </div>
 
                 <Separator className="my-4" />
@@ -2031,23 +2527,96 @@ export default function WorkspaceDatasetsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Filter Input */}
-          <div className="relative mt-4">
-            <Database className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
-            <Input
-              value={refineFilter}
-              onChange={(e) => setRefineFilter(e.target.value)}
-              placeholder="Filter by code or name..."
-              className="pl-9 h-10 rounded-xl border-neutral-200 font-light text-sm"
-            />
-            {refineFilter && (
-              <button
-                onClick={() => setRefineFilter("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-neutral-100 rounded-full p-0.5"
+          {/* Filter Input + Column Selector */}
+          <div className="flex items-center gap-3 mt-4">
+            <div className="relative flex-1">
+              <Database className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+              <Input
+                value={refineFilter}
+                onChange={(e) => setRefineFilter(e.target.value)}
+                placeholder="Filter by code or name..."
+                className="pl-9 h-10 rounded-xl border-neutral-200 font-light text-sm"
+              />
+              {refineFilter && (
+                <button
+                  onClick={() => setRefineFilter("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 hover:bg-neutral-100 rounded-full p-0.5"
+                >
+                  <X className="size-3.5 text-neutral-500" />
+                </button>
+              )}
+            </div>
+            {/* Custom dropdown for column selector (no portal - fixes scroll in Dialog) */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setColumnSelectorOpen(!columnSelectorOpen)}
+                className="h-10 rounded-xl font-light border-neutral-200 gap-2"
               >
-                <X className="size-3.5 text-neutral-500" />
-              </button>
-            )}
+                <Columns3 className="size-4" />
+                Columns
+                <Badge variant="secondary" className="ml-1 font-light text-xs">
+                  {visibleColumns.length}
+                </Badge>
+              </Button>
+
+              {columnSelectorOpen && (
+                <>
+                  {/* Backdrop to close */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setColumnSelectorOpen(false)}
+                  />
+                  {/* Dropdown content */}
+                  <div className="absolute top-full right-0 mt-1 w-72 bg-white border border-neutral-200 rounded-xl shadow-lg z-50">
+                    <div className="p-3 border-b border-neutral-100">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-medium text-neutral-900">Visible Columns</h4>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setVisibleColumns(allRefineColumns.filter(c => c.default).map(c => c.id))}
+                            className="text-xs text-neutral-500 hover:text-neutral-700 px-2 py-1 rounded hover:bg-neutral-100"
+                          >
+                            Reset
+                          </button>
+                          <button
+                            onClick={() => setVisibleColumns(allRefineColumns.map(c => c.id))}
+                            className="text-xs text-neutral-500 hover:text-neutral-700 px-2 py-1 rounded hover:bg-neutral-100"
+                          >
+                            All
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="h-[300px] overflow-y-auto p-2 space-y-1">
+                      {allRefineColumns.map(column => (
+                        <div
+                          key={column.id}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => toggleColumn(column.id)}
+                          onKeyDown={(e) => e.key === 'Enter' && toggleColumn(column.id)}
+                          className={cn(
+                            "w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors cursor-pointer",
+                            visibleColumns.includes(column.id)
+                              ? "bg-neutral-100 text-neutral-900"
+                              : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700"
+                          )}
+                        >
+                          <span className="font-light">{column.label}</span>
+                          {visibleColumns.includes(column.id) ? (
+                            <Eye className="size-4 text-neutral-500" />
+                          ) : (
+                            <EyeOff className="size-4 text-neutral-300" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Results count */}
@@ -2062,146 +2631,25 @@ export default function WorkspaceDatasetsPage() {
             "flex items-center gap-2 px-4 py-2 bg-neutral-50 rounded-xl border border-neutral-200 overflow-x-auto",
             refineFilter.trim() ? "mt-2" : "mt-4"
           )}>
-            <button
-              onClick={() => toggleSort("code")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-24",
-                refineSortField === "code" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Code
-              {refineSortField === "code" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("name")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors flex-1 min-w-[150px]",
-                refineSortField === "name" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Name
-              {refineSortField === "name" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("therapeuticArea")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-24",
-                refineSortField === "therapeuticArea" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Area
-              {refineSortField === "therapeuticArea" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("phase")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-20",
-                refineSortField === "phase" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Phase
-              {refineSortField === "phase" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("status")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-20",
-                refineSortField === "status" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Status
-              {refineSortField === "status" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("isLocked")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-20",
-                refineSortField === "isLocked" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Locked
-              {refineSortField === "isLocked" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("dataProductRights")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-24",
-                refineSortField === "dataProductRights" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Rights
-              {refineSortField === "dataProductRights" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("dataAvailability")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-24",
-                refineSortField === "dataAvailability" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Platform
-              {refineSortField === "dataAvailability" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("modalities")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-28",
-                refineSortField === "modalities" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Modalities
-              {refineSortField === "modalities" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
-            <button
-              onClick={() => toggleSort("patientCount")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0 w-20 justify-end",
-                refineSortField === "patientCount" ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
-              )}
-            >
-              Patients
-              {refineSortField === "patientCount" ? (
-                refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-              ) : (
-                <ArrowUpDown className="size-3 opacity-50" />
-              )}
-            </button>
+            {visibleColumnConfigs.map(column => (
+              <button
+                key={column.id}
+                onClick={() => toggleSort(column.id)}
+                className={cn(
+                  "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors shrink-0",
+                  column.width,
+                  column.align === "right" && "justify-end",
+                  refineSortField === column.id ? cn(scheme.from.replace("from-", "text-"), "bg-white shadow-sm") : "text-neutral-600 hover:text-neutral-900"
+                )}
+              >
+                {column.label}
+                {refineSortField === column.id ? (
+                  refineSortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                ) : (
+                  <ArrowUpDown className="size-3 opacity-50" />
+                )}
+              </button>
+            ))}
             <div className="w-10 shrink-0" /> {/* Space for remove button */}
           </div>
 
@@ -2230,75 +2678,116 @@ export default function WorkspaceDatasetsPage() {
                   key={dataset.id}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-100 hover:border-neutral-200 hover:bg-neutral-50 transition-all group"
                 >
-                  <div className="shrink-0 w-24">
-                    <p className="text-sm font-medium text-neutral-900">{dataset.code}</p>
-                  </div>
-                  <div className="flex-1 min-w-[150px]">
-                    <p className="text-sm font-light text-neutral-700 truncate">{dataset.name}</p>
-                  </div>
-                  <div className="shrink-0 w-24">
-                    <Badge variant="outline" className="font-light text-xs">
-                      {dataset.therapeuticArea[0] || "N/A"}
-                    </Badge>
-                  </div>
-                  <div className="shrink-0 w-20">
-                    <span className="text-sm font-light text-neutral-600">{dataset.phase}</span>
-                  </div>
-                  <div className="shrink-0 w-20">
-                    <Badge
-                      className={cn(
-                        "font-light text-xs",
-                        dataset.status === "Closed" ? "bg-green-100 text-green-800" :
-                        dataset.status === "Active" ? "bg-amber-100 text-amber-800" :
-                        dataset.status === "Grey Zone" ? "bg-orange-100 text-orange-800" :
-                        "bg-neutral-100 text-neutral-600"
+                  {visibleColumnConfigs.map(column => (
+                    <div key={column.id} className={cn("shrink-0", column.width, column.align === "right" && "text-right")}>
+                      {column.id === "code" && (
+                        <p className="text-sm font-medium text-neutral-900">{dataset.code}</p>
                       )}
-                    >
-                      {dataset.status}
-                    </Badge>
-                  </div>
-                  <div className="shrink-0 w-20">
-                    {dataset.isLocked ? (
-                      <Badge className="font-light text-xs bg-green-100 text-green-700">
-                        <Lock className="size-3 mr-1" />
-                        Yes
-                      </Badge>
-                    ) : (
-                      <span className="text-xs font-light text-neutral-400">No</span>
-                    )}
-                  </div>
-                  <div className="shrink-0 w-24">
-                    <Badge
-                      className={cn(
-                        "font-light text-xs",
-                        dataset.dataProductRights === "Research Allowed" ? "bg-green-100 text-green-700" :
-                        dataset.dataProductRights === "Research Not Allowed" ? "bg-red-100 text-red-700" :
-                        "bg-amber-100 text-amber-700"
+                      {column.id === "name" && (
+                        <p className="text-sm font-light text-neutral-700 truncate">{dataset.name}</p>
                       )}
-                    >
-                      {dataset.dataProductRights === "Research Allowed" ? "Allowed" :
-                       dataset.dataProductRights === "Research Not Allowed" ? "Not Allowed" : "Review"}
-                    </Badge>
-                  </div>
-                  <div className="shrink-0 w-24">
-                    <span className={cn(
-                      "text-xs font-light",
-                      dataset.dataAvailability === "Location Unknown" ? "text-amber-600" : "text-neutral-600"
-                    )}>
-                      {dataset.dataAvailability.replace("In ", "")}
-                    </span>
-                  </div>
-                  <div className="shrink-0 w-28">
-                    <span className="text-xs font-light text-neutral-600 truncate block" title={dataset.modalities.join(", ")}>
-                      {dataset.modalities.slice(0, 2).join(", ")}{dataset.modalities.length > 2 ? ` +${dataset.modalities.length - 2}` : ""}
-                    </span>
-                  </div>
-                  <div className="shrink-0 w-20 text-right">
-                    <span className="text-sm font-light text-neutral-600">
-                      {dataset.patientCount.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="w-10 flex justify-end">
+                      {column.id === "therapeuticArea" && (
+                        <Badge variant="outline" className="font-light text-xs">
+                          {dataset.therapeuticArea[0] || "N/A"}
+                        </Badge>
+                      )}
+                      {column.id === "phase" && (
+                        <span className="text-sm font-light text-neutral-600">{dataset.phase}</span>
+                      )}
+                      {column.id === "status" && (
+                        <Badge
+                          className={cn(
+                            "font-light text-xs",
+                            dataset.status === "Closed" ? "bg-green-100 text-green-800" :
+                            dataset.status === "Active" ? "bg-amber-100 text-amber-800" :
+                            dataset.status === "Grey Zone" ? "bg-orange-100 text-orange-800" :
+                            "bg-neutral-100 text-neutral-600"
+                          )}
+                        >
+                          {dataset.status}
+                        </Badge>
+                      )}
+                      {column.id === "isLocked" && (
+                        dataset.isLocked ? (
+                          <Badge className="font-light text-xs bg-green-100 text-green-700">
+                            <Lock className="size-3 mr-1" />
+                            Yes
+                          </Badge>
+                        ) : (
+                          <span className="text-xs font-light text-neutral-400">No</span>
+                        )
+                      )}
+                      {column.id === "dataProductRights" && (
+                        <Badge
+                          className={cn(
+                            "font-light text-xs",
+                            dataset.dataProductRights === "Research Allowed" ? "bg-green-100 text-green-700" :
+                            dataset.dataProductRights === "Research Not Allowed" ? "bg-red-100 text-red-700" :
+                            "bg-amber-100 text-amber-700"
+                          )}
+                        >
+                          {dataset.dataProductRights === "Research Allowed" ? "Allowed" :
+                           dataset.dataProductRights === "Research Not Allowed" ? "Not Allowed" : "Review"}
+                        </Badge>
+                      )}
+                      {column.id === "dataAvailability" && (
+                        <span className={cn(
+                          "text-xs font-light",
+                          dataset.dataAvailability === "Location Unknown" ? "text-amber-600" : "text-neutral-600"
+                        )}>
+                          {dataset.dataAvailability.replace("In ", "")}
+                        </span>
+                      )}
+                      {column.id === "modalities" && (
+                        <span className="text-xs font-light text-neutral-600 truncate block" title={dataset.modalities.join(", ")}>
+                          {dataset.modalities.slice(0, 2).join(", ")}{dataset.modalities.length > 2 ? ` +${dataset.modalities.length - 2}` : ""}
+                        </span>
+                      )}
+                      {column.id === "patientCount" && (
+                        <span className="text-sm font-light text-neutral-600">
+                          {dataset.patientCount.toLocaleString()}
+                        </span>
+                      )}
+                      {column.id === "geography" && (
+                        <span className="text-xs font-light text-neutral-600 truncate block" title={dataset.geography.join(", ")}>
+                          {dataset.geography.slice(0, 2).join(", ")}{dataset.geography.length > 2 ? ` +${dataset.geography.length - 2}` : ""}
+                        </span>
+                      )}
+                      {column.id === "sponsorType" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.sponsorType}</span>
+                      )}
+                      {column.id === "complianceStatus" && (
+                        <Badge
+                          className={cn(
+                            "font-light text-xs",
+                            dataset.complianceStatus === "Fully Compliant" ? "bg-green-100 text-green-700" :
+                            "bg-amber-100 text-amber-700"
+                          )}
+                        >
+                          {dataset.complianceStatus.replace("Fully ", "").replace(" Pending", "")}
+                        </Badge>
+                      )}
+                      {column.id === "closedDate" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.closedDate || "—"}</span>
+                      )}
+                      {column.id === "firstSubjectIn" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.firstSubjectIn}</span>
+                      )}
+                      {column.id === "databaseLockDate" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.databaseLockDate}</span>
+                      )}
+                      {column.id === "collections" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.collections.length}</span>
+                      )}
+                      {column.id === "activeUsers" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.activeUsers}</span>
+                      )}
+                      {column.id === "accessPlatform" && (
+                        <span className="text-xs font-light text-neutral-600">{dataset.accessPlatform}</span>
+                      )}
+                    </div>
+                  ))}
+                  <div className="w-10 flex justify-end shrink-0">
                     <button
                       onClick={() => removeFromRefineSelection(dataset.id)}
                       className="size-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 text-neutral-400 hover:text-red-600 transition-all"

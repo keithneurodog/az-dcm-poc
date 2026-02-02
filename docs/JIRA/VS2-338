@@ -1,7 +1,7 @@
 [VS2-338] DPO delivery tracker
 
 Background:
-TBC
+DPO Officers need to monitor the delivery of approved Studies through Role-based Access Model (ROAM) to ensure timely data availability and identify potential risks or dependencies. No visibility into delivery progress makes it difficult to manage these processes effectively. This tracking capability enables DPO Officers to proactively manage dependencies, identify delivery risks, track completion rates, and ensure approved Studies are delivered through appropriate sources.
 
 User Story:
 As a DPO Officer, I want visibility of Open Access delivery so that that dependencies and risks are managed.

@@ -1,7 +1,7 @@
 [VS2-335] Versioning and Change Management
 
 Background:
-TBC
+Data Collections are subject to changes even after they had been approved. Such change may result with subsequent access revoke consequences. It is therefore required that all collection changes must be versioned with impact analysis to support automatic notification and auto-revoke capabilities when metadata changes invalidate prior approvals.
 
 User Story:
 As a Data Owner/Delegate Data Owner and DPO Officer, I want to maintain version history of collection definitions so that all changes are tracked.
@@ -12,3 +12,7 @@ GIVEN a change to Open Access Collection WHEN the change is saved THEN a timesta
 GIVEN a timestamped artifact for a change made to Open Access Collection WHEN the change is saved THEN it records what was changed, who made the change ad when the change was made.
 GIVEN an existing Open Access Collection WHEN an audit is performed THEN all changes are traceable through timestamped artifacts.
 GIVEN an existing Open Access Collection WHEN a "Periodic Review" cycle is performed THEN the outcome (revoke, extend, modify) is recorded for audit purposes.
+GIVEN a metadata change WHEN it invalidates a prior approval THEN the system automatically revokes access and records the event in the version history.
+GIVEN an existing Open Access Collection access criteria WHEN they change by invalidating existing approvals THEN impacted Users receive automated notifications.
+GIVEN an approval decision change WHEN a study status changes from rejected to approved (or vice versa) THEN a new version is created with a new TA Lead signature required and recorded.
+GIVEN decision changes requiring new signatures WHEN the new version is created THEN the version number increments and the audit trail documents the reason for the change and the new approver signature with timestamp.

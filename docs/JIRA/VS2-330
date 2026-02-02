@@ -1,7 +1,7 @@
 [VS2-330] User scope for access model
 
 Background:
-TBC
+Access to datasets (i.e. ROAM Data Collection) is predominately granted to multiple Users. These User can be grouped and create a "virtual team” with tags usage. These ""virtual team” tags must be managed from a dedicated system with ownership. Requests should validate membership and collaboration restrictions. This User story purpose is to enable Users with data provision access through "virtual team" tags and its subsequent use.
 
 User Story:
 As a Data Owner/Delegate Data Owner, I want to maintain a named virtual team of users so that access is set correctly for the collection.
@@ -13,3 +13,5 @@ GIVEN an Open Data Collection User definition WHEN “virtual team” members ar
 GIVEN an existing “virtual team” WHEN it is being updated THEN addition of Users to the list is enabled.
 GIVEN an existing “virtual team” WHEN it is being updated THEN removal of Users from the list is enabled.
 GIVEN an existing “virtual team” WHEN User is added/removed in source system THEN the Open Data Collection access automatically updates without manual provisioning intervention.
+GIVEN a virtual team WHEN it is configured THEN collaboration restrictions (who can/cannot work with whom) are recorded and enforced for each team member.
+GIVEN an approved Agreement of Terms (AoT) with specified users WHEN data provisioning is executed THEN the system provisions authorised studies to the exact users listed in the AoT.

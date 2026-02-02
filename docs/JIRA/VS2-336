@@ -1,7 +1,7 @@
 [VS2-336] Data Collection operations tracker
 
 Background:
-TBC
+Working with multiple data requests and Data Collection demands results with large request volumes being handled each day. DPO requires comprehensive operational tracking mechanisms to manage data requests and to coordinate demand trends and workload volumes.
 
 User Story:
 As a Data Owner/Delegate Data Owner and DPO Officer and Data Consumer Lead, I want to track operational details for data collection so that progress and status are visible and auditable.
@@ -9,16 +9,17 @@ As a Data Owner/Delegate Data Owner and DPO Officer and Data Consumer Lead, I wa
 Acceptance criteria:
 GIVEN a request for Data Collection WHEN its information status is required THEN a tracking record is available.
 GIVEN an existing Data Collection WHEN operational tracking is required THEN a tracking record is available.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested assets.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected assets.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested Users OR User groups.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected Users OR User groups.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested asset data modalities.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected asset data modalities.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested environment enablement status.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected environment enablement status.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes due diligence status.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes data source availability.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested modality-by-source provisioning status.
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes relevant dates (to be defined).
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional context.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes requested assets.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes approved and rejected assets.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes requested Users OR User groups.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes approved and rejected Users OR User groups.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes requested asset data modalities.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes approved and rejected asset data modalities.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes requested environment enablement status.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes approved and rejected environment enablement status.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes due diligence status.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes data source availability.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes requested modality-by-source provisioning status.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes relevant dates (to be defined).
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes notes for additional context.
+GIVEN Data Collection tracking record WHEN displaying its details THEN it includes the routing decision (self-serve via collection, 10-route/iDAP, or pending ROAM escalation).

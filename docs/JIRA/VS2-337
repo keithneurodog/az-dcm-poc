@@ -1,7 +1,7 @@
 [VS2-337] Data Collection request tracker
 
 Background:
-TBC
+Data Consumers require visibility into the status and progress of their data requests to effectively plan their work and identify delays. A tracking system is required to capture the complete operational status of data collection requests. It is expected that Data Consumers are provided with real-time visibility into request status for self-service monitoring.
 
 User Story:
 As a Data Consumer, I want to track operational details for data collection requests so that progress and status are visible.
@@ -19,4 +19,5 @@ GIVEN Data Collection tracking record WHEN viewing it THEN it includes requested
 GIVEN Data Collection tracking record WHEN viewing it THEN it includes approved and rejected environment enablement status.
 GIVEN Data Collection tracking record WHEN viewing it THEN it includes due diligence status.
 GIVEN Data Collection tracking record WHEN viewing it THEN it includes relevant dates (to be defined).
-GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional
+GIVEN Data Collection tracking record WHEN viewing it THEN it includes notes for additional.
+GIVEN Data Collection tracking record WHEN viewing approval status THEN it shows which TA Lead approvals are pending, received, or rejected.

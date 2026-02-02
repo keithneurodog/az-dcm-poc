@@ -1,7 +1,7 @@
 [VS2-329] Criteria and rules for Data Collection assets
 
 Background:
-TBC
+When controlling who can access which data assets, R&D Data Provisioning Operations (DPO) need clear, consistent rules based on well-defined asset properties (metadata) like classification level, business unit, or data type. Using stable metadata ensures that anyone running the same access query gets the same list of assets every time, which is essential for policy setting and automated access controls that work without human involvement. During the Data Collection assets definition setup, it is crucial to have complete, unambiguous lists that clearly identify which assets are included or excluded. Furthermore, when asset properties change such as when a file is updated from "Consented" to "Consent withdrawn", these changes must automatically update access permissions within minutes to ensure security controls stay current and Scientists do not retain access they should not have.
 
 User Story:
 As a DPO officer, I want access criteria to map to stable metadata fields so that asset lists are unambiguous and reproducible.
