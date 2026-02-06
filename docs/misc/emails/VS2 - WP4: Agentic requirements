@@ -1,0 +1,36 @@
+Hi Everyone,
+
+Thank your time and opportunity to walk you through what I have done on the topic so far.
+Just to reiterate, the topics discussed are not touching a single Work Package (WP) but most likely 2 with some influence on other ones. Moreover, the subjects discussed are predominantly touching the “90-part” of Robel-based Access Model (ROAM) but it is likely that some will also be applicable to “10-part”. Captured requirements and process are 2 main Stakeholders input which require prioritisation, feasibility verification, programme goals alignment and perhaps other checks. Nevertheless, the process flow can be found under this URL and in below screenshot.
+Image
+
+As mentioned earlier the requirements are written in gherkin format and some are missing the Background section which I will update in due course. The list of currently captured requirements which are (currently) not mapped to WP1 or WP4:
+Criteria and rules for Data Collection assets VS2-329
+User scope for access model VS2-330
+Due diligence output VS2-331
+Collection data modalities VS2-332
+Data Collection sources VS2-333
+Consumption environments VS2-334
+Change Management VS2-335
+Data Collection operations tracker VS2-336
+Data Collection request tracker VS2-337
+DPO delivery tracker VS2-338
+Open Access Collection approval execution VS2-339
+Data Collection operations cross checks VS2-340
+User “My Access” view VS2-341
+Prohibited studies that cannot be requested VS2-342
+Similar access demand view VS2-343
+Standardise asset status SLA information VS2-344
+Data Collection artifact management VS2-345
+Collections visibility tracker VS2-346
+Self-service routing decision support VS2-347
+User notification for Collection changes VS2-348
+Cross-TA Collection approval coordination VS2-349
+Audit Trail VS2-350
+
+I will map the requirements to Ben’s work sections and furthermore to relevant Epics which would hopefully help with Rafa’s and Cayetana’s delivery management. I will support relevant Work Packages initiatives during upcoming face-to-face - offering Design and Analysis team standard recommendation, our services and delivery support.
+
+Please do not hesitate to contact me in case of any questions or concerns.
+
+Kind regards
+Marcin
