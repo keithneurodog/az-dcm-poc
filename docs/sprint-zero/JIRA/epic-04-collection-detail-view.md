@@ -211,6 +211,8 @@ Feature: Collection Detail Discussion Tab
 
 **As a** DCM, **I want a** dashboard showing the overall progress of a collection through its lifecycle, **so I can** track and manage it.
 
+> **TBC:** The post-draft progress dashboard is still being prototyped. Acceptance criteria below represent the target state; specific layout and data points may evolve.
+
 ### Acceptance Criteria
 
 ```gherkin

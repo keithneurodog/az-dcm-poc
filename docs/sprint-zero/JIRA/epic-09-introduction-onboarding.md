@@ -56,8 +56,8 @@ Feature: In-App Contextual Help
     When I open the help panel
     Then the help content is specific to the current page/feature
 
-  Scenario: Create wizard shows AI guidance
-    Given I am on the collection creation wizard
+  Scenario: Create workspace shows AI guidance
+    Given I am on the collection creation workspace
     When I open the help panel
     Then I see a "New to AI-assisted collection building?" guide
 

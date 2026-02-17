@@ -14,6 +14,8 @@
 
 **As a** DCM, **I want to** search and browse available datasets by d-code, name, or therapeutic area, **so I can** add relevant studies to my collection.
 
+> **Note:** Primary dataset selection during collection creation happens in the workspace Dataset Browser (see Epic 1, stories 1.9–1.10). This story covers the ROAM-enriched dataset catalog and post-draft dataset management.
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -22,22 +24,27 @@ Feature: Browse & Add Datasets
   Scenario: Search dataset catalog by d-code
     Given I am on the dataset browser
     When I enter a d-code in the search field
-    Then matching datasets from the AZCT catalog are displayed
+    Then matching datasets from the ROAM-enriched AZCT catalog are displayed
 
   Scenario: Search by study name or TA
     Given I am on the dataset browser
     When I enter a study name or therapeutic area
     Then matching datasets are displayed with d-code, name, phase, status
 
+  Scenario: ROAM-enriched fields displayed per dataset
+    Given I am viewing dataset search results
+    Then each dataset shows ROAM fields: locked status, DPR status, compliance status, data availability platform
+    And locked datasets are visually distinguished
+
   Scenario: Filter datasets
     Given I am on the dataset browser
-    When I apply filters for phase, status, geography, or sponsor type
+    When I apply filters for phase, status, geography, sponsor type, locked status, or DPR status
     Then the dataset list narrows to matching results
 
   Scenario: Preview dataset before adding
     Given search results are displayed
     When I click a dataset to preview
-    Then full dataset metadata is shown in a detail panel
+    Then full dataset metadata including ROAM fields is shown in a detail panel
     And I can add it to my collection from the preview
 
   Scenario: Bulk add datasets
@@ -65,10 +72,16 @@ Feature: Dataset Detail Panel
     Given I am viewing a dataset detail panel
     Then I see: enrollment dates, completion dates, sponsor information
 
+  Scenario: ROAM fields are displayed
+    Given I am viewing a dataset detail panel
+    Then I see ROAM-enriched fields: locked status, Data Product Rights (DPR) status, data availability platform
+    And locked datasets show the lock reason
+
   Scenario: Compliance status is shown
     Given I am viewing a dataset detail panel
     Then ethical compliance status is displayed (confirmed/pending/flagged)
     And legal compliance status is displayed (confirmed/pending/flagged)
+    And DPR status is displayed alongside compliance
 
   Scenario: Data availability and access breakdown
     Given I am viewing a dataset detail panel
@@ -85,6 +98,8 @@ Feature: Dataset Detail Panel
 ## 7.3 - Modality/Source Matrix Editor `[L]`
 
 **As a** DCM, **I want to** configure modalities and sources in a matrix view across all datasets, **so I can** see and edit the full picture at once.
+
+> **Note:** Initial modality/source configuration during creation happens in the workspace (see Epic 1, story 1.12). This story covers the full matrix editor available post-draft and within the workspace context.
 
 ### Acceptance Criteria
 
@@ -156,9 +171,11 @@ Feature: Compliance Status per Study
     Given I am viewing studies in my collection
     Then each study shows: ethical status (confirmed/pending/flagged), legal status (confirmed/pending/flagged)
 
-  Scenario: DPR status displayed
+  Scenario: ROAM compliance fields displayed
     Given I am viewing a study's compliance info
     Then the Data Product Rights (DPR) status is shown
+    And locked status is shown with lock reason where applicable
+    And data availability platform is shown
 
   Scenario: First Subject In date check
     Given I am viewing a study's compliance info

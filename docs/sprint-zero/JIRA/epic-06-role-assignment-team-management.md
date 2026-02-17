@@ -16,6 +16,8 @@
 
 **BRD Refs:** FR-COL-040
 
+> **Note:** Initial role assignment during collection creation happens in the workspace Roles section (see Epic 1, story 1.16). This story covers deeper role management post-draft.
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -47,6 +49,8 @@ Feature: Assign Data Consumer Lead & Data Owner
 **As a** DCM, **I want to** nominate a Collection Leader for day-to-day management, **so that** operational responsibility is delegated.
 
 **BRD Refs:** FR-COL-043
+
+> **Note:** Initial role assignment during collection creation happens in the workspace Roles section (see Epic 1, story 1.16). This story covers deeper role management post-draft.
 
 ### Acceptance Criteria
 
@@ -108,6 +112,8 @@ Feature: Create & Manage Virtual Teams
 ## 6.4 - Azure AD User Search for Assignment `[M]`
 
 **As a** DCM, **I want to** search AstraZeneca's directory to find and assign users, **so I can** identify the right people.
+
+> **Note:** Azure AD search is also available in the workspace Roles section during concept creation (see Epic 1, story 1.16). This story covers the full search experience and post-draft management.
 
 ### Acceptance Criteria
 

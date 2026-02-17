@@ -1,6 +1,6 @@
 # Epic 2: Collection Lifecycle Management
 
-**Goal:** Enable DCM users to manage collections through their full lifecycle from draft to active to archived.
+**Goal:** Enable DCM users to manage collections through their full lifecycle from concept through draft to active to archived.
 
 **Personas:** Data Collection Manager (DCM)
 
@@ -24,7 +24,7 @@ Feature: Edit Draft Collections
   Scenario: All fields editable for draft collections
     Given a collection exists with status "draft"
     When I open the collection for editing
-    Then all wizard fields are editable
+    Then the collection's workspace opens with all sections editable
 
   Scenario: Changes are tracked and versioned
     Given I am editing a draft collection
@@ -108,7 +108,7 @@ Feature: Submit Collection for Approval
     Given a draft collection is missing required fields
     When I attempt to submit for approval
     Then submission is blocked
-    And a list of incomplete fields with links to their wizard steps is displayed
+    And a list of incomplete fields with links to the relevant workspace sections is displayed
 ```
 
 ---
@@ -206,41 +206,11 @@ Feature: Archive Collection
 
 ---
 
-## 2.7 - Collection Workspace (Non-Linear Editing) `[L]`
-
-**As a** DCM, **I want a** workspace view for my in-progress collection, **so I can** work on different sections (datasets, terms, roles, activities) in any order.
-
-### Acceptance Criteria
-
-```gherkin
-Feature: Collection Workspace
-
-  Scenario: Hub-and-spoke layout with section cards
-    Given I am viewing my in-progress collection workspace
-    Then I see section cards for: Datasets, Terms, Roles, Activities, Environments, Review
-    And each card shows its completion status (empty / in-progress / complete)
-
-  Scenario: Navigate directly to any section
-    Given I am on the workspace view
-    When I click on a section card
-    Then I am navigated directly to that section's editor
-    And I can return to the workspace at any time
-
-  Scenario: Section completion indicators update
-    Given I have completed all required fields in a section
-    When I return to the workspace
-    Then that section's card shows "complete" status
-
-  Scenario: Share draft link
-    Given I am on the workspace view
-    When I click "Share Draft"
-    Then a shareable link is generated for the draft collection
-    And the link provides read-only access to non-DCM users
-```
+> **Note:** Non-linear workspace editing (hub-and-spoke) is now the core of Epic 1 (Collection Concept & Workspace). See stories 1.5–1.16 for workspace section details.
 
 ---
 
-## 2.8 - Auto-Flag Studies on Metadata Change `[L]`
+## 2.7 - Auto-Flag Studies on Metadata Change `[L]`
 
 **As the** system, **I want to** automatically flag studies when their metadata status changes (e.g., consent withdrawn), **so that** collection integrity is maintained.
 

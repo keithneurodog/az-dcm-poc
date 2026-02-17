@@ -80,7 +80,7 @@ Feature: Collections Kanban View
   Scenario: Display collections by status columns
     Given I am on the collections browser page
     When I select the Kanban view
-    Then collections are organized into columns: Draft, Pending Approval, Approved, Provisioning, Active
+    Then collections are organized into columns: Concept, Draft, Pending Approval, Approved, Provisioning, Active
     And each column shows a card count
 
   Scenario: Drag card between valid status transitions
