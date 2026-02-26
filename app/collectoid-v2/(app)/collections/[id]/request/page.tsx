@@ -208,12 +208,7 @@ export default function RequestAccessPage() {
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem("dcm_current_collection_id", params.id as string)
-            }
-            router.push("/collectoid-v2/dcm/progress")
-          }}
+          onClick={() => router.push(`/collectoid-v2/collections/${params.id}`)}
           className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
         >
           <ArrowLeft className="size-4" />
@@ -543,12 +538,7 @@ export default function RequestAccessPage() {
                   the collection&apos;s{" "}
                   <button
                     type="button"
-                    onClick={() => {
-                      if (typeof window !== "undefined") {
-                        sessionStorage.setItem("dcm_current_collection_id", params.id as string)
-                      }
-                      router.push("/collectoid-v2/dcm/progress?tab=terms")
-                    }}
+                    onClick={() => router.push(`/collectoid-v2/collections/${params.id}?tab=terms`)}
                     className={cn(
                       "underline hover:no-underline",
                       scheme.from.replace("from-", "text-")
@@ -597,12 +587,7 @@ export default function RequestAccessPage() {
         <div className="flex items-center justify-between pt-4">
           <Button
             variant="ghost"
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                sessionStorage.setItem("dcm_current_collection_id", params.id as string)
-              }
-              router.push("/collectoid-v2/dcm/progress")
-            }}
+            onClick={() => router.push(`/collectoid-v2/collections/${params.id}`)}
             className="rounded-xl font-light"
           >
             Cancel

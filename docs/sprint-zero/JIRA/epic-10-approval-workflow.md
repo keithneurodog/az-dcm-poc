@@ -228,7 +228,7 @@ Feature: Cross-TA Approval Status Visualization
 
   Scenario: Per-TA status indicators
     Given a collection spans multiple therapeutic areas
-    When I view the collection detail or progress page
+    When I view the collection detail page
     Then each TA shows a visual indicator: approved (green), pending (amber), rejected (red)
     And the approver name is shown per TA
     And the decision date is shown per TA (if decided)
@@ -273,6 +273,8 @@ Feature: All-Approved Trigger
     Then provisioning is not triggered
     And the collection remains in "pending_approval" status
 ```
+
+> **Design Decision (Immuta alignment):** When all approvals are complete, the provisioning trigger must create records in four Immuta tables — not a single "policy": (1) `Data_Access_Intent` rows (one per permitted activity, with Category, Sub_Category, Purpose, dual AI/ML flags), (2) `Access_Authorisation` rows (IDA or AdHoc track, with approval tier metadata), (3) `Partition_Filter_Criteria` rows (Study_ID IN clause from collection's d-codes), (4) `User_Profile` assignments. The SQS message payload should include all data needed to populate these four tables. See `04-integration-map.md`, Section 4.5 for the complete field mapping. **[TBD]:** The provisioning orchestrator design (direct API vs event-driven) is pending ADR-011.
 
 ---
 

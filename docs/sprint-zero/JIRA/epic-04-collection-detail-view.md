@@ -108,15 +108,22 @@ Feature: Collection Detail Agreement of Terms Tab
 ```gherkin
 Feature: Collection Detail Users/Team Tab
 
-  Scenario: User list with details
-    Given I am viewing the Users/Team tab
+  Scenario: User list with details (active collections)
+    Given I am viewing the Users/Team tab for an active collection
     Then each user entry shows: name, email, role, department, assigned date
     And a role breakdown summary is shown (DCL, DDO, Collection Leader, Data Consumer)
+    And users sourced via Immuta role groups show their group membership
 
-  Scenario: Virtual team groupings
-    Given there are virtual teams assigned to the collection
-    Then users are grouped by their team
-    And each team shows its member count
+  Scenario: Draft collection users placeholder
+    Given I am viewing the Users/Team tab for a draft collection
+    Then I see a "Users Not Yet Provisioned" placeholder
+    And the target user count from the access scope is displayed
+    And a message explains users will be provisioned after approval
+
+  Scenario: Virtual team / role group groupings
+    Given there are virtual teams or Immuta role groups assigned to the collection
+    Then users are grouped by their team or role group
+    And each group shows its member count
 
   Scenario: Search users within collection
     Given I am viewing the Users/Team tab
@@ -207,37 +214,61 @@ Feature: Collection Detail Discussion Tab
 
 ---
 
-## 4.7 - Collection Progress Dashboard `[L]`
+## 4.7 - Collection Detail: Progress & Draft View `[L]`
 
-**As a** DCM, **I want a** dashboard showing the overall progress of a collection through its lifecycle, **so I can** track and manage it.
+**As a** DCM, **I want** the collection detail page to show lifecycle progress for active collections and draft-specific controls for draft collections, **so I can** track and manage collections regardless of their status.
 
-> **TBC:** The post-draft progress dashboard is still being prototyped. Acceptance criteria below represent the target state; specific layout and data points may evolve.
+> **Design Decision:** The progress dashboard has been merged into the collection detail view at `/collections/[id]`. There is no separate progress page — the detail page adapts its content based on collection status (draft vs active/provisioning).
 
 ### Acceptance Criteria
 
 ```gherkin
-Feature: Collection Progress Dashboard
+Feature: Collection Detail Progress & Draft View
 
-  Scenario: Status progress indicator
-    Given I am viewing the progress dashboard
-    Then a visual stepper shows the collection's current position in the lifecycle
-    And completed steps are visually distinguished from pending steps
+  Scenario: Active collection shows full progress view
+    Given I am viewing a collection with status "active" or "provisioning"
+    Then I see the full progress dashboard including: health score card, provisioning status breakdown, 6 tabs (Overview, Datasets, Agreement of Terms, Users, Timeline, Discussion)
+    And a visual stepper shows the collection's current position in the lifecycle
+    And per-dataset provisioning status is displayed
+    And approval status per TA is displayed
 
-  Scenario: Per-dataset provisioning status
-    Given I am viewing the progress dashboard
-    Then each dataset shows its provisioning status (provisioned, in-progress, pending)
+  Scenario: Draft collection shows simplified view with DRAFT banner
+    Given I am viewing a collection with status "draft"
+    Then a non-dismissible amber DRAFT banner is displayed at the top
+    And the banner explains the collection is visible but pending review
+    And a simplified stats card replaces the health score (datasets, target users, selected datasets, TAs)
+    And the health score and provisioning cards are hidden
 
-  Scenario: Approval status per TA
-    Given the collection spans multiple therapeutic areas
-    Then each TA shows its approval status (approved, pending, rejected)
-    And approver name and decision date are shown per TA
+  Scenario: Draft collection shows approve action
+    Given I am viewing a draft collection
+    Then an "Approve Collection" button is shown in the header
+    When I click "Approve Collection" and confirm
+    Then the collection status transitions to "active"
+    And the DRAFT banner disappears
+    And the full progress view becomes visible
 
-  Scenario: DPO delivery tracking
-    Given DPO has been notified of the collection
+  Scenario: Draft collection shows edit grid on Overview tab
+    Given I am viewing the Overview tab of a draft collection
+    Then I see "Edit Collection" action cards for: Datasets, Activities, Terms, Access & Users
+    And each card links back to the relevant workspace sub-page
+
+  Scenario: Draft collection users tab shows placeholder
+    Given I am viewing the Users tab of a draft collection
+    Then I see a "Users Not Yet Provisioned" placeholder
+    And the target user count from the access scope is displayed
+    And a message explains that users will be provisioned after approval
+
+  Scenario: Concept collections redirect to workspace
+    Given I navigate to /collections/{id} for a collection with status "concept"
+    And I am the creator
+    Then I am redirected to the workspace at /dcm/create/workspace
+
+  Scenario: DPO delivery tracking (active collections)
+    Given DPO has been notified of an active collection
     Then delivery tracking information is displayed (read-only)
 
-  Scenario: Compliance checklist status
-    Given the collection has compliance requirements
+  Scenario: Compliance checklist status (active collections)
+    Given an active collection has compliance requirements
     Then a checklist shows the status of each compliance item
 ```
 

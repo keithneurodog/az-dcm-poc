@@ -31,11 +31,13 @@ import {
   X,
   FileText,
 } from "lucide-react"
-import { Dataset, AgreementOfTerms } from "@/lib/dcm-mock-data"
+import { Dataset, AgreementOfTerms, CURRENT_USER_ID } from "@/lib/dcm-mock-data"
+import { useCollectionsStore } from "@/lib/collections-store"
 
 export default function DCMReviewPage() {
   const { scheme } = useColorScheme()
   const router = useRouter()
+  const { addCollection } = useCollectionsStore()
   const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([])
   const [selectedActivities, setSelectedActivities] = useState<Array<{
     id: string
@@ -116,14 +118,69 @@ export default function DCMReviewPage() {
     }
   }
 
-  const handlePublish = () => {
-    // Save current values to sessionStorage before navigating
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("dcm_collection_name", collectionName)
-      sessionStorage.setItem("dcm_collection_description", description)
-      sessionStorage.setItem("dcm_target_community", targetCommunity)
+  const handleConfirmDraft = () => {
+    const newId = `col-draft-${Date.now()}`
+
+    // Build the draft collection from workspace data
+    const draftCollection = {
+      id: newId,
+      name: collectionName,
+      description,
+      status: "draft" as const,
+      progress: 0,
+      totalUsers: totalUsers || 0,
+      usersWithAccess: 0,
+      totalDatasets: selectedDatasets.length,
+      createdAt: new Date(),
+      createdBy: "You",
+      creatorId: CURRENT_USER_ID,
+      isDraft: false, // false = visible in browser (V2: drafts are public)
+      therapeuticAreas: [...new Set(selectedDatasets.flatMap(d => d.therapeuticArea || []))],
+      tags: [],
+      accessLevel: "member" as const,
+      isFavorite: false,
+      commentCount: 0,
+      selectedDatasets,
+      accessBreakdown: {
+        immediate: selectedDatasets.length > 0
+          ? Math.round(selectedDatasets.reduce((sum, d) => sum + d.accessBreakdown.alreadyOpen, 0) / selectedDatasets.length)
+          : 20,
+        instantGrant: selectedDatasets.length > 0
+          ? Math.round(selectedDatasets.reduce((sum, d) => sum + d.accessBreakdown.readyToGrant, 0) / selectedDatasets.length)
+          : 30,
+        pendingApproval: selectedDatasets.length > 0
+          ? Math.round(selectedDatasets.reduce((sum, d) => sum + d.accessBreakdown.needsApproval, 0) / selectedDatasets.length)
+          : 40,
+        dataDiscovery: selectedDatasets.length > 0
+          ? Math.round(selectedDatasets.reduce((sum, d) => sum + d.accessBreakdown.missingLocation, 0) / selectedDatasets.length)
+          : 10,
+      },
+      instantGrantProgress: 0,
+      approvalRequests: [],
+      milestones: [
+        { name: "Concept created", status: "completed" as const, timestamp: new Date(Date.now() - 60000) },
+        { name: "Promoted to draft", status: "completed" as const, timestamp: new Date() },
+      ],
+      agreementOfTerms: aot || undefined,
     }
-    router.push("/collectoid-v2/dcm/create/publishing")
+
+    addCollection(draftCollection)
+
+    // Clear workspace sessionStorage
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("dcm_collection_name")
+      sessionStorage.removeItem("dcm_collection_description")
+      sessionStorage.removeItem("dcm_selected_datasets")
+      sessionStorage.removeItem("dcm_selected_activities")
+      sessionStorage.removeItem("dcm_agreement_of_terms")
+      sessionStorage.removeItem("dcm_collection_status")
+      sessionStorage.removeItem("dcm_ai_analysis")
+      sessionStorage.removeItem("dcm_target_community")
+      sessionStorage.removeItem("dcm_total_users")
+    }
+
+    // Navigate to the new draft's detail page
+    router.push(`/collectoid-v2/collections/${newId}`)
   }
 
   if (!collectionName) {
@@ -164,7 +221,7 @@ export default function DCMReviewPage() {
             Access Provisioning Breakdown
           </h1>
           <p className="text-base font-light text-neutral-600">
-            Review collection details and access provisioning before publishing
+            Review collection details and access provisioning before creating your draft
           </p>
         </div>
       </div>
@@ -866,15 +923,15 @@ export default function DCMReviewPage() {
           Back to Workspace
         </Button>
         <Button
-          onClick={handlePublish}
+          onClick={handleConfirmDraft}
           className={cn(
             "flex-1 h-12 rounded-2xl font-light shadow-lg hover:shadow-xl transition-all bg-gradient-to-r text-white",
             scheme.from,
             scheme.to
           )}
         >
-          <Sparkles className="size-4 mr-2" />
-          Submit for Approval
+          <CheckCircle2 className="size-4 mr-2" />
+          Confirm Draft
         </Button>
       </div>
     </div>

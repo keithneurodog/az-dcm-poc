@@ -123,10 +123,10 @@ export default function WorkspaceOverviewPage() {
     },
     {
       id: "roles",
-      title: "Roles & Approvers",
+      title: "Access & Users",
       description: workspace.assignedRoles.length > 0
-        ? `${workspace.assignedRoles.length} role${workspace.assignedRoles.length !== 1 ? 's' : ''} assigned`
-        : "Assign Data Owner, Consumer Lead",
+        ? `${workspace.assignedRoles.length} group${workspace.assignedRoles.length !== 1 ? 's' : ''}/users selected`
+        : "Define who can access this data",
       icon: Users,
       status: workspace.assignedRoles.length > 0 ? "complete" : "empty",
       required: false,

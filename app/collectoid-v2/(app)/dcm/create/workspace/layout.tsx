@@ -301,7 +301,7 @@ export default function WorkspaceLayout({
     },
     {
       id: "roles",
-      title: "Roles & Approvers",
+      title: "Access & Users",
       icon: Users,
       href: "/collectoid-v2/dcm/create/workspace/roles",
       isComplete: assignedRoles.length > 0,

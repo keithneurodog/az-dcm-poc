@@ -200,12 +200,7 @@ function CustomizeCollectionContent() {
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem("dcm_current_collection_id", params.id as string)
-            }
-            router.push("/collectoid-v2/dcm/progress")
-          }}
+          onClick={() => router.push(`/collectoid-v2/collections/${params.id}`)}
           className="flex items-center gap-2 text-sm font-light text-neutral-600 hover:text-neutral-900 mb-4 transition-colors"
         >
           <ArrowLeft className="size-4" />
@@ -739,12 +734,7 @@ function CustomizeCollectionContent() {
 
                 <Button
                   variant="ghost"
-                  onClick={() => {
-                    if (typeof window !== "undefined") {
-                      sessionStorage.setItem("dcm_current_collection_id", params.id as string)
-                    }
-                    router.push("/collectoid-v2/dcm/progress")
-                  }}
+                  onClick={() => router.push(`/collectoid-v2/collections/${params.id}`)}
                   className="w-full font-light text-neutral-500"
                 >
                   Cancel

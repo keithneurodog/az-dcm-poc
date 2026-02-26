@@ -559,7 +559,7 @@ ${currentUser.email}`
                 )}
               >
                 {collection.status === "provisioning" && "Provisioning"}
-                {collection.status === "completed" && "Complete"}
+                {collection.status === "active" && "Active"}
                 {collection.status === "pending_approval" && "Pending"}
               </Badge>
 
@@ -885,7 +885,7 @@ ${currentUser.email}`
                     // Generate contextual summary
                     let summary = ""
 
-                    if (collection.status === "completed") {
+                    if (collection.status === "active") {
                       summary = `This collection has been fully provisioned with all ${totalUsers} users granted access. `
                       summary += `All approval workflows completed successfully. The collection is now in active use.`
                     } else if (collection.status === "provisioning") {
@@ -2943,7 +2943,7 @@ ${currentUser.email}`
                           {estimatedRemaining && (
                             <p className="text-xs font-light text-neutral-600">{estimatedRemaining}</p>
                           )}
-                          {collection.status !== "completed" && responsibleTeam && (
+                          {collection.status !== "active" && responsibleTeam && (
                             <div className="mt-2 p-3 rounded-xl bg-blue-50 border border-blue-100">
                               <p className="text-xs font-normal text-blue-900 mb-1">Point of Contact</p>
                               <div className="text-xs font-light text-blue-700 space-y-0.5">
@@ -3017,7 +3017,7 @@ ${currentUser.email}`
                           {estimatedStart && (
                             <p className="text-xs font-light text-amber-600">{estimatedStart}</p>
                           )}
-                          {collection.status !== "completed" && responsibleTeam && (
+                          {collection.status !== "active" && responsibleTeam && (
                             <div className="mt-2 p-3 rounded-xl bg-amber-50 border border-amber-100">
                               <p className="text-xs font-normal text-amber-900 mb-1">Point of Contact (when ready)</p>
                               <div className="text-xs font-light text-amber-700 space-y-0.5">

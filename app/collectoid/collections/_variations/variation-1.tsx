@@ -315,8 +315,8 @@ export default function CollectionsBrowserVariation1() {
     switch (status) {
       case "provisioning":
         return { label: "⚡ Provisioning", color: "bg-blue-100 text-blue-700" }
-      case "completed":
-        return { label: "✅ Complete", color: "bg-green-100 text-green-700" }
+      case "active":
+        return { label: "✅ Active", color: "bg-green-100 text-green-700" }
       case "pending_approval":
         return { label: "🟡 Pending", color: "bg-amber-100 text-amber-700" }
       default:
@@ -522,7 +522,7 @@ export default function CollectionsBrowserVariation1() {
                     <div className="space-y-2">
                       {[
                         { value: "provisioning", label: "Provisioning" },
-                        { value: "completed", label: "Completed" },
+                        { value: "active", label: "Active" },
                         { value: "pending_approval", label: "Pending Approval" },
                       ].map((status) => (
                         <label
@@ -771,7 +771,7 @@ export default function CollectionsBrowserVariation1() {
                 <div className="space-y-2">
                   {[
                     { value: "provisioning", label: "Provisioning" },
-                    { value: "completed", label: "Completed" },
+                    { value: "active", label: "Active" },
                     { value: "pending_approval", label: "Pending Approval" },
                   ].map((status) => (
                     <label

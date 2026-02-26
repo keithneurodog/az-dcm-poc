@@ -423,7 +423,7 @@ Collectoid implements a hybrid RBAC model with two layers:
 | Role ID | Display Name | Description | Assignment Mechanism |
 |---------|-------------|-------------|---------------------|
 | `dcm` | Data Collection Manager | Creates and manages data collections. Defines OAC scope, AoT terms, and collection criteria. Routes approvals. Manages datasets and users within collections. Primary "power user" role. | Azure AD group: `SG-Collectoid-DCM` |
-| `approver` | Approver (TA Lead / DDO) | Reviews and approves/rejects OAC Agreements and AoTs. Participates in quarterly opt-in/opt-out reviews. Can flag studies for exclusion. Approval routing is determined by the workflow, not the role (single Approver role handles DDO, GPT, TALT, and Alliance approval types). | Azure AD group: `SG-Collectoid-Approver` |
+| `approver` | Approver (TA Lead / DDO) | Reviews and approves/rejects OAC Agreements and AoTs. Participates in quarterly opt-in/opt-out reviews. Can flag studies for exclusion. Approval routing is determined by the workflow, not the role (single Approver role handles DDO, GPT, TALT, and Alliance approval types). **Note (Immuta alignment):** The Immuta data model defines three approval tiers (Data Steward/DPM, Source Owner, Power User - TALT). Collectoid collapses these into a single system role; the tier distinction is captured in `approvals.team` metadata rather than as separate roles. | Azure AD group: `SG-Collectoid-Approver` |
 | `data_consumer` | Data Consumer (Researcher) | Discovers available collections. Requests access. Views collection terms and their own access status. Tracks request progress. Completes training requirements. | Azure AD group: `SG-Collectoid-Consumer` |
 | `data_consumer_lead` | Data Consumer Lead | Oversees team data access. Accountable for team compliance with AoT terms. Can request access on behalf of team members. Views team-level activity and compliance dashboards. | Azure AD group: `SG-Collectoid-ConsumerLead` |
 | `dpo` | DPO Operations | Validates due diligence. Configures Immuta/Ranger/Starburst policies. Tracks delivery progress. Collectoid surfaces DPO-related data as read-only; DPO-specific operations happen in external systems. Staff needing Collectoid write access use the DCM role. | Azure AD group: `SG-Collectoid-DPO` |
@@ -656,6 +656,23 @@ export const POST = withAuth(
 | `/api/health` | GET | None (public) | Unauthenticated; returns system status |
 | `/api/webhooks/*` | POST | Webhook signature verification | No user session; validated by shared secret + HMAC |
 
+### 3.7 Immuta Authorization Bridge
+
+Collectoid's RBAC governs application-level access (who can create collections, approve requests, etc.). Data-level access (who can query which studies in PDP/Domino/SCP) is governed by Immuta's authorization model:
+
+| Layer | Governed By | Mechanism |
+|-------|-----------|-----------|
+| **Application access** | Collectoid RBAC (Sections 3.1-3.6) | Azure AD groups → system roles → permission matrix |
+| **Data access (90% IDA)** | Immuta User Profiles | Criteria-based matching over User_Tags (Manual, NPA, Workday, Cornerstone) |
+| **Data access (10% AdHoc)** | Immuta AdHoc Authorisation | Per-request approval → time-bound access grant with review cycle |
+| **Row-level security** | Immuta Partitions | `Study_ID IN (...)` WHERE clauses per collection's d-code set |
+| **Column-level masking** | Immuta Masking (pending) | Redaction/obfuscation of sensitive columns (PII, patient identifiers) at query time — **[TBD: mechanism not yet modelled]** |
+| **Policy monitoring** | Immuta monitoring API (pending) | Reconciliation between Collectoid-approved policies and Immuta/Starburst enforcement state — **[TBD: API not yet confirmed]** |
+
+When Collectoid approves a collection, it triggers provisioning that creates records in Immuta's `Data_Access_Intent`, `Access_Authorisation`, `Partition_Filter_Criteria`, and `User_Profile` tables (see `04-integration-map.md`, Section 4.5 for field-level mapping).
+
+**[TBD — METADATA FLOW]:** The exact API contract for Collectoid-to-Immuta communication is unresolved. Key open items: User Profile ownership (Collectoid-created vs DPO-maintained), transactional guarantees across Immuta tables, the relationship between Immuta policies and Starburst/Ranger enforcement, column-level masking mechanism (flagged as "to be added" in PBAC diagram), and policy enforcement monitoring/reconciliation capabilities.
+
 ---
 
 ## 4. Audit Trail Requirements
@@ -684,6 +701,9 @@ Every event below MUST produce an immutable `audit_events` record. No exceptions
 | Member added to collection | `collection.member_added` | DCM adds user | User ID, collection role, justification |
 | Member removed from collection | `collection.member_removed` | DCM removes user or system auto-revokes | User ID, removal reason (manual/compliance/metadata change) |
 | Member role changed | `collection.member_role_changed` | DCM changes member's collection role | User ID, old role, new role |
+| AI/ML permission changed | `collection.aiml_permission_changed` | DCM modifies AI/ML flags in AOT | AOT ID, flag name (`train_aiml` / `store_in_aiml`), previous value, new value |
+| Data access intent modified | `collection.intent_modified` | DCM modifies permitted activities | Activity name, category, previous permitted status, new permitted status |
+| Masking policy changed | `collection.masking_changed` | DCM or DPO modifies column masking rules | Collection ID, affected columns, masking type (redact/hash/null), previous rule, new rule |
 
 **Approval Events:**
 

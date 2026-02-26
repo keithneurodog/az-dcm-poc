@@ -389,7 +389,7 @@ Collectoid implements the **ROAM (Role-based Open Access Model)** paradigm throu
 | FR-COL-013 | The system shall capture target consumption environments (SCP, Domino Data Lab, AI Bench, PDP, IO Platform) | High | VS2-334 | Given a collection, when recording where users will access data, then environment selection from a defined list is enabled |
 | FR-COL-014 | The system shall apply default provisioning boundaries defined by leadership | High | VS2-334 | Given a data collection, when environment defaults are set by leadership (e.g., "Provision to Domino only"), then these boundaries are automatically applied |
 | FR-COL-015 | The system shall allow selection of additional environments beyond defaults when needed | Medium | VS2-334 | Given default boundaries, when additional environments are needed, then additional options are available for selection with appropriate justification |
-| FR-COL-016 | The system shall support defining Agreement of Terms (AOT) including permitted activities, user scope by department/role, ML/AI permissions, publication rights, and prohibited uses | Critical | -- | Given a DCM configuring an AOT, when terms are defined, then all four AOT elements are captured: base definition, data scope (reference to OAC), terms and conditions of use, and user scope |
+| FR-COL-016 | The system shall support defining Agreement of Terms (AOT) including permitted activities, user scope by department/role, dual AI/ML permission flags (permission to train AI/ML models AND permission to store data in AI/ML models — two separate booleans per Immuta data model), publication rights, and prohibited uses | Critical | -- | Given a DCM configuring an AOT, when terms are defined, then all four AOT elements are captured: base definition, data scope (reference to OAC), terms and conditions of use, and user scope |
 | FR-COL-017 | The system shall support one AOT per OAC, with the ability to create multiple AOTs for the same OAC for different user groups | High | -- | Given an OAC, when AOTs are managed, then one or more AOTs can be associated with it, each defining different user scopes and terms |
 
 #### 4.1.2 Collection Modification & Lifecycle
@@ -413,12 +413,14 @@ Collectoid implements the **ROAM (Role-based Open Access Model)** paradigm throu
 | FR-COL-034 | The system shall support sorting by: recent, alphabetical, most users, and completion percentage | Medium | -- | Given search results, when a sort option is selected, then results reorder accordingly |
 | FR-COL-035 | The system shall display access control indicators: Member (green), Request Access (amber), Public (blue), Restricted (red) | High | -- | Given a collection card, when displayed, then the appropriate access indicator is shown based on the current user's permissions |
 
-#### 4.1.4 Role Assignment
+#### 4.1.4 Role Assignment & Access Scope
+
+> **Note:** Collection access management has three dimensions: (1) *Authorization track* — whether users receive standing access via IDA (the "90" route) or request-based access via AdHoc (the "10" route) — per Immuta's two authorisation tracks; (2) *Access scope* — selecting Immuta User Profiles (criteria-based matching over User_Tags from Manual, NPA, Workday, and Cornerstone sources), individual user overrides by PRID, and study-level partition assignments (Study_ID sets); (3) *Governance roles* — assigning DCL, DDO, and Collection Leader roles for accountability, managed post-draft. **[TBD — METADATA FLOW]:** Confirm User Profile ownership (Collectoid-created vs DPO-maintained) and the partition-to-Starburst mapping path.
 
 | ID | Requirement | Priority | JIRA Ref | Acceptance Criteria |
 |----|-------------|----------|----------|---------------------|
 | FR-COL-040 | The system shall support assignment of Data Consumer Lead and Data Owner (DDO) roles to a collection | Critical | VS2-330 | Given a collection, when roles are assigned, then at least one Data Consumer Lead and one Data Owner are identified |
-| FR-COL-041 | The system shall support defining virtual teams (user groups) linked to collections | Critical | VS2-330 | Given a collection, when a virtual team is created, then addition/removal of users from the team is enabled |
+| FR-COL-041 | The system shall support defining access scope via Immuta role groups and individual user overrides linked to collections | Critical | VS2-330 | Given a collection, when access scope is defined, then Immuta role groups can be selected and individual users can be added by PRID |
 | FR-COL-042 | The system shall automatically update access when team membership changes in the source system | High | VS2-330 | Given a membership change in the source system (e.g., AD group), when synchronized, then access permissions are automatically updated |
 | FR-COL-043 | The system shall support nominating a Collection Leader responsible for day-to-day management | Medium | VS2-330 | Given a collection, when a Collection Leader is nominated, then their responsibilities and permissions are scoped accordingly |
 
@@ -457,6 +459,8 @@ Collectoid implements the **ROAM (Role-based Open Access Model)** paradigm throu
 | ID | Requirement | Priority | JIRA Ref | Acceptance Criteria |
 |----|-------------|----------|----------|---------------------|
 | FR-APR-001 | The system shall route approval requests to the appropriate approvers based on therapeutic area, legal requirements, data ownership, and partnership status | Critical | VS2-339 | Given a collection submitted for approval, when the system determines routing, then requests are sent to all required approver queues (DDO, GPT, TALT, Alliance as applicable) |
+> **[TBD — IMMUTA ALIGNMENT]:** The Immuta data model defines three approval tiers: (1) Data Steward / DPM, (2) Source Owner, and (3) Power User - TALT. The BRD lists DDO, GPT, TALT, and Alliance as approval queues. Confirm the mapping: does DDO = Source Owner? Does GPT = Data Steward/DPM? Is Alliance a fourth tier not in Immuta?
+
 | FR-APR-002 | The system shall enforce "all or nothing" approval for cross-TA collections: if any single TA Lead rejects, the entire collection is blocked for ALL therapeutic areas | Critical | VS2-339, VS2-349 | Given a cross-TA collection, when any TA Lead rejects, then the collection cannot proceed for any TA; this blocking status is clearly displayed to all stakeholders |
 | FR-APR-003 | The system shall require all relevant TA Leads to sign for cross-TA collections | Critical | VS2-349 | Given a collection spanning multiple TAs, when submitted for approval, then all relevant TA Leads are identified and must provide signature approval |
 | FR-APR-004 | The system shall capture formal signatures with complete audit trail and timestamps | Critical | VS2-339, VS2-350 | Given an approval decision, when recorded, then the approver identity, decision, timestamp, and any comments are captured as an immutable audit record |
@@ -927,6 +931,13 @@ Items marked with [QUESTION] throughout this document are consolidated here for 
 | **V&I** | Vaccines & Immune Therapies (therapeutic area) |
 | **VS2** | Value Stream 2 (= DOVS2) |
 | **WP** | Work Package (numbered 1-4 within DOVS2) |
+| **IDA** | Internal Data Agreement — standing authorisation track covering ~90% of access needs under ROAM. Maps to Immuta `Access_Authorisation.Authorisation_Type = 'IDA'` |
+| **AdHoc** | Request-based authorisation track covering ~10% of access needs requiring individual approval. Maps to Immuta `Access_Authorisation.Authorisation_Type = 'AdHoc'` |
+| **User Profile** | Immuta concept: criteria-based user group defined by boolean expressions matching over User_Tags (from Manual, NPA, Workday, Cornerstone) |
+| **Partition** | Immuta concept: study-level row security boundary enforced via `Study_ID IN (...)` WHERE clauses at the Starburst query layer |
+| **Data Access Intent** | Immuta concept: structured record of why a user needs data access, with Category and Sub_Category fields. One per permitted activity per collection |
+| **User Tags** | Immuta concept: attributes attached to users, sourced from Manual entry, NPA (auto-fetched by Immuta), Workday, and Cornerstone |
+| **Column Masking** | Immuta/Starburst concept: query-time redaction or obfuscation of sensitive data columns (e.g., PII, patient identifiers). Distinct from row-level partition security. Flagged as "to be added" in PBAC metadata diagram |
 
 ---
 

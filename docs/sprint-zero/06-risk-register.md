@@ -401,7 +401,7 @@ Medium  |            | RISK-TL-04 | RISK-I-004 | RISK-I-001 |            |
 |-------|-------|
 | **Risk ID** | RISK-I-004 |
 | **Category** | Integration |
-| **Description** | Immuta is rated HIGH dependency -- provisioning is blocked without it (`01-architecture-overview.md`). When all TA Leads approve a collection, Collectoid must trigger policy creation in Immuta and access configuration in Starburst/Ranger (see Flow 3 in architecture doc). The Immuta API contract is unknown (QUESTION-008), no sandbox environment is confirmed, and the policy model (per-study, per-collection, per-user) has not been agreed with the platform team. Incorrect policy creation could grant unauthorized access to clinical trial data. |
+| **Description** | Immuta is rated HIGH dependency -- provisioning is blocked without it (`01-architecture-overview.md`). When all TA Leads approve a collection, Collectoid must trigger policy creation in Immuta and access configuration in Starburst/Ranger (see Flow 3 in architecture doc). The Immuta API contract is unknown (QUESTION-008), no sandbox environment is confirmed, and the Immuta data model analysis reveals significantly more complexity than initially estimated: two authorisation tracks (IDA vs AdHoc), criteria-based User Profiles matching over User_Tags from four sources (Manual, NPA, Workday, Cornerstone), partition-based row security via Study_ID WHERE clauses, dual AI/ML boolean flags per intent, intent-based access with category/subcategory taxonomy, and review cycles per intent. Mapping Collectoid's collection/AOT model to this multi-dimensional authorization model is a major design challenge. Incorrect policy creation could grant unauthorized access to clinical trial data. |
 | **Likelihood** | 3 (Medium) -- API complexity is inherent in policy engines; sandbox availability is common for enterprise tools |
 | **Impact** | 3 (Moderate) -- Provisioning is Q3 scope; there is time to resolve, but incorrect policies are a security concern |
 | **Risk Score** | **9** |
@@ -449,6 +449,42 @@ Medium  |            | RISK-TL-04 | RISK-I-004 | RISK-I-001 |            |
 | **Owner** | Tech Lead (TBC) |
 | **Status** | Open |
 | **Review Date** | 2026-06-01 |
+
+---
+
+### RISK-I-007: Immuta Data Model Alignment Complexity
+
+| Field | Value |
+|-------|-------|
+| **Risk ID** | RISK-I-007 |
+| **Category** | Integration |
+| **Description** | The Immuta authorization model depends on User_Tags sourced from four systems (Manual, NPA, Workday, Cornerstone) for criteria-based User Profile matching. Stale or missing User_Tags could cause incorrect access grants or denials. Additionally, the complete mapping between Collectoid's collection/AOT model and Immuta's multi-layered concepts (IDA/AdHoc tracks, partitions, intents, dual AI/ML flags, review cycles) has not been designed. **[TBD — METADATA FLOW]:** Pending metadata flow diagram to clarify ownership boundaries. |
+| **Likelihood** | 3 (Medium) |
+| **Impact** | 4 (Major) — incorrect User Profile matching directly leads to unauthorized data access or blocked legitimate access |
+| **Risk Score** | **12** |
+| **Risk Level** | **Medium** |
+| **Mitigation Strategy** | 1. Document Collectoid-to-Immuta mapping during Q2 (before Q3 provisioning). 2. Implement reconciliation check for User_Tag freshness. 3. Design partition mapping as formal contract with Immuta team. 4. Map dual AI/ML flags explicitly. |
+| **Contingency Plan** | If automated mapping proves too complex, implement "policy instruction document" pattern where Collectoid generates specifications that DPO translates to Immuta policies manually. |
+| **Owner** | Tech Lead (TBC) |
+| **Status** | Open |
+| **Review Date** | 2026-04-01 |
+
+### RISK-I-008: Column-Level Masking Not Yet Modelled
+
+| Field | Value |
+|-------|-------|
+| **Risk ID** | RISK-I-008 |
+| **Category** | Integration |
+| **Description** | The PBAC metadata requirements diagram flags "Masking to be added" as a pending requirement. Column-level data masking (redacting PII, patient identifiers, sensitive clinical fields) is distinct from row-level partition security and user-level profile access. The Immuta masking mechanism was not present in the `Immuta Tables for R&D.xlsx` analysis, suggesting it is either a future Immuta feature or an existing capability not yet documented. Without masking, users who pass partition and profile checks may still see columns they should not (e.g., unmasked patient names in clinical data). |
+| **Likelihood** | 3 (Medium) — masking is flagged as pending in the official PBAC diagram, suggesting it is known but not yet implemented |
+| **Impact** | 4 (Major) — exposing unmasked PII in clinical trial data is a significant compliance and privacy risk |
+| **Risk Score** | **12** |
+| **Risk Level** | **Medium** |
+| **Mitigation Strategy** | 1. Engage Immuta team to confirm masking mechanism and timeline. 2. Document masking requirements alongside partition and profile requirements during Q2. 3. If Immuta masking is not available, evaluate Starburst/Ranger native masking as a fallback. |
+| **Contingency Plan** | Apply Starburst column-level security policies independently of Immuta until Immuta masking is available. This creates a dual-management burden but prevents PII exposure. |
+| **Owner** | Tech Lead (TBC) |
+| **Status** | Open |
+| **Review Date** | 2026-04-01 |
 
 ---
 

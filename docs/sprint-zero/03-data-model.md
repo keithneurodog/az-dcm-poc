@@ -1380,6 +1380,47 @@ When a cache entry is older than the configured threshold:
 
 [QUESTION] What are the acceptable staleness thresholds for each source? Proposed: AZCT = 2 hours, Cornerstone = 24 hours, Collibra = 24 hours.
 
+### 6.1 Immuta Data Model Mapping (Provisioning Target)
+
+When a collection is approved and transitions to the provisioning phase, Collectoid must create or update records in Immuta's data model. This section documents how Collectoid's internal entities map to Immuta's 10-table model (source: `Immuta Tables for R&D.xlsx` analysis).
+
+#### Collectoid → Immuta Entity Mapping
+
+| Collectoid Entity | Immuta Table | Relationship | Notes |
+|-------------------|-------------|-------------|-------|
+| Collection activities (from `agreement_versions.terms`) | `Data_Access_Intent` | 1 activity → 1 intent row | Each permitted activity creates an intent with `Category`, `Sub_Category`, `Purpose` |
+| Approval decisions (from `approvals`) | `Access_Authorisation` | 1 approval → 1+ authorisation rows | Tracks IDA (standing) vs AdHoc (request-based) track; includes 3 approval tiers |
+| Selected datasets (from `collection_version_datasets`) | `Partition_Filter_Criteria` | N d-codes → 1 partition filter per data source | `Study_ID IN ('D-001', 'D-042', ...)` WHERE clause |
+| Role group selections (from `collection_members`) | `User_Profile` | Collection access scope → profile expression | Criteria-based matching over `User_Tags` |
+| — (read-only) | `User_Tags` | Reference data | Tags sourced from Manual, NPA, Workday, Cornerstone |
+| — (read-only) | `Data_Asset` | Reference data | Broad data products; collections are scoped subsets |
+| — (read-only) | `Internal_Data_Agreement` | Reference data | IDA records for standing access (90% route) |
+| AoT restrictions | `Data_Usage_Restrictions` | Validation target | Collectoid validates AoT terms don't conflict |
+| — | `Hypothesis` | Not used | Empty in current Immuta data |
+| Partition → User assignments | `Partition_Applicable` | Junction | Links partitions to users/profiles |
+
+#### Key Design Implications
+
+**1. Intent-per-activity granularity:** The `agreement_versions.terms` JSONB (Section 3.12) stores activities as boolean flags (`primary_use.understand_drug_mechanism: true`). Each `true` activity must map to a `Data_Access_Intent` row with the correct Immuta `Category` and `Sub_Category`. A category/subcategory mapping table is needed — either as a new `intent_category_mappings` table or as application-level configuration.
+
+**2. Dual AI/ML flags:** The Immuta model has two separate boolean columns per intent: `To_train_AI_ML_models` and `To_store_data_in_AI_ML_model`. The current `terms` JSONB schema (Section 3.12) has a single `beyond_primary_use.ai_research` flag. **[TBD]:** Add a second AI/ML flag to the `terms` JSONB schema: `beyond_primary_use.store_in_ai_ml_model`. This is a schema change needed before Q3 provisioning.
+
+**3. Two authorisation tracks:** The `approvals` table (Section 3.17) uses `team` to identify the approver type (GPT, TALT, DDO, Alliance). Immuta uses `Authorisation_Type` with values `IDA` (Internal Data Agreement = standing access) or `AdHoc` (request-based). **[TBD]:** The `access_requests` table or `agreement_versions` should carry an `authorisation_track` field (`ida` | `adhoc`) to distinguish which Immuta track applies.
+
+**4. Three approval tiers:** Immuta defines three tiers: `Data Steward/DPM`, `Source Owner`, `Power User - TALT`. The `approvals.team` field currently uses `GPT`, `TALT`, `DDO`, `Alliance`. **[TBD]:** Confirm the mapping between Collectoid's team values and Immuta's tier enum. Consider adding an `immuta_tier` column to `approvals` or maintaining a mapping table.
+
+**5. Partition-based row security:** When Collectoid provisions a collection, the selected d-codes become a `Study_ID IN (...)` SQL WHERE clause in Immuta. This is derived from `collection_version_datasets` → `datasets.d_code`. No schema change needed — the data is already available.
+
+**6. User Profile criteria expressions:** Immuta User Profiles are boolean expressions over `User_Tags` (e.g., `tag:department = 'Oncology' AND tag:training_complete = true`). Collectoid must either generate these expressions from collection role group selections or reference pre-existing Immuta profiles. **[TBD]:** Determine ownership — does Collectoid create profiles or reference existing ones?
+
+**7. Review cycles:** Each `Data_Access_Intent` has `Next_Review_Date` and `Review_Status`. The existing `agreement_versions.review_date` maps to intent-level review, but a single AoT review date may need to fan out to multiple intent review dates. **[TBD]:** Consider whether `review_date` should be per-intent (requiring a new `collection_intents` table) or per-collection (current design).
+
+**8. Column-level masking (identified gap):** The PBAC metadata diagram flags "Masking to be added" as a pending requirement. Beyond row-level partitions (`Partition_Filter_Criteria`) and user-level profiles (`User_Profile`), Immuta also supports column-level data masking — redacting or obfuscating sensitive columns (e.g., PII, dates of birth, patient identifiers) at query time. This may require an additional Immuta table or policy configuration not yet mapped. Collectoid's AoT terms may need to specify which columns require masking per collection. **[TBD — METADATA FLOW]:** Confirm Immuta's masking table/mechanism and whether Collectoid needs to write masking rules or if DPO manages them independently.
+
+**9. Policy monitoring and reconciliation (identified gap):** The PBAC diagram indicates a monitoring and reporting layer for verifying that provisioned policies are actually enforced at the Starburst/Ranger query layer. Collectoid should implement periodic reconciliation between its approved collection state and Immuta's actual policy state. **[TBD — METADATA FLOW]:** Confirm whether Immuta exposes a status/health API for policy enforcement verification, and what monitoring dashboard requirements exist.
+
+> **Pending:** A full metadata flow diagram is expected to clarify the remaining TBD items above, particularly the Category/Sub_Category taxonomy mapping and User Profile ownership.
+
 ---
 
 ## 7. Indexes and Query Patterns
@@ -2408,6 +2449,10 @@ For DocumentDB, the model is adapted to a document-oriented approach. Key differ
 | [Q10] | What AZCT API fields map to which dataset columns? | Integration accuracy | Requires AZCT API specification review. See `04-integration-map.md` for detailed field mapping. |
 | [Q11] | Are there additional data modalities beyond Clinical, Genomic, Imaging, Biomarkers, Digital Devices, and Real-World Data? | Data category taxonomy completeness | Validate with domain experts. The taxonomy in the POC has 30+ categories across 6 domains. |
 | [Q12] | How should duplicate detection (VS2-340) work at the data model level? | Cross-collection dataset overlap queries | Proposed: Query `collection_version_datasets` to find shared `dataset_id` values across active collections. No separate table needed. |
+| [Q13] | Should the `terms` JSONB schema add a second AI/ML flag (`store_in_ai_ml_model`) separate from `ai_research`? | Immuta requires two independent booleans: "To train AI/ML models" and "To store data in AI/ML model". Current schema has only one flag. | Proposed: Add `beyond_primary_use.store_in_ai_ml_model` boolean to `terms` JSONB. This is a non-breaking addition. |
+| [Q14] | Should `access_requests` or `agreement_versions` carry an `authorisation_track` field (`ida` / `adhoc`)? | Immuta distinguishes IDA (standing) from AdHoc (request-based) authorisation. Collectoid needs to know which track to use when creating Immuta records. | Proposed: Add `authorisation_track` enum to `agreement_versions` (IDA for open collections, AdHoc for request-based). |
+| [Q15] | Should a `collection_intents` table be created to track per-intent review dates, or should `review_date` remain per-AoT? | Immuta tracks `Next_Review_Date` per `Data_Access_Intent`. If a collection has 5 activities, each maps to a separate intent with potentially different review dates. | Proposed: Start with per-AoT review date (current design). If review date granularity is required per-intent, introduce `collection_intents` table in a future sprint. |
+| [Q16] | Does Collectoid create Immuta User Profiles or reference pre-existing profiles maintained by DPO/Immuta admin? | Affects whether Collectoid needs to generate criteria-based profile expressions or simply pass profile IDs to Immuta during provisioning. | Pending DPO team input. |
 
 ---
 

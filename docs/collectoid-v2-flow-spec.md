@@ -62,7 +62,7 @@ The DCM lands in the **workspace** — a hub-and-spoke layout with section cards
 - **Datasets** (required) — browse, filter, and select studies from the ROAM-enriched catalog
 - **Activities & Purpose** (required) — define permitted activities across 4 categories
 - **Agreement of Terms** (required) — configure primary use, beyond primary use, publication rights
-- **Roles & Approvers** (optional) — assign DCL, DDO, VT Lead via directory search
+- **Access & Users** (optional) — select Immuta role groups and individual users who should receive data access
 
 Sections can be completed in any order. A sidebar stepper tracks progress. Background AI analysis runs automatically and suggests filters/keywords based on the collection's title and description.
 

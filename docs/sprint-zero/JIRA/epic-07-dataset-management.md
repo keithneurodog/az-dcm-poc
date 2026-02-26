@@ -154,6 +154,8 @@ Feature: Access Provisioning Breakdown
     Then the approval team responsible is identified and displayed
 ```
 
+> **Design Decision (Immuta alignment):** The 20/30/40/10 access provisioning breakdown should reflect that "Awaiting Policy" datasets will have Immuta partition filters (Study_ID IN clauses) created during provisioning, and "Needs Approval" datasets require Access_Authorisation records with approval tier routing. The breakdown display should map to Immuta's authorization tracks: IDA (standing access) for the 90% route and AdHoc (request-based) for the 10% route.
+
 ---
 
 ## 7.5 - Compliance Status Display per Study `[M]`

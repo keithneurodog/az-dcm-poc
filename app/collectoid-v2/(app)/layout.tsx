@@ -14,6 +14,7 @@ import {
   NotesFloatingPanel,
 } from "./_components"
 import { FEATURE_FLAGS } from "@/lib/feature-flags"
+import { CollectionsStoreProvider } from "@/lib/collections-store"
 
 export default function CollectoidLayout({ children }: { children: ReactNode }) {
   const notesEnabled = FEATURE_FLAGS.NOTES_ENABLED
@@ -23,6 +24,7 @@ export default function CollectoidLayout({ children }: { children: ReactNode }) 
   )
 
   return (
+    <CollectionsStoreProvider>
     <ColorSchemeProvider>
       <NotificationProvider>
         {notesEnabled ? (
@@ -59,5 +61,6 @@ export default function CollectoidLayout({ children }: { children: ReactNode }) 
         )}
       </NotificationProvider>
     </ColorSchemeProvider>
+    </CollectionsStoreProvider>
   )
 }

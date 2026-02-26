@@ -3717,7 +3717,7 @@ export interface Collection {
   id: string
   name: string
   description: string
-  status: "concept" | "draft" | "pending_approval" | "provisioning" | "completed"
+  status: "concept" | "draft" | "pending_approval" | "provisioning" | "active"
   progress: number
   totalUsers: number
   usersWithAccess: number
@@ -3862,7 +3862,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "Cardiovascular Outcomes Collection",
     description:
       "Comprehensive cardiovascular outcomes data from Phase II-IV trials. Includes primary endpoints, safety data, and long-term follow-up across multiple indications.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 22,
     usersWithAccess: 22,
@@ -3913,7 +3913,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "Immunotherapy Response Data",
     description:
       "Multi-indication immunotherapy response datasets with detailed biomarker, imaging, and clinical outcome data. Focused on checkpoint inhibitor therapies across multiple tumor types.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 18,
     usersWithAccess: 18,
@@ -3964,7 +3964,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "Diabetes Management Real World Evidence",
     description:
       "Real-world evidence from diabetes management programs across multiple geographies. Includes patient-reported outcomes, adherence data, and clinical biomarkers.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 65,
     usersWithAccess: 65,
@@ -4049,7 +4049,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "COVID-19 Vaccine Safety Monitoring",
     description:
       "Post-market surveillance data for COVID-19 vaccines including adverse events, efficacy metrics, and demographic breakdowns across global populations.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 220,
     usersWithAccess: 220,
@@ -4138,7 +4138,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "Pediatric Oncology Clinical Trials",
     description:
       "Phase II/III clinical trials for pediatric cancer indications including neuroblastoma, leukemia, and solid tumors with safety and efficacy data.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 52,
     usersWithAccess: 52,
@@ -4227,7 +4227,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     name: "Inflammatory Bowel Disease Outcomes",
     description:
       "Long-term outcomes data for IBD patients including treatment responses, quality of life measures, and endoscopic assessments.",
-    status: "completed",
+    status: "active",
     progress: 100,
     totalUsers: 43,
     usersWithAccess: 43,

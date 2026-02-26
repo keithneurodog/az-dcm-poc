@@ -8,6 +8,8 @@
 
 **Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
 
+> **Note:** This epic covers *governance role assignment* (DCL, DDO, Collection Leader) and team management for post-draft collections. *Access scope definition* — selecting which Immuta role groups and individual users should receive data access — is handled during collection creation in the workspace "Access & Users" section (see Epic 1, story 1.16).
+
 ---
 
 ## 6.1 - Assign Data Consumer Lead & Data Owner `[M]`
@@ -16,7 +18,7 @@
 
 **BRD Refs:** FR-COL-040
 
-> **Note:** Initial role assignment during collection creation happens in the workspace Roles section (see Epic 1, story 1.16). This story covers deeper role management post-draft.
+> **Note:** Initial access scope definition during collection creation happens in the workspace Access & Users section (see Epic 1, story 1.16). This story covers governance role management post-draft.
 
 ### Acceptance Criteria
 
@@ -50,7 +52,7 @@ Feature: Assign Data Consumer Lead & Data Owner
 
 **BRD Refs:** FR-COL-043
 
-> **Note:** Initial role assignment during collection creation happens in the workspace Roles section (see Epic 1, story 1.16). This story covers deeper role management post-draft.
+> **Note:** Initial access scope definition during collection creation happens in the workspace Access & Users section (see Epic 1, story 1.16). This story covers governance role management post-draft.
 
 ### Acceptance Criteria
 
@@ -113,7 +115,7 @@ Feature: Create & Manage Virtual Teams
 
 **As a** DCM, **I want to** search AstraZeneca's directory to find and assign users, **so I can** identify the right people.
 
-> **Note:** Azure AD search is also available in the workspace Roles section during concept creation (see Epic 1, story 1.16). This story covers the full search experience and post-draft management.
+> **Note:** Azure AD search is also available in the workspace Access & Users section during concept creation (see Epic 1, story 1.16). This story covers the full search experience and post-draft management.
 
 ### Acceptance Criteria
 

@@ -143,7 +143,7 @@ Feature: Workspace Overview Hub
 
   Scenario: Section cards are displayed
     Given I am on the workspace overview
-    Then I see section cards for: Datasets, Activities & Purpose, Agreement of Terms, Roles & Approvers
+    Then I see section cards for: Datasets, Activities & Purpose, Agreement of Terms, Access & Users
     And each card shows: title, description, completion status (empty/complete), and item count where applicable
 
   Scenario: Required sections are indicated
@@ -181,7 +181,7 @@ Feature: Workspace Sidebar Navigation
 
   Scenario: Sidebar displays all sections
     Given I am in the workspace
-    Then a sidebar is visible with navigation items: Overview, Datasets, Activities & Purpose, Agreement of Terms, Roles & Approvers
+    Then a sidebar is visible with navigation items: Overview, Datasets, Activities & Purpose, Agreement of Terms, Access & Users
 
   Scenario: Active section is highlighted
     Given I am viewing the Datasets section
@@ -510,7 +510,7 @@ Feature: Configure Agreement of Terms
   Scenario: Beyond primary use
     Given I am configuring terms
     When I toggle beyond primary use options
-    Then I can enable/disable: AI/ML research, software development
+    Then I can enable/disable: "To train AI/ML models" (boolean), "To store data in AI/ML model" (boolean), software development
 
   Scenario: Publication permissions
     Given I am configuring terms
@@ -534,41 +534,67 @@ Feature: Configure Agreement of Terms
     Then the workspace overview updates the Terms card to "complete"
 ```
 
+> **Design Decision (Immuta alignment):** The Immuta data model requires two separate AI/ML boolean flags per Data_Access_Intent: "To train AI/ML models" and "To store data in AI/ML model". The AoT configuration UI must capture these as independent toggles rather than a single AI/ML permission. This maps to `agreement_versions.terms.beyond_primary_use.ai_research` and a new `beyond_primary_use.store_in_ai_ml_model` field. See `03-data-model.md`, Section 6.1 for schema implications.
+
 ---
 
-### 1.16 - Workspace: Assign Roles & Approvers `[M]`
+### 1.16 - Workspace: Define Access & Users `[M]`
 
-**As a** DCM, **I want to** assign key governance roles (Data Consumer Lead, Data Domain Owner, Virtual Team Lead), **so that** the collection has clear accountability.
+**As a** DCM, **I want to** define who can access this collection by selecting from existing Immuta role groups and adding individual user overrides, **so that** the access scope is clear before promotion.
 
-**BRD Refs:** FR-COL-040, FR-COL-043
+**BRD Refs:** FR-COL-040, FR-COL-041
+
+> **Design Decision:** The workspace "Access & Users" section focuses on *access scope* — selecting which Immuta/ROAM role groups and individual users should receive access. This is distinct from *governance role assignment* (DCL, DDO, Collection Leader) which is covered in Epic 6 for post-draft management.
 
 ### Acceptance Criteria
 
 ```gherkin
-Feature: Assign Roles & Approvers
+Feature: Define Access & Users
 
-  Scenario: View available roles
-    Given I am on the Roles section
-    Then I see role cards for: Data Consumer Lead (required), Data Domain Owner (optional), Virtual Team Lead (optional)
-    And each card shows a description and whether it's required
+  Scenario: Browse Immuta role groups
+    Given I am on the Access & Users section
+    Then I see a searchable list of existing Immuta role groups
+    And each group shows: name, source system (ROAM, Immuta, Workday), member count, category
+    And groups are organized by category: Therapeutic Area, Function, Study Team, Platform
 
-  Scenario: Search and assign users
-    Given I am assigning a role
-    When I search by name, PRID, or organization
-    Then matching users from the directory are displayed with: name, role, department
-    And I can select a user to assign
+  Scenario: Filter role groups by category
+    Given I am viewing role groups
+    When I select a category filter (e.g., "Therapeutic Area")
+    Then only groups in that category are displayed
+    And an "All" option shows all groups
 
-  Scenario: Required role validation
-    Given the Data Consumer Lead role is not assigned
-    Then a status banner shows "Required: Data Consumer Lead"
+  Scenario: Search role groups
+    Given I am on the Access & Users section
+    When I enter a search term
+    Then the role group list filters to matching names
+
+  Scenario: Select role groups for collection
+    Given I am viewing role groups
+    When I toggle a group on
+    Then the group is added to the collection's access scope
+    And the total user count updates
+
+  Scenario: Add individual users
+    Given I am on the Individual Users tab
+    When I search by name or PRID
+    Then matching users from the directory are displayed
+    And I can add them to the collection individually
+
+  Scenario: Add user by PRID directly
+    Given I am on the Individual Users tab
+    When I enter a PRID in the manual entry field
+    Then the user is looked up and added to the collection
+
+  Scenario: View access summary
+    Given I have selected role groups and/or individual users
+    When I view the Summary tab
+    Then I see: total role groups selected, total individual users, estimated total users
+    And selected groups are listed with member counts
 
   Scenario: Save and return to workspace
-    Given I have assigned roles
+    Given I have configured access scope
     When I navigate back to the overview
-    Then the Roles card updates with the assigned role count
-
-  Scenario: TBC — Multiple users per role
-    TBC: Ability to assign multiple users to the same role (e.g., multiple DDOs for different TAs)
+    Then the Access & Users card updates with the count (e.g., "3 groups, 2 users selected")
 ```
 
 ---
@@ -608,8 +634,12 @@ Feature: Promote Concept to Draft
     And the workspace banner updates to "Draft Stage — visible to team members"
     And a "collection.created" event is published
 
-  Scenario: TBC — Post-draft collection dashboard
-    TBC: After promotion, the collection transitions to a progress/management dashboard similar to the existing collection detail view. The exact UX for the post-draft management screen is still being prototyped.
+  Scenario: Post-promotion navigation to collection detail
+    Given I have confirmed the promotion
+    Then I am navigated to the collection detail page at /collections/{id}
+    And the detail page shows a DRAFT banner indicating the collection is visible but pending approval
+    And draft-specific controls are available: "Approve Collection" button, edit grid for workspace sections
+    And the full progress view (health score, tabs, discussion) becomes available once the collection is approved and active
 ```
 
 ---

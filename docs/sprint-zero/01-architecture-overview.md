@@ -337,7 +337,7 @@ app/
     (dcm)/                         # DCM Module routes
       create/                      # 11-step collection creation wizard
       collections/                 # Collections browser
-      progress/                    # Progress dashboard
+      [id]/                        # Collection detail (includes progress view)
       analytics/                   # Demand analytics
       propositions/                # AI-suggested propositions
     (discover)/                    # Discovery Module routes
@@ -581,7 +581,7 @@ CREATE TABLE collections (
 
     CONSTRAINT valid_status CHECK (status IN (
         'draft', 'pending_approval', 'approved', 'provisioning',
-        'completed', 'rejected', 'archived'
+        'active', 'rejected', 'archived'
     ))
 );
 

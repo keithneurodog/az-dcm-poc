@@ -80,7 +80,7 @@ Feature: Role-Based Navigation
 
   Scenario: DCM navigation
     Given I am logged in as a DCM
-    Then the sidebar shows: Dashboard, Create, Collections, Progress, Analytics, Propositions
+    Then the sidebar shows: Dashboard, Create, Collections, Analytics, Propositions
 
   Scenario: Data Consumer navigation
     Given I am logged in as a Data Consumer

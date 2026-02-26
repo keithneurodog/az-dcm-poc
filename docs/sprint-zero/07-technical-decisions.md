@@ -805,4 +805,51 @@ The following open questions from other sprint-zero documents directly affect th
 
 ---
 
+---
+
+## ADR-011: Immuta Provisioning Data Model Integration
+
+**Status:** Proposed
+**Date:** 2026-02-17
+**Deciders:** Tech Lead (TBC), Keith Hayes (Lead Engineer), DPO Team
+
+### Context
+
+The Immuta data model analysis (source: `Immuta Tables for R&D.xlsx`) reveals a 10-table authorization model that Collectoid must integrate with for data access provisioning. Key structural findings:
+
+1. **Two authorization tracks:** IDA (standing access, ~90%) and AdHoc (request-based, ~10%)
+2. **Intent-based access:** Each activity maps to a `Data_Access_Intent` with category/subcategory taxonomy (~60 intent variants in current data)
+3. **Criteria-based User Profiles:** Boolean expressions over User_Tags from four sources (Manual, NPA, Workday, Cornerstone)
+4. **Partition-based row security:** Study-level WHERE clauses (`Study_ID IN (...)`) per data source
+5. **Dual AI/ML flags:** "To train AI/ML models" and "To store data in AI/ML model" are separate booleans
+6. **Review cycles:** Per-intent `Next_Review_Date` drives periodic recertification
+
+### Decision
+
+**PENDING** — requires Immuta team and DPO input. Options under evaluation:
+
+| Option | Description | Pros | Cons |
+|--------|-------------|------|------|
+| **A: Direct API** | Collectoid calls Immuta REST API to create Intent + Authorisation + Partition + Profile records | Full automation; real-time | Tight coupling; needs API contract; complex error handling |
+| **B: Event-driven** | Collectoid publishes structured provisioning events to SQS; a provisioning orchestrator consumes and creates Immuta records | Decoupled; retry-friendly | Additional service to build and operate |
+| **C: Policy instructions** | Collectoid generates human-readable policy specifications; DPO translates to Immuta | Low integration risk; fallback to current process | Manual step; does not scale |
+
+### Consequences
+
+- Collectoid's AoT `terms` JSONB schema needs a second AI/ML flag (`store_in_ai_ml_model`)
+- The `approvals` table may need an `immuta_tier` mapping column
+- A category/subcategory mapping table or configuration is needed for intent creation
+- The provisioning status display must reflect per-table creation status (not just a single "policy created" flag)
+- Column-level masking requirements (flagged as "to be added" in PBAC diagram) may add a fifth Immuta write target beyond the current four tables
+- A monitoring/reconciliation mechanism is needed to verify that provisioned policies (intents, authorisations, partitions, profiles, and future masking rules) are actively enforced at the Starburst/Ranger layer
+
+### Open Questions
+
+See `04-integration-map.md` Section 12 (INT-016 through INT-020) and `10-open-questions.md` (Q-DATA-015 through Q-DATA-026).
+
+- What Immuta mechanism handles column-level masking? (INT-036)
+- What monitoring/reporting API does Immuta expose for policy enforcement verification? (INT-037)
+
+---
+
 *This document is a living artifact. Each ADR may be updated from "Accepted" to "Superseded" if new information changes the decision landscape. All changes should be tracked via pull request with review from the engineering lead. New ADRs should be appended with sequential numbering (ADR-011, ADR-012, etc.).*

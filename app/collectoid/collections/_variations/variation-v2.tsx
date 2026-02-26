@@ -231,7 +231,7 @@ export default function CollectionsBrowserV2() {
 
   // Status indicator
   const StatusDot = ({ status }: { status: string }) => {
-    const color = status === "completed" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : "bg-amber-500"
+    const color = status === "active" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : "bg-amber-500"
     return <div className={cn("size-3 rounded-full", color)} />
   }
 
@@ -314,7 +314,7 @@ export default function CollectionsBrowserV2() {
             <FilterChip label="Access" filterKey="myAccess" options={[{ value: "all", label: "All" }, { value: "have_access", label: "Have Access" }, { value: "need_request", label: "Need Request" }]} />
             <FilterChip label="Intent" filterKey="intent" options={[{ value: "all", label: "All Uses" }, { value: "aiResearch", label: "AI/ML" }, { value: "softwareDevelopment", label: "Software" }, { value: "externalPublication", label: "Ext Pub" }]} />
             <FilterChip label="Area" filterKey="area" options={[{ value: "all", label: "All Areas" }, ...allAreas.map(a => ({ value: a, label: a }))]} />
-            <FilterChip label="Status" filterKey="status" options={[{ value: "all", label: "All" }, { value: "provisioning", label: "Provisioning" }, { value: "completed", label: "Completed" }, { value: "pending_approval", label: "Pending" }]} />
+            <FilterChip label="Status" filterKey="status" options={[{ value: "all", label: "All" }, { value: "provisioning", label: "Provisioning" }, { value: "active", label: "Active" }, { value: "pending_approval", label: "Pending" }]} />
             <FilterChip label="Phase" filterKey="studyPhase" options={[{ value: "all", label: "All Phases" }, ...STUDY_PHASES.map(p => ({ value: p, label: p }))]} />
             <FilterChip label="Region" filterKey="region" options={[{ value: "all", label: "All Regions" }, ...REGIONS.map(r => ({ value: r, label: r }))]} />
             <FilterChip label="Data Type" filterKey="dataType" options={[{ value: "all", label: "All Types" }, ...DATA_TYPES.map(t => ({ value: t, label: t }))]} />
@@ -585,9 +585,9 @@ export default function CollectionsBrowserV2() {
         ) : (
           /* Kanban View - Grouped by Status */
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {["provisioning", "pending_approval", "completed"].map((status) => {
+            {["provisioning", "pending_approval", "active"].map((status) => {
               const statusCollections = filteredCollections.filter(c => c.status === status)
-              const statusLabel = status === "provisioning" ? "Provisioning" : status === "pending_approval" ? "Pending" : "Completed"
+              const statusLabel = status === "provisioning" ? "Provisioning" : status === "pending_approval" ? "Pending" : "Active"
               const statusColor = status === "provisioning" ? "bg-blue-500" : status === "pending_approval" ? "bg-amber-500" : "bg-green-500"
 
               return (

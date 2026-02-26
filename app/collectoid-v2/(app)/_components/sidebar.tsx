@@ -80,7 +80,7 @@ export function Sidebar() {
             } else if (item.name === "DCM Propositions") {
               isActive = pathname.startsWith(`${basePath}/dcm/propositions`)
             } else if (item.name === "Browse Collections") {
-              isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`) || pathname.startsWith(`${basePath}/dcm/progress`)
+              isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`)
             } else {
               isActive = pathname === item.href
             }

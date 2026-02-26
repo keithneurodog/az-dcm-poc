@@ -42,13 +42,11 @@ import {
   EyeOff,
 } from "lucide-react"
 import {
-  MOCK_COLLECTIONS,
   getAllTherapeuticAreas,
   getAllOwners,
   CURRENT_USER_ID,
-  getPublishedCollections,
-  getMyDraftCollections,
 } from "@/lib/dcm-mock-data"
+import { useCollectionsStore } from "@/lib/collections-store"
 
 // Constants
 const USER_GROUPS = ["Oncology Data Science", "Oncology Biometrics", "Cardiovascular Research", "Neuroscience Analytics", "Translational Medicine", "Biostatistics", "Data Science Platform", "Clinical Operations"]
@@ -57,24 +55,27 @@ const DATA_TYPES = ["Clinical", "Genomics", "Imaging", "Real World", "Biomarker"
 const REGIONS = ["North America", "Europe", "Asia Pacific", "Latin America", "Global", "Multi-regional"]
 const TIME_PERIODS = ["Last 7 days", "Last 30 days", "Last 90 days", "Last year"]
 
-// Extended collection data - only published collections by default
-const COLLECTIONS_WITH_AOT = MOCK_COLLECTIONS.map((col, i) => ({
-  ...col,
-  agreementOfTerms: { aiResearch: i % 3 !== 2, softwareDevelopment: i % 4 === 0, externalPublication: i % 2 === 0, internalPublication: true },
-  userAccess: { currentUserHasAccess: i % 3 !== 0, accessGroups: USER_GROUPS.filter((_, idx) => (i + idx) % 3 === 0).slice(0, 3) },
-  studyPhase: STUDY_PHASES[i % STUDY_PHASES.length],
-  dataTypes: DATA_TYPES.filter((_, idx) => (i + idx) % 2 === 0),
-  region: REGIONS[i % REGIONS.length],
-  patientCount: Math.floor(Math.random() * 50000) + 100,
-  lastUpdated: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
-  quality: ["High", "Medium", "Standard"][i % 3],
-  compliance: ["HIPAA", "GDPR", "Both", "None"][i % 4],
-}))
-
 export default function CollectionsBrowserV2() {
   const { scheme } = useColorScheme()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { collections: storeCollections } = useCollectionsStore()
+
+  // Enrich collections with mock AoT/access data for display
+  const COLLECTIONS_WITH_AOT = useMemo(() => storeCollections.map((col, i) => ({
+    ...col,
+    agreementOfTerms: col.agreementOfTerms
+      ? { aiResearch: !!col.agreementOfTerms.beyondPrimaryUse?.aiResearch, softwareDevelopment: !!col.agreementOfTerms.beyondPrimaryUse?.softwareDevelopment, externalPublication: !!col.agreementOfTerms.publication?.externalPublication, internalPublication: true }
+      : { aiResearch: i % 3 !== 2, softwareDevelopment: i % 4 === 0, externalPublication: i % 2 === 0, internalPublication: true },
+    userAccess: { currentUserHasAccess: i % 3 !== 0, accessGroups: USER_GROUPS.filter((_, idx) => (i + idx) % 3 === 0).slice(0, 3) },
+    studyPhase: STUDY_PHASES[i % STUDY_PHASES.length],
+    dataTypes: DATA_TYPES.filter((_, idx) => (i + idx) % 2 === 0),
+    region: REGIONS[i % REGIONS.length],
+    patientCount: Math.floor(Math.random() * 50000) + 100,
+    lastUpdated: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
+    quality: ["High", "Medium", "Standard"][i % 3],
+    compliance: ["HIPAA", "GDPR", "Both", "None"][i % 4],
+  })), [storeCollections])
 
   // View & UI state
   const [viewMode, setViewMode] = useState<"cards" | "table" | "kanban">("cards")
@@ -83,8 +84,8 @@ export default function CollectionsBrowserV2() {
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false)
   const [showMyDrafts, setShowMyDrafts] = useState(false)
 
-  // Get my draft collections count
-  const myDraftsCount = getMyDraftCollections().length
+  // My concepts count (private workspace items)
+  const myDraftsCount = storeCollections.filter(c => c.creatorId === CURRENT_USER_ID && c.status === "concept").length
 
   // All filter state
   const [filters, setFilters] = useState({
@@ -129,10 +130,11 @@ export default function CollectionsBrowserV2() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    // Start with either drafts or published collections
+    // "My Drafts" shows private concept-stage collections
+    // Main view shows all non-concept collections (draft, pending, provisioning, active)
     let filtered = showMyDrafts
-      ? COLLECTIONS_WITH_AOT.filter(c => c.isDraft && c.creatorId === CURRENT_USER_ID)
-      : COLLECTIONS_WITH_AOT.filter(c => !c.isDraft)
+      ? COLLECTIONS_WITH_AOT.filter(c => c.status === "concept" && c.creatorId === CURRENT_USER_ID)
+      : COLLECTIONS_WITH_AOT.filter(c => c.status !== "concept")
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
@@ -200,8 +202,7 @@ export default function CollectionsBrowserV2() {
   }, [searchQuery, filters, sortBy, showMyDrafts])
 
   const handleViewCollection = (id: string) => {
-    sessionStorage.setItem("dcm_current_collection_id", id)
-    router.push("/collectoid-v2/dcm/progress")
+    router.push(`/collectoid-v2/collections/${id}`)
   }
 
   // Filter chip component
@@ -244,7 +245,7 @@ export default function CollectionsBrowserV2() {
 
   // Status indicator
   const StatusDot = ({ status }: { status: string }) => {
-    const color = status === "completed" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : status === "draft" ? "bg-amber-400" : "bg-amber-500"
+    const color = status === "active" ? "bg-green-500" : status === "provisioning" ? "bg-blue-500" : status === "draft" ? "bg-amber-400" : "bg-amber-500"
     return <div className={cn("size-3 rounded-full", color)} />
   }
 
@@ -263,11 +264,11 @@ export default function CollectionsBrowserV2() {
               </button>
               <div>
                 <h1 className="text-3xl font-light text-neutral-900">
-                  {showMyDrafts ? "My Draft Collections" : "Collections"}
+                  {showMyDrafts ? "My Concepts" : "Collections"}
                 </h1>
                 <p className="text-sm font-light text-neutral-500 mt-1">
                   {showMyDrafts
-                    ? `${filteredCollections.length} private draft${filteredCollections.length !== 1 ? 's' : ''}`
+                    ? `${filteredCollections.length} private concept${filteredCollections.length !== 1 ? 's' : ''}`
                     : `${filteredCollections.length} results`
                   }
                 </p>
@@ -285,7 +286,7 @@ export default function CollectionsBrowserV2() {
                 )}
               >
                 <FileEdit className="size-4" />
-                My Drafts
+                My Concepts
                 {myDraftsCount > 0 && (
                   <Badge className={cn(
                     "ml-1 h-5 px-1.5 text-xs",
@@ -356,7 +357,7 @@ export default function CollectionsBrowserV2() {
             <FilterChip label="Access" filterKey="myAccess" options={[{ value: "all", label: "All" }, { value: "have_access", label: "Have Access" }, { value: "need_request", label: "Need Request" }]} />
             <FilterChip label="Intent" filterKey="intent" options={[{ value: "all", label: "All Uses" }, { value: "aiResearch", label: "AI/ML" }, { value: "softwareDevelopment", label: "Software" }, { value: "externalPublication", label: "Ext Pub" }]} />
             <FilterChip label="Area" filterKey="area" options={[{ value: "all", label: "All Areas" }, ...allAreas.map(a => ({ value: a, label: a }))]} />
-            <FilterChip label="Status" filterKey="status" options={[{ value: "all", label: "All" }, { value: "provisioning", label: "Provisioning" }, { value: "completed", label: "Completed" }, { value: "pending_approval", label: "Pending" }]} />
+            <FilterChip label="Status" filterKey="status" options={[{ value: "all", label: "All" }, { value: "active", label: "Active" }, { value: "provisioning", label: "Provisioning" }, { value: "draft", label: "Draft" }, { value: "pending_approval", label: "Pending" }]} />
             <FilterChip label="Phase" filterKey="studyPhase" options={[{ value: "all", label: "All Phases" }, ...STUDY_PHASES.map(p => ({ value: p, label: p }))]} />
             <FilterChip label="Region" filterKey="region" options={[{ value: "all", label: "All Regions" }, ...REGIONS.map(r => ({ value: r, label: r }))]} />
             <FilterChip label="Data Type" filterKey="dataType" options={[{ value: "all", label: "All Types" }, ...DATA_TYPES.map(t => ({ value: t, label: t }))]} />
@@ -497,9 +498,9 @@ export default function CollectionsBrowserV2() {
             {showMyDrafts ? (
               <>
                 <FileEdit className="size-20 text-neutral-300 mb-6" />
-                <h3 className="text-xl font-light text-neutral-900 mb-3">No draft collections</h3>
+                <h3 className="text-xl font-light text-neutral-900 mb-3">No concept collections</h3>
                 <p className="text-base font-light text-neutral-500 mb-6">
-                  Start creating a collection to see your drafts here
+                  Start creating a collection to see your concepts here
                 </p>
                 <Button
                   onClick={() => router.push("/collectoid-v2/dcm/create")}
@@ -654,11 +655,11 @@ export default function CollectionsBrowserV2() {
           </Card>
         ) : (
           /* Kanban View - Grouped by Status */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {["provisioning", "pending_approval", "completed"].map((status) => {
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {["draft", "pending_approval", "provisioning", "active"].map((status) => {
               const statusCollections = filteredCollections.filter(c => c.status === status)
-              const statusLabel = status === "provisioning" ? "Provisioning" : status === "pending_approval" ? "Pending" : "Completed"
-              const statusColor = status === "provisioning" ? "bg-blue-500" : status === "pending_approval" ? "bg-amber-500" : "bg-green-500"
+              const statusLabel = status === "draft" ? "Draft" : status === "pending_approval" ? "Pending" : status === "provisioning" ? "Provisioning" : "Active"
+              const statusColor = status === "draft" ? "bg-amber-400" : status === "pending_approval" ? "bg-amber-500" : status === "provisioning" ? "bg-blue-500" : "bg-green-500"
 
               return (
                 <div key={status} className="space-y-4">

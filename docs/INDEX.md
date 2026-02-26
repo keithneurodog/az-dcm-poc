@@ -32,8 +32,8 @@ Specs for **completed features** - only read if you need implementation details:
 |---------------|---------|-------|
 | collectoid-poc-requirements.md | Master requirements | Various |
 | aot-integration-dcm-flow-spec.md | Agreement of Terms | `/dcm/create/agreements` |
-| dataset-approval-workflow-spec.md | GPT/TALT approvals | `/dcm/progress` |
-| dcm-progress-dashboard-improvements.md | Help, Discussion tabs | `/dcm/progress` |
+| dataset-approval-workflow-spec.md | GPT/TALT approvals | `/collections/[id]` (was `/dcm/progress`) |
+| dcm-progress-dashboard-improvements.md | Help, Discussion tabs | `/collections/[id]` (was `/dcm/progress`) |
 | dcm-demand-analytics-spec.md | Heatmap, suggestions | `/dcm/analytics` |
 | end-user-discovery-approaches.md | Collections-aware discovery | `/discover` |
 | end-user-data-discovery-detailed-spec.md | AoT badges, intent filter | `/discover/ai` |

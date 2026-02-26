@@ -77,7 +77,7 @@ export default function CollectoidDashboard() {
 
     // Ready for Review: Recently completed collections (last 7 days)
     const readyForReview = MOCK_COLLECTIONS.filter((col) => {
-      if (col.status === "completed") {
+      if (col.status === "active") {
         const lastMilestone = col.milestones
           .filter((m) => m.status === "completed" && m.timestamp)
           .sort((a, b) => (b.timestamp?.getTime() || 0) - (a.timestamp?.getTime() || 0))[0]
@@ -141,8 +141,8 @@ export default function CollectoidDashboard() {
     switch (status) {
       case "provisioning":
         return { text: "Provisioning", color: "bg-blue-50 text-blue-700 border-blue-200" }
-      case "completed":
-        return { text: "Fully Provisioned", color: "bg-green-50 text-green-700 border-green-200" }
+      case "active":
+        return { text: "Active", color: "bg-green-50 text-green-700 border-green-200" }
       case "pending_approval":
         return { text: "Pending Approval", color: "bg-amber-50 text-amber-700 border-amber-200" }
       default:

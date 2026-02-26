@@ -675,7 +675,7 @@ ci:
       - http://localhost:3000/collectoid/collections
       - http://localhost:3000/collectoid/dcm/create
       - http://localhost:3000/collectoid/discover
-      - http://localhost:3000/collectoid/dcm/progress
+      - http://localhost:3000/collectoid/collections/col-1
       - http://localhost:3000/login
     numberOfRuns: 3
   assert:

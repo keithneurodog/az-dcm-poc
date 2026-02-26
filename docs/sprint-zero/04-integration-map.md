@@ -169,6 +169,96 @@ Each client inherits:
 
 ---
 
+### 3.1 Data Source Map
+
+The table below answers the question: **where does each piece of data in Collectoid originate?**
+
+```
+ ┌──────────────────────────────────────────────────────────────────────┐
+ │                        COLLECTOID DATA MAP                          │
+ │                                                                     │
+ │  WHO CAN ACCESS?         WHAT DATA EXISTS?         WHO IS TRAINED?  │
+ │  ┌─────────────┐         ┌──────────────┐         ┌──────────────┐  │
+ │  │  Azure AD   │         │  AZCT API    │         │ Cornerstone  │  │
+ │  │  Entra ID   │         │              │         │     LMS      │  │
+ │  │             │         │  Studies,    │         │              │  │
+ │  │  Users,     │         │  D-codes,    │         │  Training    │  │
+ │  │  Groups,    │         │  Metadata,   │         │  Completion, │  │
+ │  │  Roles      │         │  Compliance  │         │  Expiry      │  │
+ │  └──────┬──────┘         └──────┬───────┘         └──────┬───────┘  │
+ │         │                       │                        │          │
+ │         ▼                       ▼                        ▼          │
+ │  ┌──────────────────────────────────────────────────────────────┐   │
+ │  │                    COLLECTOID (Aurora PG + Redis)             │   │
+ │  │                                                              │   │
+ │  │  Collections, Versions, Agreements, Access Requests,         │   │
+ │  │  Approvals, Audit Trail, Discussions, Notifications          │   │
+ │  └───────┬──────────────────┬──────────────────┬────────────┘   │
+ │          │                  │                  │                │   │
+ │          ▼                  ▼                  ▼                │   │
+ │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────────┐  │   │
+ │  │   Immuta     │  │  Starburst   │  │  Environments       │  │   │
+ │  │              │  │  / Ranger    │  │  PDP, Domino, SCP,  │  │   │
+ │  │  Policies,   │  │              │  │  AI Bench, IO       │  │   │
+ │  │  Role groups │  │  Query ACLs  │  │                     │  │   │
+ │  └──────────────┘  └──────────────┘  └─────────────────────┘  │   │
+ │  WHO GETS POLICY?   WHO CAN QUERY?    WHERE DO THEY WORK?     │   │
+ └──────────────────────────────────────────────────────────────────────┘
+
+ ──▶  INBOUND = External → Collectoid (we consume)
+ ──▶  OUTBOUND = Collectoid → External (we trigger)
+```
+
+#### What each system provides (INBOUND)
+
+| Source System | What it provides to Collectoid | Key Data Fields | Collectoid stores in |
+|---------------|-------------------------------|-----------------|---------------------|
+| **Azure AD / Entra ID** | User identity, authentication, org structure, security group membership for role mapping | User ID, email, name, PRID, department, job title, manager, AD group memberships | `users` table, Redis session, role mapping |
+| **AZCT REST API** | Clinical trial / study metadata — the core dataset catalog that DCMs browse and select from | D-code, study name, TA, phase, status, patient count, geography, sponsor type, compliance status, modalities, FSI/DBL dates, ML/AI restrictions, publication restrictions | `datasets` table, `azct_cache` table |
+| **Cornerstone LMS** | Training completion status per user — compliance gate before data access is granted | Course ID, completion status (completed/in-progress/not-started/expired), completion date, expiry date, score | `cornerstone_cache` table |
+| **Collibra 2.0** | Standardized metadata, business glossary, data quality scores, taxonomy, lineage | Asset ID, asset name, asset type, domain, glossary terms, quality score, lineage, tags | `collibra_cache` table |
+| **Immuta** (status callback) | Policy creation confirmation — did the access policy get created successfully? | Policy ID, policy status (active/pending/error/revoked), creation timestamp, error details | `collection_members.access_status` |
+| **Starburst/Ranger** (status callback) | Query-level ACL confirmation | Policy ID, status (active/inactive/error) | Provisioning status tracking |
+| **Consumption Environments** | Environment availability, user workspace status, direct URLs | Availability, user access status, workspace/project URL | Environment status display |
+
+#### What Collectoid sends (OUTBOUND)
+
+| Target System | What Collectoid sends | Trigger | Key Data Fields |
+|---------------|----------------------|---------|-----------------|
+| **Immuta** | Policy creation / update / revocation requests | Collection approved → provisioning | Policy name, subject users/groups, data sources, dataset IDs, access level, conditions, effective/expiry dates |
+| **Starburst / Ranger** | Query-level access rules | Collection approved → provisioning (after Immuta) | Policy name, users/groups, database/schema/table, access type (SELECT), row-level filters, column masking |
+| **Consumption Environments** | Provisioning triggers (where API exists) | Post-policy creation | User ID, dataset IDs, access level, environment config |
+
+#### What Collectoid owns natively (not sourced externally)
+
+| Data Domain | Description | Key Entities |
+|-------------|-------------|-------------|
+| **Collections** | The core domain — collection definitions, lifecycle state, configuration | `collections`, `collection_versions`, `collection_version_datasets` |
+| **Agreement of Terms** | Permitted uses, restrictions, publication rights, user scope | `agreements_of_terms`, `agreement_versions` |
+| **Access Requests** | Consumer requests for data access with declared intent | `access_requests` |
+| **Approval Workflow** | Multi-TA approval chains, decisions, delegation, SLA tracking | `approval_chains`, `approvals` |
+| **Audit Trail** | Immutable, append-only record of every action (ICH E6(R2) compliant) | `audit_events` |
+| **Discussions** | Threaded comments, @mentions, blockers, reactions on any entity | `discussions`, `comments` |
+| **Notifications** | In-app + email notifications with user preferences | `notifications` |
+| **Membership** | User-to-collection assignments with collection-level roles and access status | `collection_memberships` |
+
+#### Immuta role groups — special note
+
+Immuta serves a dual role in the Collectoid ecosystem:
+
+1. **Outbound (policy enforcement):** After a collection is approved, Collectoid pushes access policies to Immuta specifying which users/groups get access to which datasets under what conditions.
+2. **Inbound (role group catalog):** During collection creation, the workspace "Access & Users" section presents existing Immuta/ROAM role groups (sourced from Immuta, Workday, and ROAM) for DCMs to select as the collection's access scope. These role groups define *who* should receive access once the collection is approved and provisioned.
+
+The role group catalog is currently maintained across three source systems:
+
+| Source | Example Groups | How synced |
+|--------|---------------|------------|
+| **ROAM** | TA-level groups (e.g., "Oncology Development Data Users") | ROAM governance process → Immuta |
+| **Immuta** | Platform-level groups (e.g., "Immuta Data Engineers") | Immuta admin portal |
+| **Workday** | Function-level groups (e.g., "Biometrics - Statistical Programming") | Workday HR feed → Immuta |
+
+---
+
 ## 4. Detailed Integration Specifications
 
 ### 4.1 Azure AD / Entra ID (Authentication & Identity)
@@ -805,37 +895,102 @@ Immuta is classified as **HIGH** criticality for the provisioning workflow. Howe
 
 #### Data Exchanged
 
-**Outbound to Immuta (policy creation):**
+**Outbound to Immuta — Target Tables and Field Mapping:**
 
-| Data Field | Description | Source in Collectoid |
-|------------|-------------|---------------------|
-| Policy name | Human-readable policy name | `collections.name` + version |
-| Policy description | What this policy grants | `agreements_of_terms.terms` summary |
-| Subject users | List of users who should receive access | `collection_members` with role = "consumer" |
-| Subject groups | AD groups (if group-based policies) | `collection_members` group assignments |
-| Data source(s) | Which data sources the policy applies to | `collection_version_datasets.sources` |
-| Dataset identifiers | Specific tables/schemas/paths | `datasets.d_code` + data layer mapping |
-| Access level | Read-only, read-write, etc. | `agreement_versions.terms.access_level` |
-| Conditions | Time-bound, purpose-limited, geographic | `agreement_versions.terms` conditions |
-| Effective date | When policy should activate | `agreement_versions.effective_date` |
-| Expiry date | When policy should expire (if applicable) | `agreement_versions.review_date` |
+When a collection is approved, Collectoid must create or update records across **four** core Immuta tables. The mapping below reflects the 10-table Immuta data model discovered during sprint zero analysis (source: `Immuta Tables for R&D.xlsx`).
 
-**Inbound from Immuta (policy status):**
+**1. `Data_Access_Intent` — one row per collection activity**
 
-| Data Field | Description | Used For |
-|------------|-------------|----------|
-| Policy ID | Immuta-assigned policy identifier | Reference tracking |
-| Policy status | `active`, `pending`, `error`, `revoked` | Provisioning status display |
-| Creation timestamp | When policy was activated | Audit trail |
-| Error details | If policy creation failed, why | Error resolution by DPO |
+| Immuta Field | Description | Source in Collectoid |
+|--------------|-------------|---------------------|
+| `Category` | High-level intent category (e.g., "Research", "Operational") | Derived from collection activity categories |
+| `Sub_Category` | Granular sub-category (e.g., "Biomarker discovery") | Derived from collection activity sub-categories |
+| `Data_Access_Summary` | Human-readable summary of data access and purpose | `collections.name` + `agreement_versions.terms` summary |
+| `Purpose` | Formal purpose statement (maps to AoT purpose terms) | `agreement_versions.terms.purpose` |
+| `To_train_AI_ML_models` | Whether this intent involves training AI/ML models | `agreement_versions.terms.beyond_primary_use.ai_research` (boolean) |
+| `To_store_data_in_AI_ML_model` | Whether data will be stored inside an AI/ML model | **[TBD — separate flag not yet captured in Collectoid AoT; needs new field]** |
+| `Next_Review_Date` | Next scheduled review date for this intent | `agreement_versions.review_date` |
+| `Effective_Date` | When the intent becomes active | `agreement_versions.effective_date` |
 
-**[QUESTION-INT-016]** What is the Immuta API contract for policy creation? Is there an OpenAPI spec or SDK?
+> **[TBD — METADATA FLOW]:** Confirm the full `Category` and `Sub_Category` taxonomy. The Immuta Excel has ~60 intent rows with categories like "Scientific Analysis", "Data Engineering", "HEOR" — these must map to Collectoid's 4 activity categories (Permitted Analysis, Data Sharing, Publication, AI/ML). Mapping document needed.
 
-**[QUESTION-INT-017]** How should Collectoid map AoT terms to Immuta policy conditions? Is there a standard mapping, or is this custom per collection?
+**2. `Access_Authorisation` — one or more rows per intent, tracking approval chain**
 
-**[QUESTION-INT-018]** Does Immuta support policy-as-code (e.g., YAML/JSON policy definitions) or does it require API calls per dataset?
+| Immuta Field | Description | Source in Collectoid |
+|--------------|-------------|---------------------|
+| `Authorisation_Type` | `IDA` (standing access, 90% route) or `AdHoc` (request-based, 10% route) | Derived from collection type / access request type |
+| `Approval_Status` | `Pending`, `Approved`, `Rejected` | `approvals.decision` |
+| `Approver_Tier` | `Data Steward/DPM`, `Source Owner`, or `Power User - TALT` | `approvals.team` mapped to Immuta tier enum |
+| `Approver_Identity` | Identity of the approver | `approvals.approver_id` (resolved via Azure AD) |
+| `Approval_Timestamp` | When approval was granted/denied | `approvals.decided_at` |
+| `IDA_Reference` | IDA reference number (for standing access) | **[TBD — where does the IDA reference originate?]** |
+| `AdHoc_Reference` | AdHoc reference (INT-XXXXXXXX-XXXX format) | **[TBD — reference format and generation logic]** |
 
-**[QUESTION-INT-019]** Is there an Immuta sandbox environment for integration testing?
+> **[TBD — METADATA FLOW]:** Confirm the mapping between Collectoid's approver roles (DDO, GPT, TALT, Alliance) and Immuta's three approval tiers (Data Steward/DPM, Source Owner, Power User - TALT). Is Alliance a fourth tier?
+
+**3. `Partition_Filter_Criteria` — row-level security from selected d-codes**
+
+| Immuta Field | Description | Source in Collectoid |
+|--------------|-------------|---------------------|
+| `Filter_Expression` | SQL WHERE clause: `Study_ID IN ('D-001', 'D-042', 'D-119')` | Built from `collection_version_datasets.d_code` list |
+| `Filter_Type` | Always `ROW_LEVEL` for d-code partitions | Static value |
+| `Data_Source` | The Starburst data source the filter applies to | `collection_version_datasets.sources` |
+
+> Each collection's selected d-codes are translated into a `Study_ID IN (...)` clause. A collection with 5 d-codes produces a single IN clause per data source.
+
+**4. `User_Profile` — criteria-based expressions determining which users match**
+
+| Immuta Field | Description | Source in Collectoid |
+|--------------|-------------|---------------------|
+| `Profile_Expression` | Boolean expression over `User_Tags`, e.g., `tag:department = 'Oncology' AND tag:training_complete = true` | Built from collection role group selections + AoT conditions |
+| `Profile_Type` | `CRITERIA_BASED` (expression match) or `EXPLICIT` (named users) | Determined by whether collection uses group-based or named-user access |
+
+> **[TBD — METADATA FLOW]:** Confirm whether Collectoid creates User Profiles in Immuta or references pre-existing profiles. The Immuta Excel shows ~12 profiles with complex boolean expressions — does Collectoid generate these or does DPO maintain them?
+
+**Reference tables (read-only for Collectoid):**
+
+| Immuta Table | Collectoid Interaction | Notes |
+|-------------|----------------------|-------|
+| `User_Tags` | Read-only (validation) | Tags from Manual, NPA (auto-fetched by Immuta), Workday, Cornerstone. Collectoid must understand the tag taxonomy to build valid User_Profile expressions. |
+| `Data_Asset` | Read-only (reference) | Broad Starburst data products (e.g., "Enriched Clinical Data"). A collection is a scoped subset of a Data_Asset. |
+| `Internal_Data_Agreement` | Read-only (reference) | IDA records that authorize standing access. Collections operating on the 90% IDA route reference existing IDAs. |
+| `Data_Usage_Restrictions` | Read-only (reference) | Usage restrictions per data asset. Collectoid should validate that AoT terms do not conflict with Data_Usage_Restrictions. |
+| `Hypothesis` | Not used | Empty in current Immuta data; future use TBD. |
+| `Partition_Applicable` | Created via Partition_Filter_Criteria | Junction table linking partitions to users/profiles. |
+
+**Column-Level Masking (Pending — flagged in PBAC metadata diagram):**
+
+The PBAC metadata requirements diagram identifies column-level masking as a pending addition to the Immuta provisioning model. This is distinct from row-level partitions and governs which columns are visible, redacted, or obfuscated per user/intent.
+
+| Aspect | Detail |
+|--------|--------|
+| **Scope** | Column-level (e.g., mask `patient_name`, `date_of_birth`, `site_id` in clinical trial data) |
+| **Mechanism** | Immuta masking policies applied at Starburst query time — columns return `NULL`, hashed values, or redacted strings |
+| **Collectoid mapping** | AoT terms may specify data sensitivity tiers; masking rules derive from the intersection of sensitivity tier + user clearance |
+| **Immuta table** | **[TBD]** — Masking may be a policy attribute on existing tables or a separate masking configuration table |
+| **Write responsibility** | **[TBD]** — Does Collectoid specify masking rules, or does DPO configure them independently in Immuta? |
+
+> **Note:** This was flagged as "Masking to be added" in the PBAC metadata requirements diagram. No Immuta masking table appeared in the `Immuta Tables for R&D.xlsx` analysis, suggesting this is a future addition to Immuta's model or an existing feature not yet documented in the R&D context.
+
+**Inbound from Immuta (status & validation reads):**
+
+| Data Field / Table | Description | Used For |
+|--------------------|-------------|----------|
+| `Data_Access_Intent` status | Status of the intent row (`Active`, `Pending_Review`, `Expired`) | Provisioning status display |
+| `Access_Authorisation` status | Confirmation that Immuta recorded the authorisation | Reconciliation with Collectoid's own approval state |
+| `Partition_Filter_Criteria` filter ID | Immuta-assigned identifier for the created filter | Reference tracking for updates/revocation |
+| `User_Profile` profile ID | Immuta-assigned profile identifier | Reference tracking |
+| `User_Tags` (read) | Current tag values for a user | Pre-flight validation before building `User_Profile` expressions |
+| Error details | If any table write failed, structured error response | Error resolution by DPO |
+| Masking policy status | Whether masking rules are active for collection's data sources | Pre-flight validation; compliance dashboard |
+
+**[QUESTION-INT-016]** ~~What is the Immuta API contract for policy creation?~~ **Partially Resolved.** The 10-table data model is now understood (see mapping above). Write targets are `Data_Access_Intent`, `Access_Authorisation`, `Partition_Filter_Criteria`, and `User_Profile`. **TBD:** Confirm whether writes are via direct REST API, bulk import, or Immuta's policy-as-code CLI. Need OpenAPI spec or SDK confirmation from Immuta team.
+
+**[QUESTION-INT-017]** ~~How should AoT terms map to Immuta policy conditions?~~ **Partially Resolved.** AoT purpose terms → `Data_Access_Intent.Purpose`; AoT conditions → `Partition_Filter_Criteria` (row-level) and `User_Profile` (user-level); approver tiers → `Access_Authorisation.Approver_Tier` with three values: `Data Steward/DPM`, `Source Owner`, `Power User - TALT`. **TBD:** Confirm full `Authorisation_Type` enum beyond `IDA` and `AdHoc`. Clarify whether AI/ML flags trigger additional Immuta-side restrictions.
+
+**[QUESTION-INT-018]** ~~Does Immuta support policy-as-code?~~ **Partially Resolved.** The multi-table model suggests per-table API writes rather than a single policy document. **TBD:** Confirm batch/bulk endpoint availability; clarify transactional guarantees (can we atomically create Intent + Authorisation + Filter + Profile?).
+
+**[QUESTION-INT-019]** Is there an Immuta sandbox environment for integration testing? **Still Open.**
 
 #### Integration Pattern
 
@@ -884,7 +1039,11 @@ ApprovalService               SQS: provisioning-tasks      ImmutaClient
 | Credential storage | AWS Secrets Manager |
 | Service identity | Dedicated service principal for Collectoid |
 
-**[QUESTION-INT-020]** What is the Immuta API authentication method? Does Collectoid need a dedicated service account?
+**[QUESTION-INT-020]** ~~What is the Immuta API authentication method?~~ **Partially Resolved.** Immuta uses `User_Tags` with NPA (auto-fetched) as one identity source, confirming Immuta integrates with the corporate AD/identity provider. **TBD:** Confirm whether Collectoid authenticates via OAuth 2.0 client credentials, API key, or service principal for write access to the 4 target tables.
+
+**[QUESTION-INT-040]** What Immuta mechanism handles column-level data masking? Is masking configured as a policy attribute on `Data_Access_Intent` rows, a separate masking table, or an Immuta-native feature managed outside the 10-table model? Does Collectoid need to specify masking rules, or is this DPO-managed? **[TBD — METADATA FLOW]**
+
+**[QUESTION-INT-041]** What monitoring and reporting capabilities does Immuta expose for verifying policy enforcement? Is there a status/health API, audit dashboard, or reconciliation endpoint that Collectoid can query to confirm that provisioned policies (intents, authorisations, partitions, profiles, masking) are actively enforced at the Starburst/Ranger layer? **[TBD — METADATA FLOW]**
 
 #### Sync Strategy
 
@@ -1661,12 +1820,14 @@ D        |        |         |        |  impact) |
 
 | ID | Question | Impact | Owner | Status |
 |----|----------|--------|-------|--------|
-| **INT-016** | What is the Immuta API contract for policy creation? OpenAPI spec or SDK available? | Client implementation | Immuta Team / DPO | Open |
-| **INT-017** | How should AoT terms map to Immuta policy conditions? Standard mapping or custom? | Policy creation logic | Engineering + DPO | Open |
-| **INT-018** | Does Immuta support policy-as-code (YAML/JSON) or only API calls per dataset? | Implementation complexity | Immuta Team | Open |
+| **INT-016** | ~~Immuta API contract?~~ 10-table data model now mapped. **Remaining:** Confirm REST API endpoints/SDK for writing to `Data_Access_Intent`, `Access_Authorisation`, `Partition_Filter_Criteria`, `User_Profile`. | Client implementation | Immuta Team / DPO | **Partially Resolved** |
+| **INT-017** | ~~AoT-to-Immuta mapping?~~ Purpose → Intent, conditions → Partitions + Profiles, approvers → Authorisation tiers. **Remaining:** Confirm full enum values; clarify AI/ML flag behaviour in Immuta. | Policy creation logic | Engineering + DPO | **Partially Resolved** |
+| **INT-018** | ~~Policy-as-code?~~ Multi-table model suggests per-table API writes. **Remaining:** Confirm batch endpoint; clarify transactional atomicity across tables. | Implementation complexity | Immuta Team | **Partially Resolved** |
 | **INT-019** | Is there an Immuta sandbox for integration testing? | Testing strategy | Immuta Team | Open |
-| **INT-020** | What authentication does Immuta API require? Dedicated service account? | Client authentication | Immuta Team | Open |
+| **INT-020** | ~~Authentication method?~~ NPA integration confirmed via `User_Tags`. **Remaining:** Confirm Collectoid service account auth for write access. | Client authentication | Immuta Team | **Partially Resolved** |
 | **INT-035** | Is there an Immuta sandbox instance available? | Testing strategy | Immuta Team | Open |
+| **INT-040** | What Immuta mechanism handles column-level masking? Collectoid-specified or DPO-managed? | Masking policy design | Immuta Team / DPO | Open |
+| **INT-041** | What monitoring/reporting does Immuta expose for policy enforcement verification? | Compliance monitoring | Immuta Team / Engineering | Open |
 
 ### Starburst / Ranger
 
