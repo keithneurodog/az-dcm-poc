@@ -14,4 +14,4 @@ GIVEN an existing “virtual team” WHEN it is being updated THEN addition of U
 GIVEN an existing “virtual team” WHEN it is being updated THEN removal of Users from the list is enabled.
 GIVEN an existing “virtual team” WHEN User is added/removed in source system THEN the Open Data Collection access automatically updates without manual provisioning intervention.
 GIVEN a virtual team WHEN it is configured THEN collaboration restrictions (who can/cannot work with whom) are recorded and enforced for each team member.
-GIVEN an approved Agreement of Terms (AoT) with specified users WHEN data provisioning is executed THEN the system provisions authorised studies to the exact users listed in the AoT.
+GIVEN an approved Data Use Terms (AoT) with specified users WHEN data provisioning is executed THEN the system provisions authorised studies to the exact users listed in the AoT.

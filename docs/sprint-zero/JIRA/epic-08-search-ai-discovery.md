@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-DSC-001 through FR-DSC-006
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 8.1 - AI-Assisted Natural Language Search `[L]`
@@ -15,6 +13,7 @@
 **As a** user, **I want to** search using natural language queries (e.g., "oncology biomarker studies from 2024"), **so the** system interprets my intent and suggests relevant collections.
 
 **BRD Refs:** FR-DSC-002
+
 
 ### Acceptance Criteria
 
@@ -47,6 +46,7 @@ Feature: AI-Assisted Natural Language Search
 
 **BRD Refs:** FR-DSC-003
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -75,6 +75,7 @@ Feature: Data Category Taxonomy Browser
 
 **BRD Refs:** FR-DSC-004, VS2-343
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -102,6 +103,7 @@ Feature: Similar Collection Recommendations
 **As a** user, **I want to** compare two or more collections side-by-side, **so I can** decide which best meets my needs.
 
 **BRD Refs:** FR-DSC-006
+
 
 ### Acceptance Criteria
 

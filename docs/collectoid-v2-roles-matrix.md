@@ -297,7 +297,7 @@ These roles appear in approval workflows:
 |------|--------------|------------------|
 | **(A) Agreement in Principle** | R&D Data Office Lead | DDOs, Data Consumer Leads |
 | **(B) OAC Agreement** | R&D Data Office Lead | DDOs (approve) |
-| **(C) Agreement of Terms** | R&D Data Office Lead | DDOs (approve), Data Consumer Leads (review) |
+| **(C) Data Use Terms** | R&D Data Office Lead | DDOs (approve), Data Consumer Leads (review) |
 | **(D) Implement Open Access** | R&D Data Office Lead | Data Provisioning Reps, Data Prep Reps |
 | **(E) Access Granted** | Data Consumers | Data Consumer Leads (oversight) |
 | **(F) Maintain Collections** | R&D Data Office Lead | DDOs (quarterly review), Compliance |

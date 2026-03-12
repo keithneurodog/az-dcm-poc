@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-NOT-001 through FR-NOT-007, VS2-348
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 11.1 - In-App Notification Center `[L]`
@@ -15,6 +13,7 @@
 **As a** user, **I want an** in-app notification center showing all my notifications with unread count, filtering, and action links, **so I** stay informed without leaving the application.
 
 **BRD Refs:** FR-NOT-006
+
 
 ### Acceptance Criteria
 
@@ -62,6 +61,7 @@ Feature: In-App Notification Center
 
 **BRD Refs:** FR-NOT-001
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -90,6 +90,7 @@ Feature: Approval Request Notifications
 **As a** requester, **I want to** be notified when approval decisions are made, **so I** know the outcome.
 
 **BRD Refs:** FR-NOT-002
+
 
 ### Acceptance Criteria
 
@@ -120,6 +121,7 @@ Feature: Approval Decision Notifications
 
 **BRD Refs:** FR-NOT-003
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -149,6 +151,7 @@ Feature: Access Change Notifications
 
 **BRD Refs:** FR-NOT-004
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -172,6 +175,7 @@ Feature: Metadata Change Alert Notifications
 **As a** user, **I want to** configure which notifications I receive and how (in-app, email, digest), **so I'm** not overwhelmed.
 
 **BRD Refs:** FR-NOT-005
+
 
 ### Acceptance Criteria
 
@@ -201,6 +205,7 @@ Feature: Configurable Notification Preferences
 **As the** system, **I want to** send escalation notifications when approvals exceed defined response windows, **so that** SLAs are met.
 
 **BRD Refs:** FR-NOT-007
+
 
 ### Acceptance Criteria
 

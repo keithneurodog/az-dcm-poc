@@ -41,7 +41,7 @@ Generated: 2026-01-23
 | C5 | User Guide v1.0 | md | `00. Final Documentation - 2025/User Guide v1.0.md` |
 | C6 | User Guide - Biopharma Closed Collection - v2 | md | `00. Final Documentation - 2025/User Guide - Biopharma Closed Collection - v2.md` |
 | C7 | (B) OAC Agreement - TEMPLATE | md | `00. Final Documentation - 2025/Templates/(B) OAC Agreement - TEMPLATE.md` |
-| C8 | (C) Agreement of Terms - TEMPLATE | md | `00. Final Documentation - 2025/Templates/(C) Agreement of Terms - TEMPLATE.md` |
+| C8 | (C) Data Use Terms - TEMPLATE | md | `00. Final Documentation - 2025/Templates/(C) Data Use Terms - TEMPLATE.md` |
 | C9 | Global Standard - Internal Sharing Scientific Data | pdf | `00. Final Documentation - 2025/Global Standard - Internal Sharing Scientific Data.pdf` |
 
 ---
@@ -52,7 +52,7 @@ Generated: 2026-01-23
 |---|------|------|------|
 | D1 | (A) Role-based Open Access Model - Guidance v1.1 | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(A) Role-based Open Access Model - Guidance v1.1.md` |
 | D2 | (B) OAC Agreement - BioPharma Closed Collection | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(B) OAC Agreement - BioPharma Closed Collection.md` |
-| D3 | (C) Agreement of Terms - BioPharma Closed Collection | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(C) Agreement of Terms - BioPharma Closed Collection.md` |
+| D3 | (C) Data Use Terms - BioPharma Closed Collection | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(C) Data Use Terms - BioPharma Closed Collection.md` |
 | D4 | (D) User Guide - Biopharma Closed Collection | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(D) User Guide - Biopharma Closed Collection.md` |
 | D5 | (E) Comms & Change Materials | md | `DOVS2 2026/WP 1 Extended 90-10/Biometrics BP (90)/Documents/(E) Comms & Change Materials.md` |
 | D6 | 25Q4 - Quarterly Approval Meeting (Follow-up Email 1) | pdf | `DOVS2 2026/WP 1 Extended 90-10/ODSAI (90)/Approvals/25Q4 - Quarterly Approval Meeting (Follow-up Email 1).pdf` |
@@ -91,10 +91,10 @@ Generated: 2026-01-23
 | # | File | Type | Path |
 |---|------|------|------|
 | G1 | (B) OAC Agreement - Oncology Closed Collection | pdf | `(B) OAC Agreement - Oncology Closed Collection.pdf` |
-| G2 | ODS&AI Open access Data Collection - Agreement of Terms (AoT) - Closed | pdf | `ODS&AI Open access Data Collection - Agreement of Terms (AoT) - Closed.pdf` |
+| G2 | ODS&AI Open access Data Collection - Data Use Terms (AoT) - Closed | pdf | `ODS&AI Open access Data Collection - Data Use Terms (AoT) - Closed.pdf` |
 | G3 | Ongoing Data Collection - Opt in and Out | md | `Ongoing Data Collection - Opt in and Out.md` |
-| G4 | Agreement of Terms - Closed Collection | md | `Agreement of Terms - Closed Collection.md` |
-| G5 | Agreement of Terms - Ongoing Collection | md | `Agreement of Terms - Ongoing Collection.md` |
+| G4 | Data Use Terms - Closed Collection | md | `Data Use Terms - Closed Collection.md` |
+| G5 | Data Use Terms - Ongoing Collection | md | `Data Use Terms - Ongoing Collection.md` |
 | G6 | SOP - Internal Sharing of Scientific Data | pdf | `00. Final Documentation - 2025/SOP - Internal Sharing of Scientific Data.pdf` |
 | G7 | Management of Important New Safety Issues | pdf | `00. Final Documentation - 2025/Management of Important New Safety Issues.pdf` |
 

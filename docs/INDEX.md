@@ -31,7 +31,7 @@ Specs for **completed features** - only read if you need implementation details:
 | Archived Spec | Feature | Route |
 |---------------|---------|-------|
 | collectoid-poc-requirements.md | Master requirements | Various |
-| aot-integration-dcm-flow-spec.md | Agreement of Terms | `/dcm/create/agreements` |
+| aot-integration-dcm-flow-spec.md | Data Use Terms | `/dcm/create/agreements` |
 | dataset-approval-workflow-spec.md | GPT/TALT approvals | `/collections/[id]` (was `/dcm/progress`) |
 | dcm-progress-dashboard-improvements.md | Help, Discussion tabs | `/collections/[id]` (was `/dcm/progress`) |
 | dcm-demand-analytics-spec.md | Heatmap, suggestions | `/dcm/analytics` |

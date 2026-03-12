@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-031
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 4.1 - Collection Detail: Overview Tab `[M]`
@@ -74,17 +72,17 @@ Feature: Collection Detail Datasets Tab
 
 ---
 
-## 4.3 - Collection Detail: Agreement of Terms Tab `[M]`
+## 4.3 - Collection Detail: Data Use Terms Tab `[M]`
 
 **As a** user, **I want to** see the AoT for a collection, **so I** understand what I'm permitted to do with the data.
 
 ### Acceptance Criteria
 
 ```gherkin
-Feature: Collection Detail Agreement of Terms Tab
+Feature: Collection Detail Data Use Terms Tab
 
   Scenario: AoT terms are displayed
-    Given I am viewing the Agreement of Terms tab
+    Given I am viewing the Data Use Terms tab
     Then I see primary use permissions as a checklist
     And beyond primary use options (AI/ML, Software Dev) are shown
     And publication permissions are displayed
@@ -92,7 +90,7 @@ Feature: Collection Detail Agreement of Terms Tab
     And user scope is shown (organizations, roles, individuals)
 
   Scenario: AoT version indicator
-    Given I am viewing the Agreement of Terms tab
+    Given I am viewing the Data Use Terms tab
     Then the current AoT version number is displayed
     And a link to view version history is available
 ```
@@ -227,7 +225,7 @@ Feature: Collection Detail Progress & Draft View
 
   Scenario: Active collection shows full progress view
     Given I am viewing a collection with status "active" or "provisioning"
-    Then I see the full progress dashboard including: health score card, provisioning status breakdown, 6 tabs (Overview, Datasets, Agreement of Terms, Users, Timeline, Discussion)
+    Then I see the full progress dashboard including: health score card, provisioning status breakdown, 6 tabs (Overview, Datasets, Data Use Terms, Users, Timeline, Discussion)
     And a visual stepper shows the collection's current position in the lifecycle
     And per-dataset provisioning status is displayed
     And approval status per TA is displayed

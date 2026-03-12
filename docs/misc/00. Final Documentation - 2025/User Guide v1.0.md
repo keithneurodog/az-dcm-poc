@@ -251,8 +251,8 @@ height="3.5027777777777778in"}
 - **Top-Down Approval:** Delegate Data Owners work with the R&D Data
   Office to agree, up front, the specific Data Collections (studies/data
   sets), the permitted usages, and the user groups who can access them
-  under an Agreement of Terms (AoT). Approval is formally documented via
-  the Open Access Collection (OAC) Agreement, and the Agreement of Terms
+  under a Data Use Terms (AoT). Approval is formally documented via
+  the Open Access Collection (OAC) Agreement, and the Data Use Terms
   (AOT).
 
 - **Rollout -- Comms & Solution**: Once approval is granted, you access
@@ -389,11 +389,11 @@ Terms](https://azcollaboration.sharepoint.com/sites/VS2.Transformingdatasharinga
 BioPharma Closed Collection - users can only conduct analysis that
 classifies as Primary Use as per the above definitions and explanation
 -- Secondary Use is out of scope for this *Open Access Collection* -- as
-in the Agreement of Terms.
+in the Data Use Terms.
 
 When accessing data, you are also responsible for handling data as
 detailed in the mandatory training above (Global Standards, and SOP) --
-this is also spelled out in the Agreement of Terms. If any additional
+this is also spelled out in the Data Use Terms. If any additional
 questions remain or users are unsure on permitted use -- please refer to
 the Support section below.
 
@@ -425,7 +425,7 @@ according to internal processes. This includes, but is not limited to:
 Studies that are included in an Open Access Collection will have already
 gone through these checks -- and so users can be safe in the assumption
 that studies available in the [90:10 Power BI Dashboard]{.mark} are
-approved for use as in the *Agreement of Terms*.
+approved for use as in the *Data Use Terms*.
 
 ## What's in Scope (Product Team / IEMT / 90:10)
 
@@ -449,7 +449,7 @@ height="3.5381944444444446in"}
 - **90:10 Open Access Model:** If you're part of the Role‑Based Open
   Access rollout, you can access studies and data listed in the Open
   Access Collection (see the 90:10 Power BI dashboard). Use is governed
-  by the Agreement of Terms and is generally limited to Primary Use. See
+  by the Data Use Terms and is generally limited to Primary Use. See
   section 3 for how to access.
 
 - **IDAP Process:** For any data or use cases outside the two routes
@@ -473,7 +473,7 @@ outcomes (this can be included in the [Project Completion Form]{.mark}
 ## Pre-Planning
 
 Confirm your intended data use aligns with collection‑specific terms
-(Agreement of Terms) and the User Guide. Complete a quick self‑review,
+(Data Use Terms) and the User Guide. Complete a quick self‑review,
 consider any risks and compliance issues, and determine resources,
 timelines, and collaborators. Contact the R&D Data Office if guidance is
 needed (see Support section below)

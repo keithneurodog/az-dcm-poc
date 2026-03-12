@@ -57,7 +57,7 @@
 |-----------|-------------|
 | Primary Use Reinterpretation | Leverages June 2025 DGB decision |
 | Open Access Collections | Studies/data grouped into pre-approved collections |
-| Agreement of Terms | Approves user groups, role-aligned intent, permitted use |
+| Data Use Terms | Approves user groups, role-aligned intent, permitted use |
 | Access Solutions | R&D approved platforms (Domino) + new mechanisms (Immuta) |
 | Collection Management | Joint stewardship by Data Office and TAs |
 

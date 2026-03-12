@@ -134,7 +134,7 @@ After selecting datasets, a "Recommended Activities" panel appears showing:
 
 ---
 
-#### Feature 3: Intelligent Agreement of Terms (AoT) Suggestion
+#### Feature 3: Intelligent Data Use Terms (AoT) Suggestion
 
 **What the user sees:**
 When defining data use restrictions, the system suggests:
@@ -395,7 +395,7 @@ A "Recommended Collections" panel showing:
 | Function | Location | Purpose |
 |----------|----------|---------|
 | `extractKeywordsAndSuggestCategories()` | `lib/dcm-mock-data.ts:395-429` | NLP keyword extraction + category mapping |
-| `suggestAoT()` | `lib/dcm-mock-data.ts:4879-4960` | Agreement of Terms suggestion based on activities |
+| `suggestAoT()` | `lib/dcm-mock-data.ts:4879-4960` | Data Use Terms suggestion based on activities |
 | `detectAoTConflicts()` | `lib/dcm-mock-data.ts:4965-5030` | Real-time conflict detection |
 | `calculateDemandMetrics()` | `lib/analytics-helpers.ts:165-219` | Demand prediction + gap scoring |
 | `generateCollectionSuggestions()` | `lib/analytics-helpers.ts:308-383` | Proactive collection recommendations |

@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-004 through FR-COL-015, VS2-329, VS2-332, VS2-333, VS2-334
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 7.1 - Browse & Add Datasets (D-Code Search) `[L]`
@@ -163,6 +161,7 @@ Feature: Access Provisioning Breakdown
 **As a** DCM, **I want to** see the ethical and legal compliance status per study within my collection, **so I can** identify issues before submission.
 
 **BRD Refs:** FR-AUD-002, FR-AUD-003
+
 
 ### Acceptance Criteria
 

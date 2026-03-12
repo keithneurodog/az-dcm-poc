@@ -2,7 +2,7 @@
 
 # 
 
-# **Agreement of Terms** (AoT) for Open Access to Strictly Confidential Data
+# **Data Use Terms** (AoT) for Open Access to Strictly Confidential Data
 
 *A document that formalises agreement between (Delegate) Data Owners and
 Data Consumers, for Open Access to Strictly Confidential Data, based on
@@ -14,7 +14,7 @@ and terms associated to data-use*
 +--------------------------------------------------------------------------------------+
 | Document Control                                                                     |
 +=====================================+================================================+
-| *Document type*                     | *Agreement of Terms for Open Access to         |
+| *Document type*                     | *Data Use Terms for Open Access to         |
 |                                     | Strictly Confidential Data*                    |
 +-------------------------------------+------------------------------------------------+
 | *Description of application*        | *Open access to the Oncology Primary Closed    |
@@ -60,16 +60,16 @@ application of the document:*
 
 # Table of Contents {#table-of-contents .TOC-Heading}
 
-[Agreement of Terms (AoT) for Open Access to Strictly Confidential Data
+[Data Use Terms (AoT) for Open Access to Strictly Confidential Data
 [1](#agreement-of-terms-aot-for-open-access-to-strictly-confidential-data)](#agreement-of-terms-aot-for-open-access-to-strictly-confidential-data)
 
 [1. Document context, purpose and key definitions
 [3](#document-context-purpose-and-key-definitions)](#document-context-purpose-and-key-definitions)
 
-[2. Agreement of Terms (AoT)
+[2. Data Use Terms (AoT)
 [3](#agreement-of-terms-aot)](#agreement-of-terms-aot)
 
-[2.1. Base definition of the Agreement of Terms
+[2.1. Base definition of the Data Use Terms
 [3](#base-definition-of-the-agreement-of-terms)](#base-definition-of-the-agreement-of-terms)
 
 [2.2. Data Scope [3](#data-scope)](#data-scope)
@@ -81,7 +81,7 @@ application of the document:*
 
 # Document context, purpose and key definitions
 
-An *Agreement of Terms (AoT)* is used to formalise an instance of *open
+A *Data Use Terms (AoT)* is used to formalise an instance of *open
 Access to Strictly Confidential Data*. The creation of an Agreement of
 Terms sits as part of a wider process of enabling *Open Access to
 Strictly Confidential Data*. The step in the end-to-end process is
@@ -89,10 +89,10 @@ highlighted below, where additional information can be found in the
 [linked procedural
 document](https://azcollaboration.sharepoint.com/sites/VS2.Transformingdatasharingaccess2/Shared%20Documents/WP%201%20-%20Policy%20Enhanced%2090.10/Open%20Access%20User%20Guides%20and%20Procedures/Open%20Access%20to%20Strictly%20Confidential%20Data%20Procedure.docx?d=w2e6c90990d5749e188e27f353a4fbcc7&csf=1&web=1&e=FyoiIc).
 
-The four main elements that constitute an Agreement of Terms for Open
+The four main elements that constitute a Data Use Terms for Open
 Access to Strictly Confidential Data. These are:
 
-1)  A base definition of the Agreement of Terms.
+1)  A base definition of the Data Use Terms.
 
 2)  A defined scope of data
 
@@ -101,20 +101,20 @@ Access to Strictly Confidential Data. These are:
 
 4)  Terms and conditions of use of the data
 
-The outcome of creating the *Agreement of Terms* is that technical setup
+The outcome of creating the *Data Use Terms* is that technical setup
 of access will be initiated leading to the defined set of data consumers
 being able to openly access and use the data within the permitted terms
 and conditions.
 
-# Agreement of Terms (AoT)
+# Data Use Terms (AoT)
 
-## Base definition of the Agreement of Terms
+## Base definition of the Data Use Terms
 
-In this section, we provide the definition of the Agreement of Terms
+In this section, we provide the definition of the Data Use Terms
 specified by this document.
 
 +---------------------------------------------------------------------------------------+
-| **High level Information about the Agreement of Terms**                               |
+| **High level Information about the Data Use Terms**                               |
 +=====================================+=================================================+
 | AoT Instance Identifier             | AoT-2.00                                        |
 +-------------------------------------+-------------------------------------------------+

@@ -118,7 +118,7 @@ Early notification to DPO with initial intent, draft criteria, and anticipated u
 Translate draft criteria to meaningful (and static) metadata attributes.
 Produce definitive asset list (study d-codes).
 Identify and assign Data Consumer Lead, Data Owner
-Obtain approved Data Collection artefacts (Open Access Collection, Agreement of Terms, trainings)
+Obtain approved Data Collection artefacts (Open Access Collection, Data Use Terms, trainings)
 Confirm ethical/legal/data-owner approvals. If pending, assign actions and hold provisioning until cleared.
 Tactical approach is to use email with attachments that includes Excel list of studies, Excel list of users (virtual team tags), modalities per study, source systems per modality, consumption environments, due diligence confirmations. Register the collection in iDAP for traceability (ticket number).
 DPO configures Ranger/Starburst policies study-by-study. Executes data provisioning per modality and source.

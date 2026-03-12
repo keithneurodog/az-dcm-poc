@@ -59,8 +59,19 @@ export default function CreateCollectionSimple() {
   }
 
   const handleCreateConcept = () => {
-    // Save to sessionStorage
     if (typeof window !== "undefined") {
+      // Clear any previous workspace data first
+      sessionStorage.removeItem("dcm_selected_datasets")
+      sessionStorage.removeItem("dcm_selected_activities")
+      sessionStorage.removeItem("dcm_agreement_of_terms")
+      sessionStorage.removeItem("dcm_collection_status")
+      sessionStorage.removeItem("dcm_ai_analysis")
+      sessionStorage.removeItem("dcm_target_community")
+      sessionStorage.removeItem("dcm_total_users")
+      sessionStorage.removeItem("dcm_selected_categories")
+      sessionStorage.removeItem("dcm_collection_intent")
+
+      // Save new concept data
       sessionStorage.setItem("dcm_collection_name", title.trim())
       sessionStorage.setItem("dcm_collection_description", description.trim())
       sessionStorage.setItem("dcm_concept_created", new Date().toISOString())
@@ -204,7 +215,7 @@ export default function CreateCollectionSimple() {
               </div>
               <div>
                 <p className="text-sm font-normal text-neutral-800">Set Terms</p>
-                <p className="text-xs font-light text-neutral-500">Configure agreement of terms</p>
+                <p className="text-xs font-light text-neutral-500">Configure data use terms</p>
               </div>
             </div>
             <div className="flex items-start gap-3">

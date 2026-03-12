@@ -1,6 +1,6 @@
-# Summary: Agreement of Terms (AOT) - BioPharma Template
+# Summary: Data Use Terms (AOT) - BioPharma Template
 
-**Source:** `00. Final Documentation - 2025/Templates/(C) Agreement of Terms - TEMPLATE.md`
+**Source:** `00. Final Documentation - 2025/Templates/(C) Data Use Terms - TEMPLATE.md`
 **Type:** Agreement Template (Filled for BioPharma)
 **Workstream:** 2025 Baseline
 **Date:** 17 November 2025 (v1.0)
@@ -12,7 +12,7 @@
 
 - **Purpose:** Formalizes agreement between DDOs and Data Consumers for data scope, user base, and terms of use `[ref: header]`
 - **AOT ID:** AOT-001 `[ref: Section 2.1]`
-- **AOT Name:** Agreement of Terms - BioPharma Closed Collection `[ref: Section 2.1]`
+- **AOT Name:** Data Use Terms - BioPharma Closed Collection `[ref: Section 2.1]`
 - **Description:** Open access for BioPharma Quantitative Scientists for broad and continuous primary use intent `[ref: Section 2.1]`
 
 ---

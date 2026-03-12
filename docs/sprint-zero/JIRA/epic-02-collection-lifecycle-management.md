@@ -1,12 +1,10 @@
 # Epic 2: Collection Lifecycle Management
 
-**Goal:** Enable DCM users to manage collections through their full lifecycle from concept through draft to active to archived.
+**Goal:** Enable DCM users to manage collections through their full lifecycle using a two-dimensional state model (governance stage and operational state), with in-flight modifications tracked via propositions.
 
 **Personas:** Data Collection Manager (DCM)
 
 **BRD Refs:** FR-COL-020 through FR-COL-024
-
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
 
 ---
 
@@ -16,13 +14,14 @@
 
 **BRD Refs:** FR-COL-020
 
+
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Edit Draft Collections
 
   Scenario: All fields editable for draft collections
-    Given a collection exists with status "draft"
+    Given a collection exists with governance_stage "draft"
     When I open the collection for editing
     Then the collection's workspace opens with all sections editable
 
@@ -43,39 +42,81 @@ Feature: Edit Draft Collections
 
 ## 2.2 - Collection Status Lifecycle Engine `[L]`
 
-**As a** DCM, **I want the** system to enforce valid status transitions, **so that** collections follow the governance process.
+**As a** DCM, **I want the** system to enforce valid transitions across both state dimensions, **so that** collections follow the governance process.
 
 **BRD Refs:** FR-COL-021
+
+
+> **State Model Overview**
+>
+> Collections are described by two independent dimensions:
+>
+> | Dimension              | Values                                                                 | Active When            |
+> |------------------------|------------------------------------------------------------------------|------------------------|
+> | `governance_stage`     | concept → draft → pending_approval → approved (or rejected → draft)    | Always                 |
+> | `operational_state`    | provisioning → live → suspended → decommissioned                       | governance_stage = approved |
+>
+> In-flight modifications are tracked via **propositions** — a separate entity with lifecycle: `draft → submitted → approved → merged` (or `→ rejected`). Multiple propositions per collection are allowed; conflicts are resolved at merge time.
 
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Collection Status Lifecycle Engine
 
-  Scenario Outline: Valid status transitions are allowed
-    Given a collection has status "<current_status>"
-    When the system attempts to transition to "<new_status>"
+  # --- Dimension 1: Governance Stage ---
+
+  Scenario Outline: Valid governance_stage transitions are allowed
+    Given a collection has governance_stage "<current_stage>"
+    When the system attempts to transition governance_stage to "<new_stage>"
     Then the transition succeeds
-    And an audit event is created with the status change
+    And an audit event is created with the governance_stage change
 
     Examples:
-      | current_status   | new_status       |
+      | current_stage    | new_stage        |
       | concept          | draft            |
       | draft            | pending_approval |
       | pending_approval | approved         |
       | pending_approval | rejected         |
-      | approved         | provisioning     |
-      | provisioning     | active           |
-      | active           | under_review     |
-      | active           | suspended        |
-      | under_review     | active           |
-      | under_review     | archived         |
+      | rejected         | draft            |
 
-  Scenario: Invalid status transition is blocked
-    Given a collection has status "draft"
-    When the system attempts to transition to "active"
+  Scenario: Invalid governance_stage transition is blocked
+    Given a collection has governance_stage "draft"
+    When the system attempts to transition governance_stage to "approved"
     Then the transition is rejected with an error message
     And no audit event is created
+
+  # --- Dimension 2: Operational State ---
+
+  Scenario: Operational state is initialised on approval
+    Given a collection has governance_stage "pending_approval"
+    When the governance_stage transitions to "approved"
+    Then the operational_state is automatically set to "provisioning"
+
+  Scenario Outline: Valid operational_state transitions are allowed
+    Given a collection has governance_stage "approved" and operational_state "<current_state>"
+    When the system attempts to transition operational_state to "<new_state>"
+    Then the transition succeeds
+    And an audit event is created with the operational_state change
+
+    Examples:
+      | current_state    | new_state        |
+      | provisioning     | live             |
+      | live             | suspended        |
+      | suspended        | live             |
+      | suspended        | decommissioned   |
+
+  Scenario: Invalid operational_state transition is blocked
+    Given a collection has governance_stage "approved" and operational_state "provisioning"
+    When the system attempts to transition operational_state to "suspended"
+    Then the transition is rejected with an error message
+    And no audit event is created
+
+  Scenario: Operational state transition blocked when not approved
+    Given a collection has governance_stage "draft"
+    When the system attempts to transition operational_state to "provisioning"
+    Then the transition is rejected with an error message
+    And no audit event is created
+
 ```
 
 ---
@@ -100,7 +141,7 @@ Feature: Submit Collection for Approval
     When I submit the collection for approval
     Then the system identifies required TA Lead approvers based on studies' therapeutic areas
     And an approval_request record is created per TA
-    And the collection status transitions to "pending_approval"
+    And the collection governance_stage transitions to "pending_approval"
     And notifications are sent to all required approvers
     And an early notification is sent to DPO
 
@@ -115,26 +156,30 @@ Feature: Submit Collection for Approval
 
 ## 2.4 - Add/Remove Studies within Approved Scope `[M]`
 
-**As a** DCM, **I want to** add or remove studies from an active collection within the approved OAC scope, **so that** the collection stays current without re-approval.
+**As a** DCM, **I want to** add or remove studies from a live collection within the approved OAC scope, **so that** the collection stays current without re-approval.
 
 **BRD Refs:** FR-COL-022
+
 
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Add/Remove Studies within Approved Scope
 
-  Scenario: Add study within approved scope
-    Given an active collection with an approved OAC scope
-    When I add a study that falls within the approved scope
-    Then the study is added without triggering re-approval
+  Scenario: Add study within approved scope via proposition
+    Given a collection with operational_state "live"
+    And the collection has an approved OAC scope
+    When I create a proposition to add a study that falls within the approved scope
+    And I submit the proposition
+    Then the proposition transitions from "submitted" to "merged" without requiring governance re-approval
     And a new collection version is created
     And affected users are notified of the change
 
-  Scenario: Remove study within approved scope
-    Given an active collection with studies
-    When I remove a study that doesn't change the overall approved scope
-    Then the study is removed without triggering re-approval
+  Scenario: Remove study within approved scope via proposition
+    Given a collection with operational_state "live"
+    When I create a proposition to remove a study that doesn't change the overall approved scope
+    And I submit the proposition
+    Then the proposition transitions from "submitted" to "merged" without requiring governance re-approval
     And a new collection version is created
     And affected users are notified of the change
 ```
@@ -143,65 +188,73 @@ Feature: Add/Remove Studies within Approved Scope
 
 ## 2.5 - Out-of-Scope Modification (Triggers Re-Approval) `[L]`
 
-**As a** DCM, **I want the** system to detect when modifications fall outside approved scope and require re-approval, **so that** governance is maintained.
+**As a** DCM, **I want the** system to detect when a proposition's changes fall outside approved scope and require governance re-approval via the proposition's own lifecycle, **so that** governance is maintained.
 
 **BRD Refs:** FR-COL-023
+
 
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Out-of-Scope Modification Triggers Re-Approval
 
-  Scenario: System detects out-of-scope change
-    Given an active collection with approved scope
-    When I add a study from a new therapeutic area not in the original approval
-    Then the system flags the modification as out-of-scope
-    And the modification is routed for re-approval
+  Scenario: System detects out-of-scope change in proposition
+    Given a collection with operational_state "live"
+    When I create a proposition to add a study from a new therapeutic area not in the original approval
+    And I submit the proposition
+    Then the system flags the proposition as out-of-scope
+    And the proposition status remains "submitted" pending governance re-approval
     And fresh TA Lead signatures are required
+    And the proposition is routed to the appropriate approvers
 
-  Scenario: AoT term change triggers re-approval
-    Given an active collection with approved AoT terms
-    When I modify the permitted uses or publication rights
-    Then the system flags the change as out-of-scope
+  Scenario: AoT term change in proposition triggers re-approval
+    Given a collection with operational_state "live"
+    And the collection has approved AoT terms
+    When I create a proposition to modify the permitted uses or publication rights
+    And I submit the proposition
+    Then the system flags the proposition as out-of-scope
     And re-approval is required from all relevant TA Leads
+    And the proposition transitions to "approved" only after all re-approvals are received, then to "merged"
 
   Scenario: DCM is informed about re-approval requirement
-    Given the system has detected an out-of-scope change
+    Given a proposition has been flagged as requiring governance re-approval
     Then the DCM sees a clear message explaining why re-approval is needed
-    And the DCM can choose to proceed with re-approval or revert the change
+    And the DCM can choose to proceed with re-approval or withdraw the proposition
+    And withdrawing the proposition leaves the collection unchanged
 ```
 
 ---
 
-## 2.6 - Archive Collection `[S]`
+## 2.6 - Decommission Collection `[S]`
 
-**As a** DCM, **I want to** archive a collection that is no longer needed, with a recorded reason, **so that** there's an audit trail for decommissioned collections.
+**As a** DCM, **I want to** decommission a collection that is no longer needed, with a recorded reason, **so that** there's an audit trail for decommissioned collections.
 
 **BRD Refs:** FR-COL-024
+
 
 ### Acceptance Criteria
 
 ```gherkin
-Feature: Archive Collection
+Feature: Decommission Collection
 
-  Scenario: Archive with reason
-    Given I have an active collection
-    When I choose to archive the collection
-    Then I must provide an archive reason (free text or predefined option)
+  Scenario: Decommission with reason
+    Given I have a collection with operational_state "suspended"
+    When I choose to decommission the collection
+    Then I must provide a decommission reason (free text or predefined option)
     And all active access is revoked
     And all affected users are notified
-    And the collection status transitions to "archived"
+    And the operational_state transitions to "decommissioned"
 
-  Scenario: Archived collection is retained for audit
-    Given a collection has been archived
+  Scenario: Decommissioned collection is retained for audit
+    Given a collection has operational_state "decommissioned"
     Then the collection remains queryable in the system
-    And it appears in search results with an "Archived" badge
+    And it appears in search results with a "Decommissioned" badge
     And it is read-only
 
-  Scenario: Archive without reason is blocked
-    Given I am archiving a collection
+  Scenario: Decommission without reason is blocked
+    Given I am decommissioning a collection
     When I attempt to confirm without providing a reason
-    Then the archive action is blocked with a validation message
+    Then the decommission action is blocked with a validation message
 ```
 
 ---
@@ -216,20 +269,21 @@ Feature: Archive Collection
 
 **BRD Refs:** FR-COL-007
 
+
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Auto-Flag Studies on Metadata Change
 
   Scenario: Metadata status change triggers auto-flag
-    Given a study is included in an active collection
+    Given a study is included in a collection with operational_state "live"
     When the AZCT sync detects a metadata status change for that study
     Then the study is automatically flagged as "Out of Scope" or "Restricted"
     And the DCM is notified of the flag
     And affected stakeholders are notified
 
   Scenario: Consent withdrawal flags study
-    Given a study is included in an active collection
+    Given a study is included in a collection with operational_state "live"
     When the consent status for the study changes to "withdrawn"
     Then the study is flagged as "Restricted"
     And the flag reason indicates "Consent withdrawn"

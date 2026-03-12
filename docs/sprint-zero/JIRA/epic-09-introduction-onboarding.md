@@ -6,8 +6,6 @@
 
 **BRD Refs:** MVP-008
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 9.1 - Role-Based Landing/Introduction Page `[M]`

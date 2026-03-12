@@ -22,7 +22,7 @@ Open Access Collection (OAC) Agreement
 
 (C) 
 
-Agreement of Terms (AoT)
+Data Use Terms (AoT)
 
 (D) 
 
@@ -88,7 +88,7 @@ Open Access Collection (OAC) Agreement  ( HERE )
 
 Document to define the Open Access Collection; it does not grant access to the data collection but instead defines the criteria that specify the scope
 
-Agreement of Terms (AOT)  ( HERE )
+Data Use Terms (AOT)  ( HERE )
 
 Document to formalise the agreement between (Delegate) Data Owners and Data Consumers - to determine the specified data-scope, user-base and terms of use 
 

@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-APR-001 through FR-APR-012, VS2-339, VS2-349
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 10.1 - Approval Routing Engine `[XL]`
@@ -15,6 +13,7 @@
 **As the** system, **I want to** automatically route approval requests to the correct approvers based on therapeutic area, legal requirements, data ownership, and partnership status, **so that** the right people review each collection.
 
 **BRD Refs:** FR-APR-001, VS2-339
+
 
 ### Acceptance Criteria
 
@@ -49,6 +48,7 @@ Feature: Approval Routing Engine
 **As an** Approver, **I want to** see all pending approval requests in my queue with filtering and sorting, **so I can** efficiently manage my workload.
 
 **BRD Refs:** FR-APR-010
+
 
 ### Acceptance Criteria
 
@@ -99,7 +99,7 @@ Feature: Approval Review Interface
 
   Scenario: AoT terms summary visible
     Given I am reviewing a collection
-    Then the Agreement of Terms summary is displayed
+    Then the Data Use Terms summary is displayed
 
   Scenario: Previous approval decisions visible
     Given other TA Leads have already made decisions on this collection
@@ -117,6 +117,7 @@ Feature: Approval Review Interface
 **As an** Approver, **I want to** approve, reject, request changes, or delegate, **so I can** take the appropriate action.
 
 **BRD Refs:** FR-APR-005
+
 
 ### Acceptance Criteria
 
@@ -161,6 +162,7 @@ Feature: Approval Decision Actions
 
 **BRD Refs:** FR-APR-004, FR-APR-009
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -190,6 +192,7 @@ Feature: Digital Signature/Acknowledgement Capture
 
 **BRD Refs:** FR-APR-002, VS2-349
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -199,7 +202,7 @@ Feature: Cross-TA All or Nothing Enforcement
     Given a collection spans Oncology, Respiratory, and CVMD
     And Oncology and Respiratory have approved
     When CVMD rejects the collection
-    Then the collection status is set to "rejected" for ALL therapeutic areas
+    Then the collection governance_stage is set to "rejected" for ALL therapeutic areas
     And all stakeholders (DCM, Oncology Lead, Respiratory Lead) are notified of the rejection
 
   Scenario: Blocking status is clearly displayed
@@ -210,7 +213,7 @@ Feature: Cross-TA All or Nothing Enforcement
 
   Scenario: All TAs must approve for collection to proceed
     Given a collection spans multiple TAs
-    Then the collection cannot proceed to "approved" status until ALL TA Leads have approved
+    Then the collection governance_stage cannot proceed to "approved" until ALL TA Leads have approved
 ```
 
 ---
@@ -220,6 +223,7 @@ Feature: Cross-TA All or Nothing Enforcement
 **As a** user, **I want to** see the per-TA approval status (approved/pending/rejected) for cross-TA collections, **so I** understand where the collection stands.
 
 **BRD Refs:** FR-APR-012, VS2-349
+
 
 ### Acceptance Criteria
 
@@ -242,9 +246,10 @@ Feature: Cross-TA Approval Status Visualization
 
 ## 10.8 - All-Approved Trigger (Provisioning) `[L]`
 
-**As the** system, when all required TA Leads have approved, **I want to** automatically transition the collection to "provisioning" and trigger downstream policy creation, **so that** access is provisioned without manual intervention.
+**As the** system, when all required TA Leads have approved, **I want to** automatically transition the collection governance_stage to "approved" and auto-trigger operational_state to "provisioning", initiating downstream policy creation, **so that** access is provisioned without manual intervention.
 
 **BRD Refs:** FR-APR-006
+
 
 ### Acceptance Criteria
 
@@ -256,7 +261,8 @@ Feature: All-Approved Trigger
     When the last TA Lead approves
     Then the system verifies all TAs are approved
     And minimum information gates are verified
-    And the collection status transitions to "provisioning"
+    And the collection governance_stage transitions to "approved"
+    And the collection operational_state auto-transitions to "provisioning"
 
   Scenario: Downstream policy creation is triggered
     Given the collection has transitioned to "provisioning"
@@ -271,7 +277,7 @@ Feature: All-Approved Trigger
     Given a collection has 3 TA approval requests
     And only 2 have approved
     Then provisioning is not triggered
-    And the collection remains in "pending_approval" status
+    And the collection governance_stage remains in "pending_approval"
 ```
 
 > **Design Decision (Immuta alignment):** When all approvals are complete, the provisioning trigger must create records in four Immuta tables — not a single "policy": (1) `Data_Access_Intent` rows (one per permitted activity, with Category, Sub_Category, Purpose, dual AI/ML flags), (2) `Access_Authorisation` rows (IDA or AdHoc track, with approval tier metadata), (3) `Partition_Filter_Criteria` rows (Study_ID IN clause from collection's d-codes), (4) `User_Profile` assignments. The SQS message payload should include all data needed to populate these four tables. See `04-integration-map.md`, Section 4.5 for the complete field mapping. **[TBD]:** The provisioning orchestrator design (direct API vs event-driven) is pending ADR-011.
@@ -283,6 +289,7 @@ Feature: All-Approved Trigger
 **As the** system, **I want to** automatically revoke access and notify stakeholders when metadata changes invalidate previously approved access, **so that** compliance is maintained.
 
 **BRD Refs:** FR-APR-007
+
 
 ### Acceptance Criteria
 
@@ -309,6 +316,7 @@ Feature: Auto-Revoke on Metadata Invalidation
 
 **BRD Refs:** FR-APR-008
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -333,6 +341,7 @@ Feature: Re-Approval on Decision Change
 **As a** DCM, **I want to** initiate quarterly review workflows where DDOs approve study inclusion or exclusion, **so that** collections stay governed and current.
 
 **BRD Refs:** FR-APR-011
+
 
 ### Acceptance Criteria
 
@@ -391,6 +400,7 @@ Feature: Approval Delegation
 **As an** Approver, **I want to** approve multiple studies at once after metadata pre-verification, **so I can** efficiently process large collections.
 
 **BRD Refs:** FR-AUD-006
+
 
 ### Acceptance Criteria
 

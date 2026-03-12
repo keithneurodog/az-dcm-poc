@@ -75,7 +75,7 @@ AstraZeneca is decommissioning the legacy **AZCt iDAP** (AstraZeneca Clinical tr
     │   │   ├── categories/       # Step 2: AI-suggested categories
     │   │   ├── filters/          # Step 3: Multi-dimensional filtering
     │   │   ├── activities/       # Step 4: Activities/intents selection
-    │   │   ├── agreements/       # Step 5: Agreement of Terms
+    │   │   ├── agreements/       # Step 5: Data Use Terms
     │   │   ├── details/          # Step 6: Collection name/description
     │   │   ├── review/           # Step 7: Access provisioning breakdown
     │   │   └── publishing/       # Step 8: Collectoid automation
@@ -171,7 +171,7 @@ AstraZeneca is decommissioning the legacy **AZCt iDAP** (AstraZeneca Clinical tr
 
 | Term | Definition |
 |------|------------|
-| **Agreement of Terms (AoT)** | Data use restrictions defined per collection - specifies allowed uses (ML, publication, external sharing) |
+| **Data Use Terms (AoT)** | Data use restrictions defined per collection - specifies allowed uses (ML, publication, external sharing) |
 | **90/10 Initiative** | Once data is approved for a user profile, similar users matching that profile gain instant access (target: 90% instant, 10% manual approval) |
 | **Collection Crossover** | DCM-specific concept - datasets appearing in multiple collections (important for curation decisions) |
 | **EPU** | Extended Primary Use - consent type allowing broader use of clinical trial data |
@@ -225,7 +225,7 @@ Intent → Categories → Filters → Activities → Agreements → Details → 
 | 2. Categories | `/dcm/create/categories/` | AI extracts keywords and suggests data categories from 30+ taxonomy |
 | 3. Filters | `/dcm/create/filters/` | Multi-dimensional filtering (categories, study characteristics, collection context, access criteria) |
 | 4. Activities | `/dcm/create/activities/` | Select data engineering vs scientific analysis intents (affects access level) |
-| 5. Agreements | `/dcm/create/agreements/` | Define Agreement of Terms (AoT) + user scope + conflict detection |
+| 5. Agreements | `/dcm/create/agreements/` | Define Data Use Terms (AoT) + user scope + conflict detection |
 | 6. Details | `/dcm/create/details/` | Collection name and description |
 | 7. Review | `/dcm/create/review/` | Access provisioning breakdown (20/30/40/10) with charts |
 | 8. Publishing | `/dcm/create/publishing/` | Collectoid automation - policy generation, approval routing |
@@ -403,7 +403,7 @@ Key features:
 - Multi-step collection creation wizard (8 steps)
 - AI-powered category suggestions from 30+ taxonomy
 - Multi-dimensional dynamic filtering with live result counts
-- Agreement of Terms (AoT) definition with conflict detection
+- Data Use Terms (AoT) definition with conflict detection
 - Dataset filtering with access provisioning breakdown (20/30/40/10)
 - Progress tracking with discussion threads and blockers
 - End-user discovery and request flows

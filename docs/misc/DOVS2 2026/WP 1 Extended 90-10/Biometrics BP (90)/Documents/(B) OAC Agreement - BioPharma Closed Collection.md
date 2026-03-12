@@ -6,7 +6,7 @@
 
 *This document defines the Open Access Collection (OAC) for BioPharma
 Closed Studies; it does not grant access to the data collection (this is
-contained in the Agreement of Terms) but instead defines the criteria
+contained in the Data Use Terms) but instead defines the criteria
 that specify the scope of the Open Access Collection.*
 
 *The table below should be used for document control purposes:*
@@ -349,7 +349,7 @@ is permitted.
 |   *(using full scope of patient data in    |                         |
 |   the corresponding studies)*              |                         |
 |                                            |                         |
-| - See Agreement of Terms (AOT) for more    |                         |
+| - See Data Use Terms (AOT) for more    |                         |
 |   details & guidance on Primary Use in     |                         |
 |   practice)                                |                         |
 +--------------------------------------------+-------------------------+
@@ -359,7 +359,7 @@ is permitted.
 |   language for primary use *(subsetted     |                         |
 |   patient data in corresponding studies)*  |                         |
 |                                            |                         |
-| - See Agreement of Terms (AOT) for more    |                         |
+| - See Data Use Terms (AOT) for more    |                         |
 |   details                                  |                         |
 +--------------------------------------------+-------------------------+
 | **Other Usage Categories**                 | **No**                  |

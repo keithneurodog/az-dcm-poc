@@ -203,7 +203,7 @@ Primary Use Reinterpretation:   Leveraging reinterpretation of Primary Use to st
 
 Open Access Collections:   Studies and data grouped into pre‑approved collections, defined and governed by Delegate Data Owners to enable controlled open access.
 
-Agreement of Terms:   Approves which user groups can access collections, for role‑aligned intent under permitted use -- continuous access approved top‑down by Delegate Data Owners
+Data Use Terms:   Approves which user groups can access collections, for role‑aligned intent under permitted use -- continuous access approved top‑down by Delegate Data Owners
 
 Access Solutions & Environments:   Leverages R&D's approved analysis platforms (eg: Domino), in combination with innovative new access mechanisms and tools (eg: Immuta)
 
@@ -285,7 +285,7 @@ Open Access Collection (OAC) Agreement
 
 (C) 
 
-Agreement of Terms (AoT)
+Data Use Terms (AoT)
 
 (D) 
 
@@ -486,7 +486,7 @@ When Data Consumers are accessing IPLD through the Role-based Open Access Model 
 
 Included User
 
-Is the Data Consumer included in the scope of an agreed Agreement of Terms (AOT) & ROAM rollout phase?
+Is the Data Consumer included in the scope of an agreed Data Use Terms (AOT) & ROAM rollout phase?
 
 Access should be requested via another mechanisms --  ie : IDAP or IEMT -- or ask R&D Data Office support for more help
 

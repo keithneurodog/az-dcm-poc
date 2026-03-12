@@ -36,7 +36,7 @@ Last updated: 2026-01-23
 - [x] C5: User Guide v1.0
 - [x] C6: User Guide - Biopharma Closed Collection - v2
 - [x] C7: (B) OAC Agreement - TEMPLATE
-- [x] C8: (C) Agreement of Terms - TEMPLATE
+- [x] C8: (C) Data Use Terms - TEMPLATE
 - [x] C9: Global Standard - Internal Sharing Scientific Data (pdf - partial)
 
 ### Group D: WP1 Extended 90-10 (Priority 4) ✓

@@ -56,7 +56,7 @@ application of the document:*
 [2.1. Open Access Collection (OAC) Agreement
 [4](#open-access-collection-oac-agreement)](#open-access-collection-oac-agreement)
 
-[2.2. Agreement of Terms (AOT)
+[2.2. Data Use Terms (AOT)
 [5](#agreement-of-terms-aot)](#agreement-of-terms-aot)
 
 [3. Role Accountabilities
@@ -211,20 +211,20 @@ On completion the *Open Access Collection (OAC) Agreement* should be
 reviewed and approved by relevant Delegate Data Owner(s) to allow onward
 open access to be set up.
 
-## Agreement of Terms (AOT)
+## Data Use Terms (AOT)
 
-An **Agreement of Terms (AOT)** is a formally written, and approved,
+A **Data Use Terms (AOT)** is a formally written, and approved,
 document for open access that is used to define an agreed terms of use
 applied to an Open Access Collection. For simplicity, [one]{.underline}
 AOT specifies access to just [one]{.underline} Open Access Collection.
 However, there can be more than one AOT per Open Access Collection, as
 required by different user groups.
 
-There are four main elements that constitute an Agreement of Terms
+There are four main elements that constitute a Data Use Terms
 (AOT), these are:
 
 1)  **[Base Definition:]{.underline}** A base definition of the
-    Agreement of Terms, including elements like an identifier and
+    Data Use Terms, including elements like an identifier and
     descriptive name, for reference purposes.
 
 2)  **[Data Scope:]{.underline}** A defined scope of data, by
@@ -236,7 +236,7 @@ There are four main elements that constitute an Agreement of Terms
     written as a series of rules that refer to aspects such as the
     permitted analysis purposes. Terms and conditions may be inherited
     from the terms already specified for the given data, or be
-    introduced in Agreement of Terms, as additional or overriding new
+    introduced in Data Use Terms, as additional or overriding new
     rules
 
 4)  **[User Scope:]{.underline}** A defined scope of data consumers who
@@ -259,7 +259,7 @@ There are three roles that wield accountability in ROAM*.* These are:
     Delegate Data Owners to actively wield that accountability. Within
     ROAM, the Delegate Data Owners accountability is to approve the
     creation of any new Open Access Collection (in the *OAC Agreement*)
-    and approve the *Agreement of Terms* associated to their data. Thus,
+    and approve the *Data Use Terms* associated to their data. Thus,
     they approve who accesses what data and the associated terms and
     conditions of use.
 
@@ -333,7 +333,7 @@ section of the ROAM process.
 +------------------------------------+-------------------------------------------------------+
 | **(C)**                            | Based on the Agreement in Principle and established   |
 |                                    | *Open Access Collection (OAC) Agreement*, the R&D     |
-| **Agreement of Terms (AoT)**       | Data Office will produce new or amended *Agreement of |
+| **Data Use Terms (AoT)**       | Data Office will produce new or amended *Agreement of |
 |                                    | Terms (AOT)*, with co-shaping from stakeholders       |
 |                                    | appointed by Data Owners / Delegates.                 |
 |                                    |                                                       |
@@ -394,7 +394,7 @@ section of the ROAM process.
 |                                    |   Collection (details found in the User Guide)        |
 |                                    |                                                       |
 |                                    | - [People Manager]{.underline} -- Based on the        |
-|                                    |   criteria approved in the Agreement of Terms (AOT)   |
+|                                    |   criteria approved in the Data Use Terms (AOT)   |
 |                                    |   -- R&D Data Office will create a list of in-scope   |
 |                                    |   users. R&D Data Office will then work with Data     |
 |                                    |   Consumer Leads, and other stakeholders who have     |

@@ -450,7 +450,7 @@ export default function WorkspaceActivitiesPage() {
                         </div>
                         <div className="flex items-center gap-2 text-xs font-light text-neutral-600">
                           <CheckCircle2 className="size-3.5 text-green-600" />
-                          <span className="font-normal">Access:</span> Granted under Agreement of Terms
+                          <span className="font-normal">Access:</span> Granted under Data Use Terms
                         </div>
                       </div>
 

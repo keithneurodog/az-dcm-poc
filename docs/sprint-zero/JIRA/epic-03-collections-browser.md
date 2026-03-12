@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-030 through FR-COL-035, FR-DSC-001
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 3.1 - Collections Grid View (Card Layout) `[L]`
@@ -15,6 +13,7 @@
 **As a** user, **I want to** see collections displayed as cards in a grid, **so I can** quickly scan and compare collections visually.
 
 **BRD Refs:** FR-COL-030, FR-COL-031
+
 
 ### Acceptance Criteria
 
@@ -104,6 +103,7 @@ Feature: Collections Kanban View
 
 **BRD Refs:** FR-COL-032, FR-DSC-001
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -140,6 +140,7 @@ Feature: Full-Text Search
 
 **BRD Refs:** FR-COL-033
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -174,6 +175,7 @@ Feature: Multi-Faceted Filtering
 **As a** user, **I want to** sort collections by different criteria, **so I can** prioritize what I see.
 
 **BRD Refs:** FR-COL-034
+
 
 ### Acceptance Criteria
 
@@ -212,6 +214,7 @@ Feature: Collection Sorting
 
 **BRD Refs:** FR-COL-035
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -237,6 +240,7 @@ Feature: Access Control Indicators
 **As a** user, **I want to** star/favorite collections, **so they** appear prominently when I return.
 
 **BRD Refs:** FR-DSC-005
+
 
 ### Acceptance Criteria
 

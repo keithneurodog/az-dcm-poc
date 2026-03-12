@@ -25,6 +25,7 @@ import {
   Copy,
   Check,
   Share2,
+  ArrowRight,
 } from "lucide-react"
 
 interface SectionCard {
@@ -112,7 +113,7 @@ export default function WorkspaceOverviewPage() {
     },
     {
       id: "terms",
-      title: "Agreement of Terms",
+      title: "Data Use Terms",
       description: workspace.hasAgreementOfTerms
         ? "Terms configured"
         : "Set usage permissions and restrictions",
@@ -129,7 +130,7 @@ export default function WorkspaceOverviewPage() {
         : "Define who can access this data",
       icon: Users,
       status: workspace.assignedRoles.length > 0 ? "complete" : "empty",
-      required: false,
+      required: true,
       count: workspace.assignedRoles.length > 0 ? workspace.assignedRoles.length : undefined,
       href: "/collectoid-v2/dcm/create/workspace/roles",
     },
@@ -495,7 +496,7 @@ export default function WorkspaceOverviewPage() {
                   Complete required sections to continue
                 </h3>
                 <p className="text-sm font-light text-neutral-600">
-                  Add datasets, define activities, and set agreement of terms to promote this concept to a full draft.
+                  Add datasets, define activities, and set data use terms to promote this concept to a full draft.
                 </p>
               </div>
             </div>
@@ -504,11 +505,11 @@ export default function WorkspaceOverviewPage() {
       ) : (
         <Card className={cn("border rounded-2xl overflow-hidden", scheme.from.replace("from-", "border-").replace("500", "200"), scheme.bg)}>
           <CardContent className="p-5">
-            <div className="flex items-start gap-4">
-              <div className={cn("flex size-10 items-center justify-center rounded-xl bg-gradient-to-br", scheme.from, scheme.to)}>
+            <div className="flex items-center gap-4">
+              <div className={cn("flex size-10 items-center justify-center rounded-xl bg-gradient-to-br shrink-0", scheme.from, scheme.to)}>
                 <CheckCircle2 className="size-5 text-white" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-sm font-normal text-neutral-900 mb-1">
                   Ready to promote to draft
                 </h3>
@@ -516,6 +517,13 @@ export default function WorkspaceOverviewPage() {
                   Your concept is complete! Promote it to enable discussions, timeline tracking, and collaboration.
                 </p>
               </div>
+              <Button
+                onClick={workspace.handlePromote}
+                className={cn("shrink-0 rounded-xl font-light bg-gradient-to-r text-white", scheme.from, scheme.to)}
+              >
+                Promote to Draft
+                <ArrowRight className="size-4 ml-2" />
+              </Button>
             </div>
           </CardContent>
         </Card>

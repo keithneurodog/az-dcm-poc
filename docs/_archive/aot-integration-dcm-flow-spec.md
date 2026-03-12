@@ -1,4 +1,4 @@
-# Agreement of Terms (AoT) Integration into DCM Collection Creation Flow
+# Data Use Terms (AoT) Integration into DCM Collection Creation Flow
 
 **Created:** 2025-11-20
 **Status:** Ready for Implementation
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Add a new **Agreement of Terms (AoT) specification step** after Activities selection (becoming Step 5 of 8), where DCMs define data use terms and restrictions. The system will auto-suggest AoT based on selected activities and datasets, detect conflicts between dataset restrictions and defined AoT, and include user scope assignment within the AoT step.
+Add a new **Data Use Terms (AoT) specification step** after Activities selection (becoming Step 5 of 8), where DCMs define data use terms and restrictions. The system will auto-suggest AoT based on selected activities and datasets, detect conflicts between dataset restrictions and defined AoT, and include user scope assignment within the AoT step.
 
 ---
 
@@ -33,7 +33,7 @@ Based on user input:
 
 4. **User Scope:** Merge into AoT step
    - Move user assignment from Details step into AoT
-   - User scope becomes part of Agreement of Terms definition
+   - User scope becomes part of Data Use Terms definition
    - Simplifies Details step to just name/description
 
 ---
@@ -60,7 +60,7 @@ Based on user input:
 2. **Categories** - AI suggests data categories *(unchanged)*
 3. **Filters** - Multi-dimensional dataset selection *(unchanged)*
 4. **Activities** - Define usage intent *(unchanged)*
-5. **🆕 Agreement of Terms** - Define data use restrictions & user scope *(NEW)*
+5. **🆕 Data Use Terms** - Define data use restrictions & user scope *(NEW)*
 6. **Details** - Name and description only *(simplified)*
 7. **Review** - Access provisioning + AoT summary *(enhanced)*
 8. **Publishing** - Collectoid automation *(unchanged)*
@@ -103,7 +103,7 @@ export interface Dataset {
 }
 ```
 
-### 2. Agreement of Terms Interface
+### 2. Data Use Terms Interface
 
 **File:** `/lib/dcm-mock-data.ts`
 
@@ -180,7 +180,7 @@ export interface AgreementOfTerms {
 export interface Collection {
   // ... existing fields ...
 
-  // NEW: Agreement of Terms
+  // NEW: Data Use Terms
   agreementOfTerms?: AgreementOfTerms
 }
 ```
@@ -199,7 +199,7 @@ Allow DCM to define data use terms and restrictions, with AI assistance and conf
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Step 5 of 8: Agreement of Terms                      [Help ?]  │
+│  Step 5 of 8: Data Use Terms                      [Help ?]  │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  Define the terms and conditions for data use in this collection│
@@ -292,7 +292,7 @@ Allow DCM to define data use terms and restrictions, with AI assistance and conf
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │ 5 datasets have restrictions that conflict with your     │  │
-│  │ defined Agreement of Terms.                               │  │
+│  │ defined Data Use Terms.                               │  │
 │  │                                                           │  │
 │  │ [View Conflicts ▼]                                        │  │
 │  └──────────────────────────────────────────────────────────┘  │
@@ -315,7 +315,7 @@ Allow DCM to define data use terms and restrictions, with AI assistance and conf
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                  │
 │  ☐ I acknowledge these conflicts and take responsibility for   │
-│     proceeding with this Agreement of Terms                    │
+│     proceeding with this Data Use Terms                    │
 │                                                                  │
 │  ═══════════════════════════════════════════════════════════════│
 │                                                                  │
@@ -367,7 +367,7 @@ Allow DCM to define data use terms and restrictions, with AI assistance and conf
 
 ```typescript
 /**
- * Suggests Agreement of Terms based on selected activities and datasets
+ * Suggests Data Use Terms based on selected activities and datasets
  *
  * @param activities - Selected activities from Step 4
  * @param datasets - Selected datasets from Step 3
@@ -480,7 +480,7 @@ Example:
 /**
  * Detects conflicts between defined AoT and dataset restrictions
  *
- * @param aot - User-defined Agreement of Terms
+ * @param aot - User-defined Data Use Terms
  * @param datasets - Selected datasets
  * @returns Array of conflicts
  */
@@ -570,7 +570,7 @@ Show conflicts in expandable panel:
 ```
 ⚠️ DATASET-AOT CONFLICTS DETECTED
 
-5 datasets have restrictions that conflict with your defined Agreement of Terms.
+5 datasets have restrictions that conflict with your defined Data Use Terms.
 
 [View Conflicts ▼]
 
@@ -586,7 +586,7 @@ Show conflicts in expandable panel:
 └─────────────────────────────────────────────────────────┘
 
 ☐ I acknowledge these conflicts and take responsibility for
-   proceeding with this Agreement of Terms
+   proceeding with this Data Use Terms
 ```
 
 ### Conflict Resolution Options
@@ -645,14 +645,14 @@ For each conflict, user can:
 │                                                                  │
 │  ═══════════════════════════════════════════════════════════════│
 │                                                                  │
-│  AGREEMENT OF TERMS SUMMARY                                     │
+│  DATA USE TERMS SUMMARY                                     │
 │                                                                  │
 │  Allowed Uses:                                                  │
 │  ML/AI ✅ | Software Dev ❌ | Internal Pub ✅ | External Pub ⚠️ │
 │                                                                  │
 │  User Scope: 120 users (3 organizations)                       │
 │                                                                  │
-│  [Edit Agreement of Terms]                                      │
+│  [Edit Data Use Terms]                                      │
 │                                                                  │
 │  ═══════════════════════════════════════════════════════════════│
 │                                                                  │
@@ -670,13 +670,13 @@ For each conflict, user can:
 
 ### Changes
 
-**Add new section:** Agreement of Terms summary (full detail)
+**Add new section:** Data Use Terms summary (full detail)
 
 ### New Section Layout
 
 ```
 ═══════════════════════════════════════════════════════════════
-AGREEMENT OF TERMS
+DATA USE TERMS
 
 Primary Use:
 ✅ Understand how drugs work in the body
@@ -705,7 +705,7 @@ User Scope:
 ⚠️ Acknowledged Conflicts: 5 datasets
 [View Conflict Details]
 
-[Edit Agreement of Terms]
+[Edit Data Use Terms]
 
 ═══════════════════════════════════════════════════════════════
 ```
@@ -968,7 +968,7 @@ sessionStorage.removeItem('dcm_agreement_of_terms')
 ## Related Documentation
 
 **Source Material:**
-- `/docs/misc/Agreement of Terms - Ongoing Collection.docx` - AoT structure reference
+- `/docs/misc/Data Use Terms - Ongoing Collection.docx` - AoT structure reference
 - `/docs/misc/Ongoing Data Collection - Opt in and Out.docx` - Dataset opt-in/out process
 - `/docs/end-user-data-discovery-detailed-spec.md` - End user perspective on AoT
 

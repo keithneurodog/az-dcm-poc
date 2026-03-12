@@ -2,7 +2,7 @@
 
 # 
 
-# **Agreement of Terms (AoT) -- BioPharma Closed Collection**
+# **Data Use Terms (AoT) -- BioPharma Closed Collection**
 
 *A document that formalises the agreement between Delegate Data Owners,
 Data Consumer Leads and Data Consumers, in the Role-based Open Access
@@ -14,9 +14,9 @@ of use*
 +--------------------------------------------------------------------------------------+
 | Document Control                                                                     |
 +=====================================+================================================+
-| *Document type*                     | *Agreement of Terms (AOT)*                     |
+| *Document type*                     | *Data Use Terms (AOT)*                     |
 +-------------------------------------+------------------------------------------------+
-| *Description of application*        | Agreement of Terms -- BioPharma Closed         |
+| *Description of application*        | Data Use Terms -- BioPharma Closed         |
 |                                     | Collection *- by identified BioPharma          |
 |                                     | Quantitative Scientists for broad and          |
 |                                     | continuous primary use intent*                 |
@@ -58,13 +58,13 @@ application of the document:*
 
 # Table of Contents {#table-of-contents .TOC-Heading}
 
-[Agreement of Terms (AoT) -- BioPharma Closed Collection
+[Data Use Terms (AoT) -- BioPharma Closed Collection
 [1](#agreement-of-terms-aot-biopharma-closed-collection)](#agreement-of-terms-aot-biopharma-closed-collection)
 
 [1. Document context, purpose and key definitions
 [3](#document-context-purpose-and-key-definitions)](#document-context-purpose-and-key-definitions)
 
-[2. Agreement of Terms (AoT)
+[2. Data Use Terms (AoT)
 [4](#agreement-of-terms-aot)](#agreement-of-terms-aot)
 
 [2.1. Base Definition [4](#base-definition)](#base-definition)
@@ -80,7 +80,7 @@ application of the document:*
 
 # Document context, purpose and key definitions
 
-An *Agreement of Terms (AoT)* is used to define agreed terms of use
+A *Data Use Terms (AoT)* is used to define agreed terms of use
 applied to an *Open Access Collection*. The creation of an *Agreement of
 Terms* sits as part of the wider process of the *Role-based Open Access
 Model* -- this is Step (C) in the end-to-end process below, where
@@ -101,11 +101,11 @@ access to any data:
 incorrect.](media/image2.png){width="6.268055555555556in"
 height="3.497916666666667in"}
 
-There are four main elements that constitute an Agreement of Terms
+There are four main elements that constitute a Data Use Terms
 (AOT), these are:
 
 1)  **[Base Definition:]{.underline}** A base definition of the
-    Agreement of Terms, including elements like an identifier and
+    Data Use Terms, including elements like an identifier and
     descriptive name, for reference purposes.
 
 2)  **[Data Scope:]{.underline}** A defined scope of data, by
@@ -117,7 +117,7 @@ There are four main elements that constitute an Agreement of Terms
     written as a series of rules that refer to aspects such as the
     permitted analysis purposes. Terms and conditions may be inherited
     from the terms already specified for the given data, or be
-    introduced in Agreement of Terms, as additional or overriding new
+    introduced in Data Use Terms, as additional or overriding new
     rules
 
 4)  **[User Scope:]{.underline}** A defined scope of data consumers who
@@ -128,23 +128,23 @@ There are four main elements that constitute an Agreement of Terms
     in collections) retain a given scope but change in membership over
     time, e.g., with new joiners and leavers.
 
-The outcome of creating the *Agreement of Terms* is that R&D Data Office
+The outcome of creating the *Data Use Terms* is that R&D Data Office
 will pursue Step (D) in the end-to-end process -- initiating Technical
 Implementation, User Guides & Training, and Comms & Change Management.
 
-# Agreement of Terms (AoT)
+# Data Use Terms (AoT)
 
 ## Base Definition
 
-In this section, we provide the definition of the *Agreement of Terms*
+In this section, we provide the definition of the *Data Use Terms*
 specified by this document.
 
 +---------------------------------------------------------------------------------------+
-| **High level Information about the Agreement of Terms**                               |
+| **High level Information about the Data Use Terms**                               |
 +=====================================+=================================================+
 | AOT Identifier                      | AOT-001                                         |
 +-------------------------------------+-------------------------------------------------+
-| AOT Name                            | Agreement of Terms -- BioPharma Closed          |
+| AOT Name                            | Data Use Terms -- BioPharma Closed          |
 |                                     | Collection                                      |
 +-------------------------------------+-------------------------------------------------+
 | Description and notes               | Provides open access to the BioPharma Closed    |
@@ -155,7 +155,7 @@ specified by this document.
 
 ## Data Scope
 
-List Data Collection(s) that this Agreement of Terms will act upon:
+List Data Collection(s) that this Data Use Terms will act upon:
 
   --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   **Collection   **Collection name**    **Definition Document Link**
@@ -210,7 +210,7 @@ documented to ensure scientific utility, compliance, and privacy
 |             |                | and evaluate key         |                                                                                                                                                                                                                             |
 |             |                | criteria.                |                                                                                                                                                                                                                             |
 +-------------+----------------+--------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 4.1.1       | **Scientific   | The Analysis Team will   | *R&D Data Office will capture and file an instance of this 'Agreement of Terms' -- which has been reviewed and approved by Delegate Data Owners -- that will act as an umbrella Research Analysis Plan (RAP) for continuous |
+| 4.1.1       | **Scientific   | The Analysis Team will   | *R&D Data Office will capture and file an instance of this 'Data Use Terms' -- which has been reviewed and approved by Delegate Data Owners -- that will act as an umbrella Research Analysis Plan (RAP) for continuous |
 |             | Merit**        | declare the scientific   | usage of the data collection by specified users, as specified in this Agreement.*                                                                                                                                           |
 |             |                | intent of the analysis   |                                                                                                                                                                                                                             |
 |             |                | in a Research Analysis   |                                                                                                                                                                                                                             |

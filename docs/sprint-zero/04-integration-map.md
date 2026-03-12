@@ -233,8 +233,8 @@ The table below answers the question: **where does each piece of data in Collect
 
 | Data Domain | Description | Key Entities |
 |-------------|-------------|-------------|
-| **Collections** | The core domain — collection definitions, lifecycle state, configuration | `collections`, `collection_versions`, `collection_version_datasets` |
-| **Agreement of Terms** | Permitted uses, restrictions, publication rights, user scope | `agreements_of_terms`, `agreement_versions` |
+| **Collections** | The core domain — collection definitions, two-dimensional state (governance_stage, operational_state), configuration. In-flight modifications are tracked via propositions (a separate entity) | `collections`, `collection_versions`, `collection_version_datasets`, `propositions` |
+| **Data Use Terms** | Permitted uses, restrictions, publication rights, user scope | `agreements_of_terms`, `agreement_versions` |
 | **Access Requests** | Consumer requests for data access with declared intent | `access_requests` |
 | **Approval Workflow** | Multi-TA approval chains, decisions, delegation, SLA tracking | `approval_chains`, `approvals` |
 | **Audit Trail** | Immutable, append-only record of every action (ICH E6(R2) compliant) | `audit_events` |

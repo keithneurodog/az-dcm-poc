@@ -60,27 +60,29 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
 │                              COLLECTOID DATA MODEL                                  │
 └─────────────────────────────────────────────────────────────────────────────────────┘
 
-  ┌──────────────┐         ┌─────────────────────┐         ┌──────────────────┐
+  ┌──────────────┐         ┌──────────────────────┐         ┌──────────────────┐
   │    users     │────────>│ collection_members   │<────────│   collections    │
   │              │ 1    M  │                      │ M    1  │                  │
   │  id (PK)     │         │  user_id (FK)        │         │  id (PK)         │
   │  azure_ad_id │         │  collection_id (FK)  │         │  current_ver_id  │
-  │  email       │         │  role                │         │  status          │
-  │  display_name│         │  assigned_at         │         │  created_by (FK) │
+  │  email       │         │  role                │         │  governance_stage│
+  │  display_name│         │  assigned_at         │         │  operational_    │
+  │              │         │                      │         │   state          │
+  │              │         │                      │         │  created_by (FK) │
   └──────┬───────┘         └──────────────────────┘         └────────┬─────────┘
          │                                                           │
          │ 1                                                         │ 1
          │                                                           │
          │ M                                                         │ M
-  ┌──────┴───────┐                                          ┌────────┴─────────┐
+  ┌──────┴───────┐                                          ┌────────┴──────────┐
   │ user_roles   │                                          │collection_versions│
-  │              │                                          │                  │
-  │  user_id(FK) │                                          │  id (PK)         │
-  │  role_id(FK) │                                          │  collection_id   │
-  └──────────────┘                                          │  version_number  │
-                                                            │  snapshot (JSON) │
-  ┌──────────────┐                                          │  created_by (FK) │
-  │    roles     │                                          └────────┬─────────┘
+  │              │                                          │                   │
+  │  user_id(FK) │                                          │  id (PK)          │
+  │  role_id(FK) │                                          │  collection_id    │
+  └──────────────┘                                          │  version_number   │
+                                                            │  snapshot (JSON)  │
+  ┌──────────────┐                                          │  created_by (FK)  │
+  │    roles     │                                          └────────┬──────────┘
   │              │                                                   │
   │  id (PK)     │                                                   │ contains
   │  name        │                                                   │
@@ -89,15 +91,15 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
                                                             │  (junction)      │
                                                             │                  │
   ┌──────────────┐         ┌─────────────────────┐          │  cv_id (FK)      │
-  │  datasets    │<────────│  dataset_categories  │          │  dataset_id (FK) │
-  │              │ 1    M  │  (junction)          │          └──────────────────┘
-  │  id (PK)     │         │                      │
-  │  d_code      │         │  dataset_id (FK)     │
-  │  azct_id     │         │  category_id (FK)    │
-  │  name        │         └──────────┬───────────┘
+  │  datasets    │<────────│  dataset_categories │          │  dataset_id (FK) │
+  │              │ 1    M  │  (junction)         │          └──────────────────┘
+  │  id (PK)     │         │                     │
+  │  d_code      │         │  dataset_id (FK)    │
+  │  azct_id     │         │  category_id (FK)   │
+  │  name        │         └──────────┬──────────┘
   │  status      │                    │ M
   │  clinical_   │                    │
-  │   metadata   │              ┌─────┴──────────┐
+  │   metadata   │              ┌─────┴───────────┐
   │   (JSON)     │              │ data_categories │
   │  aot_metadata│              │                 │
   │   (JSON)     │              │  id (PK)        │
@@ -117,7 +119,7 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
   └──────────────────┘
 
 
-  ┌──────────────┐         ┌─────────────────────┐
+  ┌──────────────┐         ┌──────────────────────┐
   │ agreements   │────────>│ agreement_versions   │
   │ _of_terms    │ 1    M  │                      │
   │              │         │  id (PK)             │
@@ -129,7 +131,7 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
   └──────────────┘         └──────────────────────┘
 
 
-  ┌──────────────┐         ┌─────────────────────┐         ┌──────────────────┐
+  ┌──────────────┐         ┌──────────────────────┐         ┌──────────────────┐
   │   access_    │────────>│  approval_chains     │────────>│   approvals      │
   │   requests   │ 1    1  │                      │ 1    M  │                  │
   │              │         │  id (PK)             │         │  id (PK)         │
@@ -141,7 +143,7 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
   └──────────────┘                                          └──────────────────┘
 
 
-  ┌──────────────┐         ┌─────────────────────┐
+  ┌──────────────┐         ┌──────────────────────┐
   │ discussions  │────────>│     comments         │
   │              │ 1    M  │                      │
   │  id (PK)     │         │  id (PK)             │
@@ -152,7 +154,7 @@ This document defines the production data model for Collectoid, AstraZeneca's cl
                            └──────────────────────┘
 
 
-  ┌──────────────┐         ┌─────────────────────┐
+  ┌──────────────┐         ┌──────────────────────┐
   │ notifications│         │   audit_events       │
   │              │         │   (APPEND-ONLY)      │
   │  id (PK)     │         │                      │
@@ -337,7 +339,8 @@ The central entity. Represents a curated data collection governed by an OAC Agre
 |-------|------|----------|-------------|-------------|
 | `id` | UUID | Yes | Primary key | PK |
 | `current_version_id` | UUID | No | FK to current active version | FK -> collection_versions.id |
-| `status` | enum | Yes | Collection lifecycle status | NOT NULL |
+| `governance_stage` | enum | Yes | Where the collection is in the approval pipeline | NOT NULL |
+| `operational_state` | enum | No | Runtime status of an approved collection (nullable; only applies once governance_stage = approved) | |
 | `name` | string | Yes | Collection display name | NOT NULL, max 500 |
 | `description` | text | No | Collection description | |
 | `request_type` | enum | Yes | `new`, `update`, `policy_change` | NOT NULL |
@@ -351,7 +354,7 @@ The central entity. Represents a curated data collection governed by an OAC Agre
 | `archived_at` | timestamp | No | When archived | |
 | `deleted_at` | timestamp | No | Soft delete timestamp | |
 
-**Status enum values:**
+**`governance_stage` enum values:**
 
 | Value | Description |
 |-------|-------------|
@@ -359,17 +362,23 @@ The central entity. Represents a curated data collection governed by an OAC Agre
 | `draft` | Being defined, private to creator and assigned members |
 | `pending_approval` | Submitted for TA Lead approval |
 | `approved` | All required approvals obtained |
+| `rejected` | Approval request was rejected |
+
+**`operational_state` enum values (nullable — only applies once `governance_stage` = `approved`):**
+
+| Value | Description |
+|-------|-------------|
 | `provisioning` | DPO is configuring policies and provisioning data |
-| `active` | Fully provisioned and accessible |
-| `under_review` | Periodic review in progress |
+| `live` | Fully provisioned and accessible |
 | `suspended` | Temporarily suspended (e.g., compliance issue) |
-| `archived` | No longer active, retained for audit |
+| `decommissioned` | No longer active, retained for audit |
 
 **Indexes:**
 
 | Index | Columns | Type | Purpose |
 |-------|---------|------|---------|
-| `idx_collections_status` | `status` | B-tree | Status filtering |
+| `idx_collections_governance_stage` | `governance_stage` | B-tree | Governance stage filtering |
+| `idx_collections_operational_state` | `operational_state` | B-tree (partial, IS NOT NULL) | Operational state filtering |
 | `idx_collections_created_by` | `created_by` | B-tree | "My collections" queries |
 | `idx_collections_therapeutic_areas` | `therapeutic_areas` | GIN | TA-based filtering |
 | `idx_collections_tags` | `tags` | GIN | Tag-based search |
@@ -378,7 +387,74 @@ The central entity. Represents a curated data collection governed by an OAC Agre
 
 ---
 
-### 3.5 CollectionVersion
+### 3.5 Proposition
+
+Represents a proposed set of changes to a live collection. Propositions are a separate entity with their own lifecycle; whether a collection has open propositions is derived via query, not stored as state on the collection. Multiple propositions per collection are allowed concurrently; conflicts are resolved at merge time (like git branches).
+
+| Field | Type | Required | Description | Constraints |
+|-------|------|----------|-------------|-------------|
+| `id` | UUID | Yes | Primary key (UUIDv7) | PK |
+| `collection_id` | UUID | Yes | FK to parent collection | FK -> collections.id, NOT NULL |
+| `title` | string | Yes | Short description of the proposed change | NOT NULL, max 500 |
+| `description` | text | No | Detailed description of what is being changed and why | |
+| `type` | enum | Yes | `dataset_change`, `aot_change`, `user_change`, `mixed` | NOT NULL |
+| `status` | enum | Yes | Proposition lifecycle status | NOT NULL, DEFAULT 'draft' |
+| `changes` | JSONB | Yes | Snapshot of proposed changes (datasets added/removed, AoT diffs, user changes) | NOT NULL |
+| `created_by` | UUID | Yes | FK to user who created the proposition | FK -> users.id, NOT NULL |
+| `created_at` | timestamp | Yes | Record creation time | NOT NULL |
+| `updated_at` | timestamp | Yes | Last modification time | NOT NULL |
+| `submitted_at` | timestamp | No | When the proposition was submitted for review | |
+| `merged_at` | timestamp | No | When the proposition was merged into the collection | |
+| `decided_at` | timestamp | No | When the approval/rejection decision was made | |
+| `decision_reason` | text | No | Reason for approval or rejection | |
+
+**`type` enum values:**
+
+| Value | Description |
+|-------|-------------|
+| `dataset_change` | Adding or removing datasets from the collection |
+| `aot_change` | Modifying Data Use Terms |
+| `user_change` | Modifying user access or roles |
+| `mixed` | Multiple types of changes in a single proposition |
+
+**`status` enum values:**
+
+| Value | Description |
+|-------|-------------|
+| `draft` | Being prepared by the DCM, not yet submitted |
+| `submitted` | Submitted for review; system evaluates whether governance re-approval is required |
+| `approved` | Governance re-approval obtained, ready to merge |
+| `merged` | Applied to the collection |
+| `rejected` | Rejected by governance |
+
+**`changes` JSONB schema:**
+
+```json
+{
+  "datasets_added": ["uuid-1", "uuid-2"],
+  "datasets_removed": ["uuid-3"],
+  "aot_changes": {
+    "primary_use": { "ai_research": true }
+  },
+  "users_added": [
+    { "user_id": "uuid-user-1", "collection_role": "consumer" }
+  ],
+  "users_removed": ["uuid-user-2"]
+}
+```
+
+**Indexes:**
+
+| Index | Columns | Type | Purpose |
+|-------|---------|------|---------|
+| `idx_propositions_collection_id` | `collection_id` | B-tree | List propositions for a collection |
+| `idx_propositions_status` | `status` | B-tree | Filter by lifecycle status |
+| `idx_propositions_created_by` | `created_by` | B-tree | "My propositions" queries |
+| `idx_propositions_collection_status` | `collection_id`, `status` | B-tree | Open propositions for a collection |
+
+---
+
+### 3.6 CollectionVersion
 
 Immutable snapshot of a collection's full state at a point in time. Every meaningful change to a collection creates a new version. This supports VS2-335 (Versioning and Change Management).
 
@@ -388,7 +464,7 @@ Immutable snapshot of a collection's full state at a point in time. Every meanin
 | `collection_id` | UUID | Yes | FK to parent collection | FK -> collections.id, NOT NULL |
 | `version_number` | integer | Yes | Monotonically increasing version | NOT NULL |
 | `change_summary` | text | Yes | Human-readable description of what changed | NOT NULL |
-| `change_type` | enum | Yes | `initial`, `datasets_changed`, `aot_changed`, `users_changed`, `approval_decision`, `metadata_update`, `periodic_review` | NOT NULL |
+| `change_type` | enum | Yes | `initial`, `datasets_changed`, `aot_changed`, `users_changed`, `approval_decision`, `metadata_update`, `periodic_review`, `state_transition` | NOT NULL |
 | `snapshot` | JSONB | Yes | Full state snapshot (see schema below) | NOT NULL |
 | `created_by` | UUID | Yes | Who created this version | FK -> users.id, NOT NULL |
 | `created_at` | timestamp | Yes | Version creation time | NOT NULL |
@@ -401,7 +477,8 @@ Immutable snapshot of a collection's full state at a point in time. Every meanin
 {
   "name": "Oncology ctDNA Outcomes Collection",
   "description": "...",
-  "status": "provisioning",
+  "governance_stage": "approved",
+  "operational_state": "provisioning",
   "therapeutic_areas": ["ONC", "IMMUNONC"],
   "dataset_ids": ["uuid-1", "uuid-2"],
   "aot_version_id": "uuid-aot-v3",
@@ -435,7 +512,7 @@ Immutable snapshot of a collection's full state at a point in time. Every meanin
 
 ---
 
-### 3.6 CollectionVersionDataset (Junction)
+### 3.7 CollectionVersionDataset (Junction)
 
 Links a specific collection version to the datasets it contains. This is the normalised alternative to embedding `dataset_ids` only in the snapshot JSON; both representations exist for query flexibility.
 
@@ -452,7 +529,7 @@ Links a specific collection version to the datasets it contains. This is the nor
 
 ---
 
-### 3.7 Dataset
+### 3.8 Dataset
 
 Study dataset metadata. In production, most fields are sourced from the AZCT REST API and cached locally. See `04-integration-map.md` for AZCT sync details.
 
@@ -550,7 +627,7 @@ Study dataset metadata. In production, most fields are sourced from the AZCT RES
 
 ---
 
-### 3.8 ChildDataset
+### 3.9 ChildDataset
 
 Sub-datasets within a parent study (e.g., "DCODE-042-CLIN", "DCODE-042-BIO"). Supports the parent/child hierarchy from the POC.
 
@@ -579,7 +656,7 @@ Sub-datasets within a parent study (e.g., "DCODE-042-CLIN", "DCODE-042-BIO"). Su
 
 ---
 
-### 3.9 DataCategory
+### 3.10 DataCategory
 
 Taxonomy of data categories. This is a controlled vocabulary with 30+ entries across multiple domains (Therapeutic Areas, SDTM, ADaM, RAW Data, DICOM, Omics/NGS).
 
@@ -607,7 +684,7 @@ Taxonomy of data categories. This is a controlled vocabulary with 30+ entries ac
 
 ---
 
-### 3.10 DatasetCategory (Junction)
+### 3.11 DatasetCategory (Junction)
 
 Links datasets to their taxonomy categories.
 
@@ -621,7 +698,7 @@ Links datasets to their taxonomy categories.
 
 ---
 
-### 3.11 AgreementOfTerms
+### 3.12 AgreementOfTerms
 
 The AoT defines the terms under which data in a collection can be accessed. Each collection has one AoT (1:1). The AoT itself is versioned; changing terms creates a new `AgreementVersion`.
 
@@ -639,7 +716,7 @@ The AoT defines the terms under which data in a collection can be accessed. Each
 
 ---
 
-### 3.12 AgreementVersion
+### 3.13 AgreementVersion
 
 Immutable snapshot of AoT terms at a point in time. Each modification to terms creates a new version. Decision changes (e.g., rejected to approved) require a new version with a new TA Lead signature (per VS2-335).
 
@@ -715,7 +792,7 @@ Immutable snapshot of AoT terms at a point in time. Each modification to terms c
 
 ---
 
-### 3.13 CollectionMembership
+### 3.14 CollectionMembership
 
 Tracks users assigned to specific collections with their collection-level role. This is distinct from the system-level `user_roles` table.
 
@@ -770,7 +847,7 @@ Tracks users assigned to specific collections with their collection-level role. 
 
 ---
 
-### 3.14 AccessRequest
+### 3.15 AccessRequest
 
 A user's formal request for access to data. Contains the declared intent, selected datasets, and the smart matching result.
 
@@ -841,7 +918,7 @@ A user's formal request for access to data. Contains the declared intent, select
 
 ---
 
-### 3.15 ApprovalChain
+### 3.16 ApprovalChain
 
 Tracks the multi-TA approval workflow for an access request or collection publication. Implements the "all or nothing" semantics: if the collection spans multiple TAs, ALL TA Leads must approve; a single rejection blocks the entire collection (per VS2-339, VS2-349).
 
@@ -877,7 +954,7 @@ Tracks the multi-TA approval workflow for an access request or collection public
 
 ---
 
-### 3.16 Approval
+### 3.17 Approval
 
 Individual approval decision by a specific approver (TA Lead, DDO, etc.) within an approval chain.
 
@@ -919,7 +996,7 @@ Individual approval decision by a specific approver (TA Lead, DDO, etc.) within 
 
 ---
 
-### 3.17 AuditEvent
+### 3.18 AuditEvent
 
 Append-only, immutable audit log. This is the most critical table for regulatory compliance. See Section 4 for detailed design.
 
@@ -956,7 +1033,7 @@ Append-only, immutable audit log. This is the most critical table for regulatory
 
 ---
 
-### 3.18 Discussion
+### 3.19 Discussion
 
 A discussion thread attached to a collection, access request, or other entity. Supports the threaded comment system from the POC.
 
@@ -985,7 +1062,7 @@ A discussion thread attached to a collection, access request, or other entity. S
 
 ---
 
-### 3.19 Comment
+### 3.20 Comment
 
 Individual comment within a discussion. Supports threading via `parent_comment_id`.
 
@@ -1023,7 +1100,7 @@ Individual comment within a discussion. Supports threading via `parent_comment_i
 
 ---
 
-### 3.20 Notification
+### 3.21 Notification
 
 User-targeted notifications for events requiring attention.
 
@@ -1092,7 +1169,9 @@ Every auditable action has a structured identifier:
 | `collection.created` | collection | New collection created |
 | `collection.updated` | collection | Collection metadata changed |
 | `collection.published` | collection | Collection published (made visible) |
-| `collection.status_changed` | collection | Status transition |
+| `collection.governance_stage_changed` | collection | Governance stage transition |
+| `collection.operational_state_changed` | collection | Operational state transition |
+| `proposition.status_changed` | proposition | Proposition status transition |
 | `collection.archived` | collection | Collection archived |
 | `collection.version_created` | collection_version | New version snapshot created |
 | `collection.dataset_added` | collection | Dataset added to collection |
@@ -1162,11 +1241,12 @@ Enforce via application-layer middleware and IAM policies. The application datab
 
 The `payload` JSONB field captures action-specific context. Examples:
 
-**Collection status change:**
+**Collection state change:**
 ```json
 {
-  "before": { "status": "draft" },
-  "after": { "status": "pending_approval" },
+  "dimension": "governance_stage",
+  "before": { "governance_stage": "draft" },
+  "after": { "governance_stage": "pending_approval" },
   "trigger": "user_action"
 }
 ```
@@ -1231,19 +1311,19 @@ Collectoid uses **snapshot versioning** rather than diff-based versioning. Each 
 ```
 Collection (id: col-1)
   |
-  +-- Version 1 (initial): { datasets: [A, B], status: draft }
+  +-- Version 1 (initial): { datasets: [A, B], governance_stage: draft, operational_state: null }
   |     created_at: 2026-01-15T10:00:00Z
   |     created_by: jennifer.martinez
   |
-  +-- Version 2 (datasets_changed): { datasets: [A, B, C], status: draft }
+  +-- Version 2 (datasets_changed): { datasets: [A, B, C], governance_stage: draft, operational_state: null }
   |     created_at: 2026-01-16T14:00:00Z
   |     change_summary: "Added dataset DCODE-134"
   |
-  +-- Version 3 (aot_changed): { datasets: [A, B, C], aot_version: 2, status: pending_approval }
+  +-- Version 3 (aot_changed): { datasets: [A, B, C], aot_version: 2, governance_stage: pending_approval, operational_state: null }
   |     created_at: 2026-01-17T09:00:00Z
   |     change_summary: "Updated AoT to allow AI research; submitted for approval"
   |
-  +-- Version 4 (approval_decision): { datasets: [A, B, C], status: approved }
+  +-- Version 4 (approval_decision): { datasets: [A, B, C], governance_stage: approved, operational_state: provisioning }
         created_at: 2026-01-20T15:30:00Z
         change_summary: "All TA Lead approvals obtained"
 ```
@@ -1277,7 +1357,7 @@ A new version MUST be created when:
 | AoT terms changed | AoT + Collection | Both get new versions |
 | Users added or removed | Collection | [QUESTION] Or track only via membership table? |
 | Approval decision changes (rejected to approved) | Collection + AoT | Requires new TA Lead signature (VS2-335) |
-| Status transition | Collection | Records state change |
+| State transition (governance_stage or operational_state) | Collection | Records state change |
 | Metadata sync changes compliance status | Dataset | Auto-flag and version if in a collection |
 | Periodic review completed | Collection | Documents review outcome |
 
@@ -1441,7 +1521,7 @@ When a collection is approved and transitions to the provisioning phase, Collect
 | Q10 | Get version history for a collection | Medium | `collection_versions` | `idx_cv_collection_id` |
 | Q11 | List members of a collection | High | `collection_members` + `users` | `idx_cm_collection_id` |
 | Q12 | Duplicate detection across collections | Medium | `cv_datasets` | Composite query joining cv_datasets to find overlapping dataset sets |
-| Q13 | Dashboard: collections by status | Medium | `collections` | `idx_collections_status` |
+| Q13 | Dashboard: collections by state | Medium | `collections` | `idx_collections_governance_stage`, `idx_collections_operational_state` |
 | Q14 | Training compliance: users with incomplete training | Medium | `users` (training_status JSONB) | GIN on `training_status` |
 | Q15 | Access requests by status | Medium | `access_requests` | `idx_ar_status` |
 
@@ -1567,9 +1647,16 @@ PostgreSQL is the recommended option for its JSONB support, transactional integr
 -- ENUMS
 -- ============================================================
 
-CREATE TYPE collection_status AS ENUM (
-  'concept', 'draft', 'pending_approval', 'approved',
-  'provisioning', 'active', 'under_review', 'suspended', 'archived'
+CREATE TYPE governance_stage AS ENUM (
+  'concept', 'draft', 'pending_approval', 'approved', 'rejected'
+);
+
+CREATE TYPE operational_state AS ENUM (
+  'provisioning', 'live', 'suspended', 'decommissioned'
+);
+
+CREATE TYPE proposition_status AS ENUM (
+  'draft', 'submitted', 'approved', 'merged', 'rejected'
 );
 
 CREATE TYPE collection_request_type AS ENUM (
@@ -1646,7 +1733,7 @@ CREATE TYPE compliance_status AS ENUM (
 
 CREATE TYPE collection_version_change_type AS ENUM (
   'initial', 'datasets_changed', 'aot_changed', 'users_changed',
-  'approval_decision', 'metadata_update', 'periodic_review'
+  'approval_decision', 'metadata_update', 'periodic_review', 'state_transition'
 );
 
 -- ============================================================
@@ -1763,7 +1850,8 @@ CREATE TABLE dataset_categories (
 CREATE TABLE collections (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   current_version_id UUID,  -- FK added after collection_versions created
-  status            collection_status NOT NULL DEFAULT 'concept',
+  governance_stage  governance_stage NOT NULL DEFAULT 'concept',
+  operational_state operational_state,
   name              VARCHAR(500) NOT NULL,
   description       TEXT,
   request_type      collection_request_type NOT NULL DEFAULT 'new',
@@ -1776,6 +1864,23 @@ CREATE TABLE collections (
   published_at      TIMESTAMPTZ,
   archived_at       TIMESTAMPTZ,
   deleted_at        TIMESTAMPTZ
+);
+
+CREATE TABLE propositions (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  collection_id   UUID NOT NULL REFERENCES collections(id),
+  title           VARCHAR(500) NOT NULL,
+  description     TEXT,
+  type            VARCHAR(50) NOT NULL CHECK (type IN ('dataset_change', 'aot_change', 'user_change', 'mixed')),
+  status          proposition_status NOT NULL DEFAULT 'draft',
+  changes         JSONB NOT NULL,
+  created_by      UUID NOT NULL REFERENCES users(id),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  submitted_at    TIMESTAMPTZ,
+  merged_at       TIMESTAMPTZ,
+  decided_at      TIMESTAMPTZ,
+  decision_reason TEXT
 );
 
 CREATE TABLE collection_versions (
@@ -2025,11 +2130,18 @@ CREATE INDEX idx_child_datasets_status ON child_datasets(access_status);
 CREATE INDEX idx_data_categories_domain ON data_categories(domain);
 
 -- Collections
-CREATE INDEX idx_collections_status ON collections(status);
+CREATE INDEX idx_collections_governance_stage ON collections(governance_stage);
+CREATE INDEX idx_collections_operational_state ON collections(operational_state) WHERE operational_state IS NOT NULL;
 CREATE INDEX idx_collections_created_by ON collections(created_by);
 CREATE INDEX idx_collections_therapeutic_areas ON collections USING gin(therapeutic_areas);
 CREATE INDEX idx_collections_tags ON collections USING gin(tags);
 CREATE INDEX idx_collections_active ON collections(id) WHERE deleted_at IS NULL;
+
+-- Propositions
+CREATE INDEX idx_propositions_collection_id ON propositions(collection_id);
+CREATE INDEX idx_propositions_status ON propositions(status);
+CREATE INDEX idx_propositions_created_by ON propositions(created_by);
+CREATE INDEX idx_propositions_collection_status ON propositions(collection_id, status);
 
 -- Collection Versions
 CREATE INDEX idx_cv_collection_id ON collection_versions(collection_id);
@@ -2235,7 +2347,8 @@ For DocumentDB, the model is adapted to a document-oriented approach. Key differ
 {
   _id: ObjectId,
   current_version_number: Number,
-  status: String,
+  governance_stage: String,         // enum: concept, draft, pending_approval, approved, rejected
+  operational_state: String | null, // enum: provisioning, live, suspended, decommissioned (null until approved)
   name: String,
   description: String,
   request_type: String,
@@ -2255,6 +2368,30 @@ For DocumentDB, the model is adapted to a document-oriented approach. Key differ
     status: String,
     created_by: ObjectId
   }
+}
+
+// ─── propositions ───
+{
+  _id: ObjectId,
+  collection_id: ObjectId,    // ref: collections
+  title: String,
+  description: String,
+  type: String,               // enum: dataset_change, aot_change, user_change, mixed
+  status: String,             // enum: draft, submitted, approved, merged, rejected
+  changes: {                  // BSON document with proposed changes
+    datasets_added: [ObjectId],
+    datasets_removed: [ObjectId],
+    aot_changes: Object,
+    users_added: [{ user_id: ObjectId, collection_role: String }],
+    users_removed: [ObjectId]
+  },
+  created_by: ObjectId,
+  created_at: Date,
+  updated_at: Date,
+  submitted_at: Date,
+  merged_at: Date,
+  decided_at: Date,
+  decision_reason: String
 }
 
 // ─── collection_versions (separate collection for query efficiency) ───

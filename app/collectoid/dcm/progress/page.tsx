@@ -791,7 +791,7 @@ ${currentUser.email}`
 
           const tabs = [
             { id: "overview", label: "Overview", icon: Activity },
-            { id: "agreement", label: "Agreement of Terms", shortLabel: "AoT", icon: Shield },
+            { id: "agreement", label: "Data Use Terms", shortLabel: "AoT", icon: Shield },
             { id: "datasets", label: "Dataset Status", shortLabel: "Datasets", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
             { id: "users", label: "User Status", shortLabel: "Users", icon: Users },
             { id: "timeline", label: "Timeline", icon: TrendingUp },
@@ -1281,7 +1281,7 @@ ${currentUser.email}`
         </div>
       )}
 
-      {/* Agreement of Terms Tab */}
+      {/* Data Use Terms Tab */}
       {activeTab === "agreement" && (
         <div className="space-y-6 animate-in fade-in duration-300">
           {collection.agreementOfTerms ? (
@@ -1299,7 +1299,7 @@ ${currentUser.email}`
                         <Shield className="size-7 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-light text-neutral-900 mb-1">Agreement of Terms</h2>
+                        <h2 className="text-2xl font-light text-neutral-900 mb-1">Data Use Terms</h2>
                         <p className="text-sm font-light text-neutral-500">
                           Version {collection.agreementOfTerms.version} • Created {collection.agreementOfTerms.createdAt.toLocaleDateString()}
                         </p>
@@ -1647,9 +1647,9 @@ ${currentUser.email}`
                 <div className="flex size-16 items-center justify-center rounded-2xl bg-neutral-100 mx-auto mb-4">
                   <Shield className="size-8 text-neutral-400" />
                 </div>
-                <h3 className="text-xl font-light text-neutral-900 mb-2">No Agreement of Terms</h3>
+                <h3 className="text-xl font-light text-neutral-900 mb-2">No Data Use Terms</h3>
                 <p className="text-sm font-light text-neutral-600 max-w-md mx-auto">
-                  This collection does not have an Agreement of Terms defined. This may be because it was created before the AoT feature was available.
+                  This collection does not have a Data Use Terms defined. This may be because it was created before the AoT feature was available.
                 </p>
               </CardContent>
             </Card>

@@ -5,45 +5,83 @@
 
 ---
 
-## 1. Collection Status Glossary
+## 1. Collection State Model
 
-Every collection has a **status** that determines its visibility, editability, and available actions. Statuses are grouped into two tiers: **Prototype** (what we're building now) and **Production** (future, requires full governance implementation).
+Every collection's state is described by **two independent dimensions** rather than a single status field. This allows governance and operations to be tracked separately. In-flight modifications are tracked via **propositions** — a separate entity with its own lifecycle. The dimensions are grouped into two tiers: **Prototype** (what we're building now) and **Production** (future, requires full governance and provisioning implementation).
 
-### Prototype Statuses
+### Prototype State Model
 
-These are the statuses we're implementing in the current prototype. The simplified lifecycle is:
+In the prototype we implement a simplified subset of each dimension:
 
 ```
-concept → draft → active
+governance_stage:   concept → draft → approved
+operational_state:  (not implemented — approval jumps straight to "live" mock)
 ```
 
-| Status | Definition | Visibility | Editable | Transitions To |
-|--------|-----------|------------|----------|----------------|
+#### Dimension 1 — `governance_stage` (Prototype)
+
+| Stage | Definition | Visibility | Editable | Transitions To |
+|-------|-----------|------------|----------|----------------|
 | **`concept`** | Private workspace. Only the creator (DCM) can see it. A lightweight starting point created with just a title and optional description. All workspace sections (Datasets, Activities, Terms, Roles) are editable in any order via the hub-and-spoke workspace. | Creator only | All sections via workspace | `draft` |
-| **`draft`** | Visible in the collections browser with a prominent "DRAFT" banner. Searchable by all authenticated users. All collection data (datasets, activities, terms, roles) is editable via the collection detail page's edit buttons. The collection has been validated (3 required sections complete) and reviewed via the Access Provisioning Breakdown. Not yet approved. | All authenticated users | All sections via detail page edit buttons | `active` |
-| **`active`** | Live collection. Data access is provisioned (mocked in prototype). Appears in the collections browser without a DRAFT badge. In production this becomes "management mode" where studies can be added/removed within approved scope. | All authenticated users | Read-only in prototype | _(terminal in prototype)_ |
+| **`draft`** | Visible in the collections browser with a prominent "DRAFT" banner. Searchable by all authenticated users. All collection data (datasets, activities, terms, roles) is editable via the collection detail page's edit buttons. The collection has been validated (3 required sections complete) and reviewed via the Access Provisioning Breakdown. Not yet approved. | All authenticated users | All sections via detail page edit buttons | `approved` |
+| **`approved`** | All governance approvals obtained (simplified in prototype — single click). Appears in the collections browser without a DRAFT badge. In production, approval unlocks the `operational_state` dimension. | All authenticated users | Read-only in prototype | _(terminal in prototype)_ |
 
-### Production Statuses (Future)
+### Production State Model (Future)
 
-These statuses will be implemented when the full governance workflow is built. The production lifecycle is:
+In production, both dimensions are active. A collection's full state is the combination of its `governance_stage` and `operational_state`. In-flight modifications are tracked via **propositions** — a separate entity with its own lifecycle.
 
 ```
-concept → draft → pending_approval → approved → provisioning → active
-                                   ↘ rejected → draft (revision)
-active → under_review → active / archived
-active → suspended → active / archived
-active → archived
+governance_stage:    concept → draft → pending_approval → approved
+                                                        ↘ rejected → draft (revision)
+
+operational_state:   provisioning → live → suspended → live (after resolution)
+(unlocked once                      live → decommissioned
+ approved)                          suspended → decommissioned
 ```
+
+#### Dimension 1 — `governance_stage` (Production)
+
+Tracks the collection through authoring and governance approval. This dimension must reach `approved` before the collection can be provisioned.
+
+| Stage | Definition | Visibility | Editable | Transitions To |
+|-------|-----------|------------|----------|----------------|
+| **`concept`** | Private workspace. Only the creator (DCM) can see it. A lightweight starting point created with just a title and optional description. | Creator only | All sections via workspace | `draft` |
+| **`draft`** | Visible in the collections browser with a prominent "DRAFT" badge. Searchable by all authenticated users. All collection data is editable. The collection has been validated (3 required sections complete) and reviewed via the Access Provisioning Breakdown. | All authenticated users | All sections via detail page edit buttons | `pending_approval` |
+| **`pending_approval`** | Submitted for GPT/TALT review. Approval requests are routed per therapeutic area. The collection is read-only for the DCM while approvers review. Each TA Lead sees only studies in their therapeutic area. Cross-TA collections follow the "all or nothing" rule. | All authenticated users | Read-only | `approved`, `rejected` |
+| **`approved`** | All required governance approvals have been received. Minimum information gates verified. The collection is ready for automated provisioning. Unlocks the `operational_state` dimension. | All authenticated users | Read-only | _(governance complete — lifecycle continues via operational_state)_ |
+| **`rejected`** | One or more approvers rejected the collection. The DCM is notified with the rejection reason. The collection can be revised and resubmitted. | All authenticated users | Editable (to address rejection) | `draft` (after revision) |
+
+#### Dimension 2 — `operational_state` (Production)
+
+Tracks the infrastructure and access lifecycle. Only becomes active once `governance_stage` reaches `approved`.
+
+| State | Definition | Visibility | Editable | Transitions To |
+|-------|-----------|------------|----------|----------------|
+| **`provisioning`** | Immuta policies and Starburst access are being generated automatically via SQS. No manual intervention required. Entered automatically when `governance_stage` becomes `approved`. | All authenticated users | Read-only | `live` |
+| **`live`** | Fully provisioned. Users have data access. Appears in the collections browser with an "Active" badge. This is "management mode" where studies can be added/removed within approved scope via propositions. | All authenticated users | Management-mode edits (via propositions) | `suspended`, `decommissioned` |
+| **`suspended`** | Emergency stop. All active access is immediately revoked due to a compliance issue, metadata invalidation, or consent withdrawal. Stakeholders are notified. | All authenticated users | Read-only | `live` (after resolution), `decommissioned` |
+| **`decommissioned`** | Permanently retired and soft-deleted. All access has been revoked. The collection is retained for audit purposes and appears in search results with an "Archived" badge. Completely read-only. | All authenticated users | Read-only | None (terminal state) |
+
+#### Propositions (Production)
+
+Propositions are a separate entity that tracks in-flight change proposals against a live collection. Whether a collection has open propositions is derived via query, not stored as state on the collection. Multiple propositions per collection are allowed concurrently; conflicts are resolved at merge time (like git branches).
+
+**Proposition lifecycle:**
+
+```
+draft → submitted → approved → merged
+                  → rejected
+```
+
+Simple changes (within approved OAC scope) may skip approval and go straight from `submitted` to `merged`.
 
 | Status | Definition | Visibility | Editable | Transitions To |
 |--------|-----------|------------|----------|----------------|
-| **`pending_approval`** | Submitted for TA Lead approval. Approval requests are routed per therapeutic area. The collection is read-only for the DCM while approvers review. Each TA Lead sees only studies in their therapeutic area. Cross-TA collections follow the "all or nothing" rule. | All authenticated users | Read-only | `approved`, `rejected` |
-| **`rejected`** | One or more TA Leads rejected the collection. The DCM is notified with the rejection reason. The collection can be revised and resubmitted, which returns it to `draft` status. | All authenticated users | Editable (to address rejection) | `draft` (after revision) |
-| **`approved`** | All required TA Lead approvals have been received. Minimum information gates verified. The collection is ready for automated provisioning. | All authenticated users | Read-only | `provisioning` |
-| **`provisioning`** | Immuta policies and Starburst access are being configured automatically via SQS. No manual intervention required. | All authenticated users | Read-only | `active` |
-| **`under_review`** | A periodic quarterly review or metadata change investigation is in progress. DDOs are making per-study opt-in/opt-out decisions. | All authenticated users | Limited (review-specific fields only) | `active`, `archived` |
-| **`suspended`** | Temporarily halted due to a compliance issue, metadata invalidation, or consent withdrawal. All active access is revoked. Stakeholders are notified. | All authenticated users | Read-only | `active` (after resolution), `archived` |
-| **`archived`** | Decommissioned. All access has been revoked. The collection is retained in the system for audit purposes. It appears in search results with an "Archived" badge and is completely read-only. | All authenticated users | Read-only | None (terminal state) |
+| **`draft`** | The DCM is preparing changes to the collection (e.g., adding/removing studies, updating terms). The proposition is visible but not yet submitted. | Collection members | Fully editable | `submitted` |
+| **`submitted`** | The proposition has been submitted for review. The system evaluates whether governance re-approval is required. | All authenticated users | Read-only | `approved`, `merged` (auto), `rejected` |
+| **`approved`** | The proposition has received governance re-approval and is ready to merge. | All authenticated users | Read-only | `merged` |
+| **`merged`** | The proposition has been applied to the collection. The collection continues under its updated scope. | All authenticated users | Read-only (archived) | _(terminal)_ |
+| **`rejected`** | The proposition was rejected by governance. The collection continues under its existing scope. | All authenticated users | Read-only | _(terminal)_ |
 
 ---
 
@@ -61,7 +99,7 @@ The DCM lands in the **workspace** — a hub-and-spoke layout with section cards
 
 - **Datasets** (required) — browse, filter, and select studies from the ROAM-enriched catalog
 - **Activities & Purpose** (required) — define permitted activities across 4 categories
-- **Agreement of Terms** (required) — configure primary use, beyond primary use, publication rights
+- **Data Use Terms** (required) — configure primary use, beyond primary use, publication rights
 - **Access & Users** (optional) — select Immuta role groups and individual users who should receive data access
 
 Sections can be completed in any order. A sidebar stepper tracks progress. Background AI analysis runs automatically and suggests filters/keywords based on the collection's title and description.
@@ -76,7 +114,7 @@ The **Access Provisioning Breakdown** page shows:
 
 - Collection details (name, description, target community — editable)
 - Summary metrics (dataset count, activity count, user count)
-- Agreement of Terms summary
+- Data Use Terms summary
 - The 20/30/40/10 access breakdown:
   - Already Open (green) — no action needed
   - Awaiting Policy (theme color) — instant approval
@@ -104,7 +142,7 @@ Clicking a draft collection from the browser opens the **collection detail page*
 | Overview | Collection summary, status badge, key metrics | Title, description |
 | Datasets | List of selected datasets with metadata | "Edit Datasets" button |
 | Activities | Selected activities grouped by category | "Edit Activities" button |
-| Terms | Agreement of Terms summary | "Edit Terms" button |
+| Terms | Data Use Terms summary | "Edit Terms" button |
 | Roles | Assigned roles with user details | "Edit Roles" button |
 | Provisioning | 20/30/40/10 access breakdown | Read-only |
 | Timeline | Chronological events (concept created, promoted, edits) | Read-only |
@@ -145,7 +183,7 @@ The collection is now **active**. It:
 - [x] Dataset browser & selection (ROAM fields, multi-dimensional filters, search, pagination)
 - [x] Dataset refine selection (configurable columns modal, sort, filter, remove)
 - [x] Activities & purpose section (10+ activities in 4 categories, permitted/not-permitted flags)
-- [x] Agreement of terms section (primary use, beyond primary use, publication, conflict detection)
+- [x] Data Use Terms section (primary use, beyond primary use, publication, conflict detection)
 - [x] Roles & approvers section (DCL, DDO, VT Lead with Azure AD mock search)
 - [x] Promote to Draft button (validation gate: 3 required sections)
 - [x] Review / Access Provisioning Breakdown page (20/30/40/10 split, AoT summary, training)
@@ -191,7 +229,7 @@ The collection is now **active**. It:
 | 3.2 | Overview tab: collection summary, status badge, key metrics | Datasets count, activities count, roles count |
 | 3.3 | Datasets tab: list of selected datasets with metadata + "Edit Datasets" button | Reuse dataset table from workspace |
 | 3.4 | Activities tab: list of selected activities by category + "Edit Activities" button | Group by 4 categories |
-| 3.5 | Terms tab: Agreement of Terms summary + "Edit Terms" button | Reuse AoT display from review page |
+| 3.5 | Terms tab: Data Use Terms summary + "Edit Terms" button | Reuse AoT display from review page |
 | 3.6 | Roles tab: assigned roles with user details + "Edit Roles" button | Show DCL, DDO, VT Lead |
 | 3.7 | Access Provisioning tab: 20/30/40/10 breakdown | Reuse review page content |
 | 3.8 | Timeline tab: chronological events | Concept created, promoted to draft, edits |

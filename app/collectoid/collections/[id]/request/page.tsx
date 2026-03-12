@@ -254,7 +254,7 @@ export default function RequestAccessPage() {
                     Intent Mismatch Detected
                   </h3>
                   <p className="text-sm font-light text-neutral-600">
-                    Your selected intents don&apos;t match the collection&apos;s Agreement of Terms.
+                    Your selected intents don&apos;t match the collection&apos;s Data Use Terms.
                   </p>
                 </div>
               </div>
@@ -298,7 +298,7 @@ export default function RequestAccessPage() {
                   <FileEdit className="size-4 mr-3" />
                   <div className="text-left">
                     <div className="font-normal">Request collection modification</div>
-                    <div className="text-xs text-amber-600">Ask DCM to update the Agreement of Terms</div>
+                    <div className="text-xs text-amber-600">Ask DCM to update the Data Use Terms</div>
                   </div>
                 </Button>
 
@@ -554,7 +554,7 @@ export default function RequestAccessPage() {
                       scheme.from.replace("from-", "text-")
                     )}
                   >
-                    Agreement of Terms
+                    Data Use Terms
                   </button>
                   .
                 </Label>
@@ -575,7 +575,7 @@ export default function RequestAccessPage() {
                   </h4>
                   <p className="text-sm font-light text-amber-700 mb-3">
                     {intentMismatches.length} of your selected intents {intentMismatches.length === 1 ? "doesn't" : "don't"} match
-                    the collection&apos;s Agreement of Terms. You can still submit, but you&apos;ll be prompted to resolve the mismatch.
+                    the collection&apos;s Data Use Terms. You can still submit, but you&apos;ll be prompted to resolve the mismatch.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {intentMismatches.map((mismatch) => (

@@ -72,7 +72,6 @@ import {
   CURRENT_USER_ID,
   getMyDraftCollections,
   getMyConceptCollections,
-  getMyDraftStageCollections,
 } from "@/lib/dcm-mock-data"
 
 // Available user groups for filtering
@@ -158,9 +157,7 @@ export default function CollectionsBrowserVariation1() {
 
   // Draft collections filter
   const [showMyDrafts, setShowMyDrafts] = useState(false)
-  const myDraftsCount = getMyDraftCollections().length
-  const myConceptsCount = getMyConceptCollections().length
-  const myDraftStageCount = getMyDraftStageCollections().length
+  const myDraftsCount = getMyConceptCollections().length
 
   // Workspace mode is now handled by /dcm/create/workspace/datasets
   // This page is purely for browsing collections, not dataset selection
@@ -357,10 +354,10 @@ export default function CollectionsBrowserVariation1() {
 
   // Apply filters
   const filteredCollections = useMemo(() => {
-    // First filter by draft status
+    // "My Private" shows concept-stage collections only (concepts are private, drafts are public)
     const baseCollections = showMyDrafts
-      ? COLLECTIONS_WITH_AOT.filter(c => c.isDraft && c.creatorId === CURRENT_USER_ID)
-      : COLLECTIONS_WITH_AOT.filter(c => !c.isDraft)
+      ? COLLECTIONS_WITH_AOT.filter(c => c.status === "concept" && c.creatorId === CURRENT_USER_ID)
+      : COLLECTIONS_WITH_AOT.filter(c => c.status !== "concept")
 
     let filtered = filterCollections(baseCollections as unknown as typeof MOCK_COLLECTIONS, {
       search: searchQuery,
@@ -616,14 +613,14 @@ export default function CollectionsBrowserVariation1() {
               {isWorkspaceMode
                 ? "Select Datasets"
                 : showMyDrafts
-                ? "My Private Collections"
+                ? "My Concepts"
                 : "Browse Collections"}
             </h1>
             <p className="text-base font-light text-neutral-600">
               {isWorkspaceMode
                 ? "Choose datasets to include in your collection concept"
                 : showMyDrafts
-                ? `${filteredCollections.length} private collection${filteredCollections.length !== 1 ? 's' : ''} — concepts and drafts only visible to you`
+                ? `${filteredCollections.length} private concept${filteredCollections.length !== 1 ? 's' : ''} — only visible to you until promoted to draft`
                 : "Explore curated data collections and find what matches your research needs"
               }
             </p>
@@ -724,7 +721,7 @@ export default function CollectionsBrowserVariation1() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FileEdit className={cn("size-4", showMyDrafts ? "text-amber-600" : "text-neutral-600")} />
-                      <h3 className="text-sm font-normal text-neutral-900">My Private Collections</h3>
+                      <h3 className="text-sm font-normal text-neutral-900">My Concepts</h3>
                       {myDraftsCount > 0 && (
                         <Badge className="ml-auto bg-amber-100 text-amber-800 border border-amber-200 font-light text-xs">
                           {myDraftsCount}
@@ -748,7 +745,7 @@ export default function CollectionsBrowserVariation1() {
                       ) : (
                         <>
                           <FileEdit className="size-4" />
-                          View My Private
+                          View My Concepts
                         </>
                       )}
                     </button>
@@ -902,29 +899,13 @@ export default function CollectionsBrowserVariation1() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <FileEdit className={cn("size-4", showMyDrafts ? "text-amber-600" : "text-neutral-600")} />
-                  <h3 className="text-sm font-normal text-neutral-900">My Private Collections</h3>
+                  <h3 className="text-sm font-normal text-neutral-900">My Concepts</h3>
                   {myDraftsCount > 0 && (
                     <Badge className="ml-auto bg-amber-100 text-amber-800 border border-amber-200 font-light text-xs">
                       {myDraftsCount}
                     </Badge>
                   )}
                 </div>
-                {myDraftsCount > 0 && (
-                  <div className="flex items-center gap-2 mb-3 text-xs font-light text-neutral-500">
-                    {myConceptsCount > 0 && (
-                      <span className="flex items-center gap-1">
-                        <span className="size-2 rounded-full bg-purple-400" />
-                        {myConceptsCount} concept{myConceptsCount !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {myDraftStageCount > 0 && (
-                      <span className="flex items-center gap-1">
-                        <span className="size-2 rounded-full bg-amber-400" />
-                        {myDraftStageCount} draft{myDraftStageCount !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </div>
-                )}
                 <button
                   onClick={() => setShowMyDrafts(!showMyDrafts)}
                   className={cn(
@@ -942,7 +923,7 @@ export default function CollectionsBrowserVariation1() {
                   ) : (
                     <>
                       <FileEdit className="size-4" />
-                      View My Private
+                      View My Concepts
                     </>
                   )}
                 </button>
@@ -2303,6 +2284,16 @@ export default function CollectionsBrowserVariation1() {
                             <h3 className="text-base font-normal text-neutral-900 line-clamp-1">
                               {collection.name}
                             </h3>
+                            {collection.status === "draft" && (
+                              <Badge className="text-xs font-light py-0.5 px-2 bg-amber-50 text-amber-700 border border-amber-200">
+                                Draft
+                              </Badge>
+                            )}
+                            {collection.status === "concept" && (
+                              <Badge className="text-xs font-light py-0.5 px-2 bg-neutral-100 text-neutral-600 border border-neutral-200">
+                                Concept
+                              </Badge>
+                            )}
                           </div>
                           <p className="text-xs font-light text-neutral-600 line-clamp-2 mb-3">
                             {collection.description}
@@ -2507,6 +2498,16 @@ export default function CollectionsBrowserVariation1() {
                               <span className="text-sm font-normal text-neutral-900">
                                 {collection.name}
                               </span>
+                              {collection.status === "draft" && (
+                                <Badge className="text-xs font-light py-0.5 px-1.5 bg-amber-50 text-amber-700 border border-amber-200">
+                                  Draft
+                                </Badge>
+                              )}
+                              {collection.status === "concept" && (
+                                <Badge className="text-xs font-light py-0.5 px-1.5 bg-neutral-100 text-neutral-600 border border-neutral-200">
+                                  Concept
+                                </Badge>
+                              )}
                             </div>
                           </td>
                           <td className="px-6 py-4">

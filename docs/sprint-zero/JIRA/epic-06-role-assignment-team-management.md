@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-040 through FR-COL-043, VS2-330
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 > **Note:** This epic covers *governance role assignment* (DCL, DDO, Collection Leader) and team management for post-draft collections. *Access scope definition* — selecting which Immuta role groups and individual users should receive data access — is handled during collection creation in the workspace "Access & Users" section (see Epic 1, story 1.16).
 
 ---
@@ -17,6 +15,7 @@
 **As a** DCM, **I want to** assign at least one Data Consumer Lead and one Data Owner to a collection, **so that** governance responsibility is clear.
 
 **BRD Refs:** FR-COL-040
+
 
 > **Note:** Initial access scope definition during collection creation happens in the workspace Access & Users section (see Epic 1, story 1.16). This story covers governance role management post-draft.
 
@@ -52,6 +51,7 @@ Feature: Assign Data Consumer Lead & Data Owner
 
 **BRD Refs:** FR-COL-043
 
+
 > **Note:** Initial access scope definition during collection creation happens in the workspace Access & Users section (see Epic 1, story 1.16). This story covers governance role management post-draft.
 
 ### Acceptance Criteria
@@ -78,6 +78,7 @@ Feature: Nominate Collection Leader
 **As a** DCM, **I want to** create virtual teams (user groups) linked to a collection, **so that** access can be managed at the group level.
 
 **BRD Refs:** FR-COL-041
+
 
 ### Acceptance Criteria
 
@@ -145,6 +146,7 @@ Feature: Azure AD User Search
 **As the** system, **I want to** automatically update collection access when team membership changes in the source system (Azure AD), **so that** permissions stay synchronized.
 
 **BRD Refs:** FR-COL-042
+
 
 ### Acceptance Criteria
 

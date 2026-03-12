@@ -12,7 +12,7 @@ exclude datasets in an Open Data Collection.*
 +--------------------------------------------------------+
 | Document Control                                       |
 +========================+===============================+
-| *Document type*        | *Agreement of Terms for Open  |
+| *Document type*        | *Data Use Terms for Open  |
 |                        | Data Access Collection*       |
 +------------------------+-------------------------------+
 | *Description of        | *N/A is a template*           |

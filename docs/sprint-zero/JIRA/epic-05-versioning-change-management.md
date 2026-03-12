@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-050 through FR-COL-055, VS2-335
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## 5.1 - Automatic Version Creation on Change `[L]`
@@ -15,6 +13,7 @@
 **As the** system, **I want to** create a new immutable version snapshot whenever a collection is meaningfully changed, **so that** there is a complete history.
 
 **BRD Refs:** FR-COL-050
+
 
 ### Acceptance Criteria
 
@@ -79,6 +78,7 @@ Feature: Version History Browser
 
 **BRD Refs:** FR-COL-055
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -109,6 +109,7 @@ Feature: Version Comparison
 
 **BRD Refs:** FR-COL-051
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -134,6 +135,7 @@ Feature: Change Artifacts
 **As the** system, **I want to** create a new version and require fresh TA Lead signatures when a study's decision status changes, **so that** governance remains valid.
 
 **BRD Refs:** FR-COL-052
+
 
 ### Acceptance Criteria
 
@@ -165,6 +167,7 @@ Feature: Re-Approval Trigger on Decision Change
 
 **BRD Refs:** FR-COL-053
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -189,6 +192,7 @@ Feature: Notify Users on Version Changes
 **As a** DCM, **I want to** initiate and manage periodic (quarterly) review cycles for active collections, **so that** governance stays current.
 
 **BRD Refs:** FR-COL-054
+
 
 ### Acceptance Criteria
 

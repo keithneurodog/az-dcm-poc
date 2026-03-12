@@ -73,6 +73,8 @@ import {
   AlertTriangle,
   Target,
   Database,
+  ClipboardList,
+  FileEdit,
 } from "lucide-react"
 
 // Mock AD email suggestions
@@ -890,7 +892,7 @@ ${currentUser.email}`
 
           const tabs = [
             { id: "overview", label: "Overview", icon: Activity },
-            { id: "agreement", label: "Agreement of Terms", shortLabel: "AoT", icon: Shield },
+            { id: "agreement", label: "Data Use Terms", shortLabel: "AoT", icon: Shield },
             { id: "datasets", label: "Dataset Status", shortLabel: "Datasets", icon: FileText, badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined, badgeColor: "amber" },
             { id: "users", label: "User Status", shortLabel: "Users", icon: Users },
             { id: "timeline", label: "Timeline", icon: TrendingUp },
@@ -946,60 +948,68 @@ ${currentUser.email}`
 
         {/* Edit Collection Grid for Drafts */}
         {isDraft && (
-          <Card className="border-neutral-200 rounded-2xl overflow-hidden">
-            <CardContent className="p-5">
-              <h3 className="text-base font-normal text-neutral-900 mb-4">Edit Collection</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => router.push("/collectoid-v2/dcm/create/workspace/datasets")}
-                  className="flex items-center gap-3 p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-left"
-                >
-                  <Database className="size-5 text-neutral-600" />
-                  <div>
-                    <p className="text-sm font-normal text-neutral-900">Edit Datasets</p>
-                    <p className="text-xs font-light text-neutral-500">Browse or search catalog</p>
-                  </div>
-                  <ChevronRight className="size-4 text-neutral-400 ml-auto" />
-                </button>
-                <button
-                  onClick={() => router.push("/collectoid-v2/dcm/create/workspace/activities")}
-                  className="flex items-center gap-3 p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-left"
-                >
-                  <Target className="size-5 text-neutral-600" />
-                  <div>
-                    <p className="text-sm font-normal text-neutral-900">Edit Activities</p>
-                    <p className="text-xs font-light text-neutral-500">Define data usage</p>
-                  </div>
-                  <ChevronRight className="size-4 text-neutral-400 ml-auto" />
-                </button>
-                <button
-                  onClick={() => router.push("/collectoid-v2/dcm/create/workspace/terms")}
-                  className="flex items-center gap-3 p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-left"
-                >
-                  <Shield className="size-5 text-neutral-600" />
-                  <div>
-                    <p className="text-sm font-normal text-neutral-900">Edit Terms</p>
-                    <p className="text-xs font-light text-neutral-500">Usage permissions</p>
-                  </div>
-                  <ChevronRight className="size-4 text-neutral-400 ml-auto" />
-                </button>
-                <button
-                  onClick={() => router.push("/collectoid-v2/dcm/create/workspace/roles")}
-                  className="flex items-center gap-3 p-4 rounded-xl border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all text-left"
-                >
-                  <Users className="size-5 text-neutral-600" />
-                  <div>
-                    <p className="text-sm font-normal text-neutral-900">Edit Access & Users</p>
-                    <p className="text-xs font-light text-neutral-500">Immuta role groups</p>
-                  </div>
-                  <ChevronRight className="size-4 text-neutral-400 ml-auto" />
-                </button>
+          <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 px-6 py-5">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-amber-100">
+                <FileEdit className="size-6 text-amber-600" />
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex-1">
+                <h3 className="text-lg font-normal text-amber-900">Edit Collection</h3>
+                <p className="text-sm font-light text-amber-700">
+                  Update any section of this draft before submitting for approval
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => router.push("/collectoid-v2/dcm/create/workspace/datasets")}
+                className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-white/60 hover:bg-white transition-all text-left"
+              >
+                <Database className="size-5 text-amber-600" />
+                <div>
+                  <p className="text-sm font-normal text-neutral-900">Edit Datasets</p>
+                  <p className="text-xs font-light text-neutral-500">Browse or search catalog</p>
+                </div>
+                <ChevronRight className="size-4 text-neutral-400 ml-auto" />
+              </button>
+              <button
+                onClick={() => router.push("/collectoid-v2/dcm/create/workspace/activities")}
+                className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-white/60 hover:bg-white transition-all text-left"
+              >
+                <Target className="size-5 text-amber-600" />
+                <div>
+                  <p className="text-sm font-normal text-neutral-900">Edit Activities</p>
+                  <p className="text-xs font-light text-neutral-500">Define data usage</p>
+                </div>
+                <ChevronRight className="size-4 text-neutral-400 ml-auto" />
+              </button>
+              <button
+                onClick={() => router.push("/collectoid-v2/dcm/create/workspace/terms")}
+                className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-white/60 hover:bg-white transition-all text-left"
+              >
+                <Shield className="size-5 text-amber-600" />
+                <div>
+                  <p className="text-sm font-normal text-neutral-900">Edit Terms</p>
+                  <p className="text-xs font-light text-neutral-500">Usage permissions</p>
+                </div>
+                <ChevronRight className="size-4 text-neutral-400 ml-auto" />
+              </button>
+              <button
+                onClick={() => router.push("/collectoid-v2/dcm/create/workspace/roles")}
+                className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-white/60 hover:bg-white transition-all text-left"
+              >
+                <Users className="size-5 text-amber-600" />
+                <div>
+                  <p className="text-sm font-normal text-neutral-900">Edit Access & Users</p>
+                  <p className="text-xs font-light text-neutral-500">Immuta role groups</p>
+                </div>
+                <ChevronRight className="size-4 text-neutral-400 ml-auto" />
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* Smart Recommendations Panel */}
+        {/* Summary Panel */}
         {recommendations.length > 0 && (
           <Card className={cn(
             "border-2 rounded-2xl overflow-hidden",
@@ -1014,19 +1024,19 @@ ${currentUser.email}`
                   scheme.from,
                   scheme.to
                 )}>
-                  <Sparkles className="size-6" strokeWidth={1.5} />
+                  <ClipboardList className="size-6" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-normal text-neutral-900 mb-1">
-                    Smart Recommendations
+                    Summary
                   </h3>
                   <p className="text-sm font-light text-neutral-600">
-                    AI-powered suggestions based on collection status
+                    Status overview and next steps
                   </p>
                 </div>
               </div>
 
-              {/* AI Summary */}
+              {/* Summary */}
               <div className="mb-4 p-4 rounded-xl bg-white border border-neutral-200">
                 <p className="text-sm font-light text-neutral-700 leading-relaxed">
                   {(() => {
@@ -1069,6 +1079,17 @@ ${currentUser.email}`
                       summary = `This collection is awaiting approval from governance teams before provisioning can begin. `
                       summary += `${totalApprovals} approval${totalApprovals > 1 ? 's are' : ' is'} currently pending. `
                       summary += `Expected review time is ${collection.approvalRequests[0]?.estimatedDays || '2-5 days'}.`
+                    } else if (collection.status === "draft") {
+                      summary = `This collection contains ${collection.totalDatasets} dataset${collection.totalDatasets !== 1 ? 's' : ''} and is ready for team review. `
+                      summary += `Based on the current access breakdown, ${collection.accessBreakdown.immediate}% of data is already open and ${collection.accessBreakdown.instantGrant}% can be granted instantly once approved. `
+                      if (collection.accessBreakdown.pendingApproval > 30) {
+                        summary += `Note that ${collection.accessBreakdown.pendingApproval}% of access will require governance approval, which may extend the provisioning timeline.`
+                      } else {
+                        summary += `The majority of access can be provisioned quickly once the collection moves to approval.`
+                      }
+                    } else {
+                      summary = `This collection includes ${collection.totalDatasets} dataset${collection.totalDatasets !== 1 ? 's' : ''} across ${collection.therapeuticAreas?.length || 0} therapeutic area${(collection.therapeuticAreas?.length || 0) !== 1 ? 's' : ''}. `
+                      summary += `${collection.accessBreakdown.immediate + collection.accessBreakdown.instantGrant}% of access can be provisioned automatically, with the remaining ${collection.accessBreakdown.pendingApproval + collection.accessBreakdown.dataDiscovery}% requiring further action.`
                     }
 
                     return summary
@@ -1438,7 +1459,7 @@ ${currentUser.email}`
         </div>
       )}
 
-      {/* Agreement of Terms Tab */}
+      {/* Data Use Terms Tab */}
       {activeTab === "agreement" && (
         <div className="space-y-6 animate-in fade-in duration-300">
           {collection.agreementOfTerms ? (
@@ -1456,7 +1477,7 @@ ${currentUser.email}`
                         <Shield className="size-7 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-light text-neutral-900 mb-1">Agreement of Terms</h2>
+                        <h2 className="text-2xl font-light text-neutral-900 mb-1">Data Use Terms</h2>
                         <p className="text-sm font-light text-neutral-500">
                           Version {collection.agreementOfTerms.version} • Created {new Date(collection.agreementOfTerms.createdAt).toLocaleDateString()}
                         </p>
@@ -1804,9 +1825,9 @@ ${currentUser.email}`
                 <div className="flex size-16 items-center justify-center rounded-2xl bg-neutral-100 mx-auto mb-4">
                   <Shield className="size-8 text-neutral-400" />
                 </div>
-                <h3 className="text-xl font-light text-neutral-900 mb-2">No Agreement of Terms</h3>
+                <h3 className="text-xl font-light text-neutral-900 mb-2">No Data Use Terms</h3>
                 <p className="text-sm font-light text-neutral-600 max-w-md mx-auto">
-                  This collection does not have an Agreement of Terms defined. This may be because it was created before the AoT feature was available.
+                  This collection does not have a Data Use Terms defined. This may be because it was created before the AoT feature was available.
                 </p>
               </CardContent>
             </Card>
@@ -1911,32 +1932,46 @@ ${currentUser.email}`
                   </Card>
                 )}
 
-                {/* Summary Cards */}
-                <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                  <Card className="border-neutral-200 rounded-xl">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-neutral-900 mb-1">{collection.totalDatasets}</p>
-                      <p className="text-xs font-light text-neutral-600">Total Datasets</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-green-200 rounded-xl bg-green-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-green-900 mb-1">{statusCounts.accessible}</p>
-                      <p className="text-xs font-light text-green-700">Accessible Now</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-blue-200 rounded-xl bg-blue-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-blue-900 mb-1">{statusCounts.provisioning}</p>
-                      <p className="text-xs font-light text-blue-700">Provisioning</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-amber-200 rounded-xl bg-amber-50">
-                    <CardContent className="p-4">
-                      <p className="text-3xl font-light text-amber-900 mb-1">{statusCounts.pending}</p>
-                      <p className="text-xs font-light text-amber-700">Pending Approval</p>
-                    </CardContent>
-                  </Card>
+                {/* Summary Panel */}
+                <div className="rounded-2xl border border-neutral-200 p-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <h3 className="text-lg font-normal text-neutral-900">{collection.totalDatasets} Datasets</h3>
+                      <p className="text-sm font-light text-neutral-500">Access status across this collection</p>
+                    </div>
+                  </div>
+
+                  {/* Stacked bar */}
+                  <div className="h-3 rounded-full overflow-hidden flex mb-5">
+                    {statusCounts.accessible > 0 && (
+                      <div className="bg-emerald-500 transition-all" style={{ width: `${(statusCounts.accessible / collection.totalDatasets) * 100}%` }} />
+                    )}
+                    {statusCounts.provisioning > 0 && (
+                      <div className="bg-blue-500 transition-all" style={{ width: `${(statusCounts.provisioning / collection.totalDatasets) * 100}%` }} />
+                    )}
+                    {statusCounts.pending > 0 && (
+                      <div className="bg-amber-400 transition-all" style={{ width: `${(statusCounts.pending / collection.totalDatasets) * 100}%` }} />
+                    )}
+                  </div>
+
+                  {/* Legend row */}
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <div className="size-2.5 rounded-full bg-emerald-500" />
+                      <span className="text-sm font-light text-neutral-600">Accessible</span>
+                      <span className="text-sm font-normal text-neutral-900">{statusCounts.accessible}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="size-2.5 rounded-full bg-blue-500" />
+                      <span className="text-sm font-light text-neutral-600">Provisioning</span>
+                      <span className="text-sm font-normal text-neutral-900">{statusCounts.provisioning}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="size-2.5 rounded-full bg-amber-400" />
+                      <span className="text-sm font-light text-neutral-600">Pending Approval</span>
+                      <span className="text-sm font-normal text-neutral-900">{statusCounts.pending}</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Filters */}

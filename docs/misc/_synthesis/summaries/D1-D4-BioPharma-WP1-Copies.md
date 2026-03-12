@@ -14,7 +14,7 @@ These documents in the WP1 folder are copies/versions of the 2025 Baseline docum
 |---------|--------------|--------|
 | D1: (A) Role-based Open Access Model - Guidance v1.1 | C1 | **Identical** |
 | D2: (B) OAC Agreement - BioPharma Closed Collection | C7 | **Identical** |
-| D3: (C) Agreement of Terms - BioPharma Closed Collection | C8 | **Identical** |
+| D3: (C) Data Use Terms - BioPharma Closed Collection | C8 | **Identical** |
 | D4: (D) User Guide - Biopharma Closed Collection | C6 | **Identical** |
 
 ---

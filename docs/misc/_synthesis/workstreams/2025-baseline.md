@@ -17,7 +17,7 @@ SOP-0067196 (Internal Sharing)
     ↓
 ROAM Guidance v1.1 (C1)
     ↓
-OAC Agreements (C7, G1)  →  Agreement of Terms (C8, G4, G5)
+OAC Agreements (C7, G1)  →  Data Use Terms (C8, G4, G5)
     ↓
 User Guides (C2, C5, C6)
     ↓
@@ -41,7 +41,7 @@ Collection Manager + Comms Materials (D5)
 | Term | Definition |
 |------|------------|
 | **OAC** | Open Access Collection - specified scope of data that consumers can potentially access |
-| **AOT** | Agreement of Terms - formal document defining terms of use for an OAC |
+| **AOT** | Data Use Terms - formal document defining terms of use for an OAC |
 | **DDO** | Delegate Data Owner - approves OAC and AOT |
 | **DCM** | Data Collection Manager (role in Collectoid) |
 | **PDP** | Patient Data Product - standardized data in Starburst |

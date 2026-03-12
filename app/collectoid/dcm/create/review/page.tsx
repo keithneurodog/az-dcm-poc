@@ -250,14 +250,14 @@ export default function DCMReviewPage() {
         </CardContent>
       </Card>
 
-      {/* Agreement of Terms Summary */}
+      {/* Data Use Terms Summary */}
       {aot && (
         <Card className="border-neutral-200 rounded-2xl overflow-hidden mb-6">
           <CardContent className="p-6">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-neutral-600" strokeWidth={1.5} />
-                <h2 className="text-xl font-normal text-neutral-900">Agreement of Terms</h2>
+                <h2 className="text-xl font-normal text-neutral-900">Data Use Terms</h2>
               </div>
               <Button
                 variant="outline"
@@ -349,7 +349,7 @@ export default function DCMReviewPage() {
                       ⚠️ {aot.acknowledgedConflicts.length} dataset conflict(s) acknowledged
                     </p>
                     <p className="text-xs font-light text-amber-700">
-                      Collection includes datasets with usage restrictions that conflict with the defined Agreement of Terms
+                      Collection includes datasets with usage restrictions that conflict with the defined Data Use Terms
                     </p>
                   </div>
                 </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -31,6 +32,11 @@ import {
   Share2,
   Database,
   Trash2,
+  Users,
+  Building2,
+  Briefcase,
+  UserPlus,
+  X,
 } from "lucide-react"
 import {
   AgreementOfTerms,
@@ -84,6 +90,7 @@ export default function WorkspaceTermsPage() {
           },
           beyondPrimaryUse: {
             aiResearch: false,
+            storeInAiMlModel: false,
             softwareDevelopment: false,
           },
           publication: {
@@ -187,7 +194,7 @@ export default function WorkspaceTermsPage() {
           <Shield className={cn("size-8", scheme.from.replace("from-", "text-"))} />
         </div>
         <h1 className="text-2xl font-extralight text-neutral-900 mb-2 tracking-tight">
-          Agreement of Terms
+          Data Use Terms
         </h1>
         <p className="text-sm font-light text-neutral-600 max-w-xl mx-auto">
           Define data use restrictions and publication rights for this collection
@@ -302,7 +309,7 @@ export default function WorkspaceTermsPage() {
             </div>
 
             <div className="space-y-2">
-              {/* AI Research */}
+              {/* Train AI/ML Models */}
               <div
                 className={cn(
                   "flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer",
@@ -324,9 +331,42 @@ export default function WorkspaceTermsPage() {
                 )} />
                 <div className="flex-1">
                   <span className="font-light text-neutral-700 cursor-pointer text-sm">
-                    AI research / AI model training
+                    Train AI/ML models
                   </span>
                   {datasetsRestrictML > 0 && aot.beyondPrimaryUse.aiResearch && (
+                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1 font-light">
+                      <AlertCircle className="size-3" />
+                      {datasetsRestrictML} dataset{datasetsRestrictML !== 1 ? 's' : ''} restricted
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Store Data in AI/ML Model */}
+              <div
+                className={cn(
+                  "flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer",
+                  aot.beyondPrimaryUse.storeInAiMlModel
+                    ? cn("bg-gradient-to-r border-transparent", scheme.bg, scheme.bgHover)
+                    : "border-neutral-200 hover:border-neutral-300 bg-white"
+                )}
+                onClick={() => toggleBeyondPrimaryUse('storeInAiMlModel')}
+              >
+                <Checkbox
+                  id="storeInAiMlModel"
+                  checked={aot.beyondPrimaryUse.storeInAiMlModel}
+                  onCheckedChange={() => toggleBeyondPrimaryUse('storeInAiMlModel')}
+                  className="mt-0.5"
+                />
+                <Database className={cn(
+                  "size-4 shrink-0 mt-0.5",
+                  aot.beyondPrimaryUse.storeInAiMlModel ? scheme.from.replace("from-", "text-") : "text-neutral-400"
+                )} />
+                <div className="flex-1">
+                  <span className="font-light text-neutral-700 cursor-pointer text-sm">
+                    Store data in AI/ML model
+                  </span>
+                  {datasetsRestrictML > 0 && aot.beyondPrimaryUse.storeInAiMlModel && (
                     <p className="text-xs text-amber-600 mt-1 flex items-center gap-1 font-light">
                       <AlertCircle className="size-3" />
                       {datasetsRestrictML} dataset{datasetsRestrictML !== 1 ? 's' : ''} restricted
@@ -507,6 +547,198 @@ export default function WorkspaceTermsPage() {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* User Scope */}
+        <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={cn("flex size-9 items-center justify-center rounded-xl bg-gradient-to-br", scheme.bg)}>
+                <Users className={cn("size-4", scheme.from.replace("from-", "text-"))} />
+              </div>
+              <div>
+                <h2 className="text-base font-normal text-neutral-900">User Scope</h2>
+                <p className="text-xs text-neutral-500 font-light">Who is eligible to access this data</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* By Department */}
+              <div>
+                <Label className="font-light text-neutral-600 text-xs flex items-center gap-1.5 mb-2">
+                  <Building2 className="size-3" />
+                  Departments
+                </Label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {(aot.userScope.byDepartment || []).map((dept) => (
+                    <Badge
+                      key={dept}
+                      variant="outline"
+                      className="font-light text-xs px-2.5 py-1 rounded-lg border-neutral-200 bg-neutral-50"
+                    >
+                      {dept}
+                      <button
+                        onClick={() => updateAoT({
+                          userScope: {
+                            ...aot.userScope,
+                            byDepartment: (aot.userScope.byDepartment || []).filter(d => d !== dept),
+                            totalUserCount: Math.max(0, aot.userScope.totalUserCount - 5)
+                          }
+                        })}
+                        className="ml-1.5 hover:text-red-500 transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <select
+                  className="w-full h-9 px-3 rounded-xl border border-neutral-200 text-sm font-light text-neutral-600 bg-white"
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value && !(aot.userScope.byDepartment || []).includes(e.target.value)) {
+                      updateAoT({
+                        userScope: {
+                          ...aot.userScope,
+                          byDepartment: [...(aot.userScope.byDepartment || []), e.target.value],
+                          totalUserCount: aot.userScope.totalUserCount + 5
+                        }
+                      })
+                    }
+                  }}
+                >
+                  <option value="">Add department...</option>
+                  {["Oncology Biometrics", "Oncology Data Science", "CVRM Analytics", "R&I Biostatistics", "V&I Clinical Data", "Digital Health", "Global Medical Affairs"].filter(
+                    d => !(aot.userScope.byDepartment || []).includes(d)
+                  ).map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <Separator />
+
+              {/* By Role */}
+              <div>
+                <Label className="font-light text-neutral-600 text-xs flex items-center gap-1.5 mb-2">
+                  <Briefcase className="size-3" />
+                  Roles
+                </Label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {(aot.userScope.byRole || []).map((role) => (
+                    <Badge
+                      key={role}
+                      variant="outline"
+                      className="font-light text-xs px-2.5 py-1 rounded-lg border-neutral-200 bg-neutral-50"
+                    >
+                      {role}
+                      <button
+                        onClick={() => updateAoT({
+                          userScope: {
+                            ...aot.userScope,
+                            byRole: (aot.userScope.byRole || []).filter(r => r !== role),
+                            totalUserCount: Math.max(0, aot.userScope.totalUserCount - 3)
+                          }
+                        })}
+                        className="ml-1.5 hover:text-red-500 transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <select
+                  className="w-full h-9 px-3 rounded-xl border border-neutral-200 text-sm font-light text-neutral-600 bg-white"
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value && !(aot.userScope.byRole || []).includes(e.target.value)) {
+                      updateAoT({
+                        userScope: {
+                          ...aot.userScope,
+                          byRole: [...(aot.userScope.byRole || []), e.target.value],
+                          totalUserCount: aot.userScope.totalUserCount + 3
+                        }
+                      })
+                    }
+                  }}
+                >
+                  <option value="">Add role...</option>
+                  {["Data Scientist", "Biostatistician", "Clinical Data Manager", "Medical Reviewer", "Study Director", "Data Engineer", "Research Analyst"].filter(
+                    r => !(aot.userScope.byRole || []).includes(r)
+                  ).map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              <Separator />
+
+              {/* Explicit Users */}
+              <div>
+                <Label className="font-light text-neutral-600 text-xs flex items-center gap-1.5 mb-2">
+                  <UserPlus className="size-3" />
+                  Specific Users
+                </Label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {(aot.userScope.explicitUsers || []).map((user) => (
+                    <Badge
+                      key={user}
+                      variant="outline"
+                      className="font-light text-xs px-2.5 py-1 rounded-lg border-neutral-200 bg-neutral-50"
+                    >
+                      {user}
+                      <button
+                        onClick={() => updateAoT({
+                          userScope: {
+                            ...aot.userScope,
+                            explicitUsers: (aot.userScope.explicitUsers || []).filter(u => u !== user),
+                            totalUserCount: Math.max(0, aot.userScope.totalUserCount - 1)
+                          }
+                        })}
+                        className="ml-1.5 hover:text-red-500 transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <Input
+                  placeholder="Search by name or PRID..."
+                  className="h-9 rounded-xl border-neutral-200 font-light text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const value = (e.target as HTMLInputElement).value.trim()
+                      if (value && !(aot.userScope.explicitUsers || []).includes(value)) {
+                        updateAoT({
+                          userScope: {
+                            ...aot.userScope,
+                            explicitUsers: [...(aot.userScope.explicitUsers || []), value],
+                            totalUserCount: aot.userScope.totalUserCount + 1
+                          }
+                        });
+                        (e.target as HTMLInputElement).value = ''
+                      }
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Total User Count */}
+              {aot.userScope.totalUserCount > 0 && (
+                <>
+                  <Separator />
+                  <div className={cn("p-3 rounded-xl bg-gradient-to-r", scheme.bg, scheme.bgHover)}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-light text-neutral-600">Estimated eligible users</span>
+                      <span className={cn("text-sm font-normal", scheme.from.replace("from-", "text-"))}>
+                        {aot.userScope.totalUserCount}
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

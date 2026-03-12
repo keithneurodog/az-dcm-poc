@@ -22,8 +22,14 @@ import {
   Search,
   Filter,
   Lightbulb,
+  AlertTriangle,
+  Zap,
+  Clock,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react"
-import { Dataset, DatasetWithROAMFields } from "@/lib/dcm-mock-data"
+import { Dataset, DatasetWithROAMFields, CURRENT_USER_ID } from "@/lib/dcm-mock-data"
+import { useCollectionsStore } from "@/lib/collections-store"
 
 // AI Analysis status
 export type AIAnalysisStatus = "idle" | "analyzing" | "complete"
@@ -58,6 +64,9 @@ interface WorkspaceContextValue {
   aiAnalysisStatus: AIAnalysisStatus
   aiAnalysisResult: AIAnalysisResult | null
   showAiHelp: () => void
+  // Promote
+  canPromote: boolean
+  handlePromote: () => void
 }
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null)
@@ -102,6 +111,10 @@ export default function WorkspaceLayout({
   const [aiAnalysisStatus, setAiAnalysisStatus] = useState<AIAnalysisStatus>("idle")
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AIAnalysisResult | null>(null)
   const [showAiHelpModal, setShowAiHelpModal] = useState(false)
+  const [showPromoteModal, setShowPromoteModal] = useState(false)
+  const [activitiesExpanded, setActivitiesExpanded] = useState(false)
+
+  const { addCollection } = useCollectionsStore()
 
   // Load from sessionStorage
   useEffect(() => {
@@ -293,7 +306,7 @@ export default function WorkspaceLayout({
     },
     {
       id: "terms",
-      title: "Agreement of Terms",
+      title: "Data Use Terms",
       icon: Shield,
       href: "/collectoid-v2/dcm/create/workspace/terms",
       isComplete: hasAgreementOfTerms,
@@ -305,7 +318,7 @@ export default function WorkspaceLayout({
       icon: Users,
       href: "/collectoid-v2/dcm/create/workspace/roles",
       isComplete: assignedRoles.length > 0,
-      required: false,
+      required: true,
     },
   ], [selectedDatasets.length, selectedActivities.length, hasAgreementOfTerms, assignedRoles.length])
 
@@ -323,11 +336,97 @@ export default function WorkspaceLayout({
   }, [pathname])
 
   const handlePromote = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("dcm_collection_status", "draft")
+    setActivitiesExpanded(false)
+    setShowPromoteModal(true)
+  }
+
+  // Calculate aggregate access breakdown from selected datasets
+  const accessBreakdown = useMemo(() => {
+    const total = selectedDatasets.length
+    if (total === 0) return { alreadyOpen: 20, readyToGrant: 30, needsApproval: 40, missingLocation: 10 }
+    const sums = selectedDatasets.reduce(
+      (acc, d) => ({
+        alreadyOpen: acc.alreadyOpen + d.accessBreakdown.alreadyOpen,
+        readyToGrant: acc.readyToGrant + d.accessBreakdown.readyToGrant,
+        needsApproval: acc.needsApproval + d.accessBreakdown.needsApproval,
+        missingLocation: acc.missingLocation + d.accessBreakdown.missingLocation,
+      }),
+      { alreadyOpen: 0, readyToGrant: 0, needsApproval: 0, missingLocation: 0 }
+    )
+    return {
+      alreadyOpen: Math.round(sums.alreadyOpen / total),
+      readyToGrant: Math.round(sums.readyToGrant / total),
+      needsApproval: Math.round(sums.needsApproval / total),
+      missingLocation: Math.round(sums.missingLocation / total),
     }
-    setStatus("draft")
-    router.push("/collectoid-v2/dcm/create/review")
+  }, [selectedDatasets])
+
+  // Detect potential conflicts
+  const conflicts = useMemo(() => {
+    const issues: string[] = []
+    if (accessBreakdown.missingLocation > 15) issues.push("Some datasets have unknown data locations — provisioning may be delayed")
+    if (accessBreakdown.needsApproval > 50) issues.push("Over half of access requires manual approval from GPT/TALT")
+    if (selectedDatasets.some(d => d.complianceStatus !== "Fully Compliant")) issues.push("One or more datasets have pending compliance reviews")
+    return issues
+  }, [accessBreakdown, selectedDatasets])
+
+  const confirmPromote = () => {
+    const newId = `col-draft-${Date.now()}`
+    const storedAoT = typeof window !== "undefined" ? sessionStorage.getItem("dcm_agreement_of_terms") : null
+    const storedUsers = typeof window !== "undefined" ? sessionStorage.getItem("dcm_total_users") : null
+    const totalUsers = storedUsers ? parseInt(storedUsers) : 0
+
+    const draftCollection = {
+      id: newId,
+      name: collectionName,
+      description,
+      status: "draft" as const,
+      progress: 0,
+      totalUsers,
+      usersWithAccess: 0,
+      totalDatasets: selectedDatasets.length,
+      createdAt: new Date(),
+      createdBy: "You",
+      creatorId: CURRENT_USER_ID,
+      isDraft: false,
+      therapeuticAreas: [...new Set(selectedDatasets.flatMap(d => d.therapeuticArea || []))],
+      tags: [],
+      accessLevel: "member" as const,
+      isFavorite: false,
+      commentCount: 0,
+      selectedDatasets,
+      accessBreakdown: {
+        immediate: accessBreakdown.alreadyOpen,
+        instantGrant: accessBreakdown.readyToGrant,
+        pendingApproval: accessBreakdown.needsApproval,
+        dataDiscovery: accessBreakdown.missingLocation,
+      },
+      instantGrantProgress: 0,
+      approvalRequests: [],
+      milestones: [
+        { name: "Concept created", status: "completed" as const, timestamp: new Date(Date.now() - 60000) },
+        { name: "Promoted to draft", status: "completed" as const, timestamp: new Date() },
+      ],
+      agreementOfTerms: storedAoT ? JSON.parse(storedAoT) : undefined,
+    }
+
+    addCollection(draftCollection)
+
+    // Clear workspace sessionStorage
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("dcm_collection_name")
+      sessionStorage.removeItem("dcm_collection_description")
+      sessionStorage.removeItem("dcm_selected_datasets")
+      sessionStorage.removeItem("dcm_selected_activities")
+      sessionStorage.removeItem("dcm_agreement_of_terms")
+      sessionStorage.removeItem("dcm_collection_status")
+      sessionStorage.removeItem("dcm_ai_analysis")
+      sessionStorage.removeItem("dcm_target_community")
+      sessionStorage.removeItem("dcm_total_users")
+    }
+
+    setShowPromoteModal(false)
+    router.push(`/collectoid-v2/collections/${newId}`)
   }
 
   const contextValue: WorkspaceContextValue = {
@@ -347,6 +446,8 @@ export default function WorkspaceLayout({
     aiAnalysisStatus,
     aiAnalysisResult,
     showAiHelp: () => setShowAiHelpModal(true),
+    canPromote,
+    handlePromote,
   }
 
   if (isLoading) {
@@ -659,6 +760,150 @@ export default function WorkspaceLayout({
               <p className="text-xs font-light text-neutral-500 text-center">
                 AI suggestions are optional — you always have full control over your collection
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Promote to Draft Confirmation Modal */}
+      {showPromoteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowPromoteModal(false)}
+          />
+
+          <div className="relative bg-white rounded-2xl shadow-2xl border border-neutral-200 max-w-md w-full overflow-hidden">
+            {/* Header */}
+            <div className={cn("p-5 border-b border-neutral-100", scheme.bg)}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={cn("flex size-10 items-center justify-center rounded-xl bg-gradient-to-br", scheme.from, scheme.to)}>
+                    <ArrowRight className="size-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-normal text-neutral-900">Promote to Draft</h3>
+                    <p className="text-xs font-light text-neutral-500">This will make the collection visible to your team</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPromoteModal(false)}
+                  className="flex size-8 items-center justify-center rounded-lg hover:bg-white/50 transition-colors"
+                >
+                  <X className="size-4 text-neutral-500" />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 space-y-4">
+              {/* Flavour text */}
+              <p className="text-sm font-light text-neutral-600 leading-relaxed">
+                Promoting to draft makes this collection visible to your team for review and feedback. You&apos;ll still be able to edit everything — this simply moves it out of your private workspace.
+              </p>
+
+              {/* Summary */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm py-1.5">
+                  <Database className="size-4 text-neutral-400" />
+                  <span className="font-light text-neutral-700">Datasets</span>
+                  <span className="font-normal text-neutral-900">{selectedDatasets.length} selected</span>
+                </div>
+                <div>
+                  <button
+                    onClick={() => setActivitiesExpanded(!activitiesExpanded)}
+                    className="flex items-center gap-2 text-sm py-1.5 w-full text-left hover:bg-neutral-50 rounded-lg transition-colors -mx-1 px-1"
+                  >
+                    <Target className="size-4 text-neutral-400" />
+                    <span className="font-light text-neutral-700">Activities</span>
+                    <span className="font-normal text-neutral-900">{selectedActivities.length} selected</span>
+                    <ChevronDown className={cn("size-3.5 text-neutral-400 ml-auto transition-transform", activitiesExpanded && "rotate-180")} />
+                  </button>
+                  {activitiesExpanded && selectedActivities.length > 0 && (
+                    <div className="ml-6 mt-1 mb-1 space-y-1">
+                      {(selectedActivities as unknown as Array<{ id: string; name: string; category: string }>).map((activity) => (
+                        <div key={typeof activity === "string" ? activity : activity.id} className="flex items-center gap-2 py-1">
+                          <div className={cn("size-1.5 rounded-full bg-gradient-to-r", scheme.from, scheme.to)} />
+                          <span className="text-xs font-light text-neutral-600">
+                            {typeof activity === "string" ? activity : activity.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Access Breakdown */}
+              <div className="pt-3 border-t border-neutral-100">
+                <p className="text-xs font-light text-neutral-500 uppercase tracking-wider mb-3">Access Provisioning Breakdown</p>
+
+                {/* Stacked bar */}
+                <div className="h-3 rounded-full overflow-hidden flex mb-3">
+                  <div className="bg-emerald-500" style={{ width: `${accessBreakdown.alreadyOpen}%` }} />
+                  <div className={cn("bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: `${accessBreakdown.readyToGrant}%` }} />
+                  <div className="bg-amber-400" style={{ width: `${accessBreakdown.needsApproval}%` }} />
+                  <div className="bg-neutral-300" style={{ width: `${accessBreakdown.missingLocation}%` }} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="size-2.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="text-xs font-light text-neutral-600">Already Open</span>
+                    <span className="text-xs font-normal text-neutral-900 ml-auto">{accessBreakdown.alreadyOpen}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className={cn("size-2.5 rounded-full bg-gradient-to-r shrink-0", scheme.from, scheme.to)} />
+                    <span className="text-xs font-light text-neutral-600">Ready to Grant</span>
+                    <span className="text-xs font-normal text-neutral-900 ml-auto">{accessBreakdown.readyToGrant}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="size-2.5 rounded-full bg-amber-400 shrink-0" />
+                    <span className="text-xs font-light text-neutral-600">Needs Approval</span>
+                    <span className="text-xs font-normal text-neutral-900 ml-auto">{accessBreakdown.needsApproval}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="size-2.5 rounded-full bg-neutral-300 shrink-0" />
+                    <span className="text-xs font-light text-neutral-600">Missing Location</span>
+                    <span className="text-xs font-normal text-neutral-900 ml-auto">{accessBreakdown.missingLocation}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Conflicts */}
+              {conflicts.length > 0 && (
+                <div className="pt-3 border-t border-neutral-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="size-3.5 text-amber-500" />
+                    <p className="text-xs font-normal text-amber-700">Potential Issues</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    {conflicts.map((conflict, i) => (
+                      <p key={i} className="text-xs font-light text-neutral-600 pl-5">
+                        {conflict}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-neutral-100 flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowPromoteModal(false)}
+                className="flex-1 rounded-xl font-light border-neutral-200 h-10"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmPromote}
+                className={cn("flex-1 rounded-xl font-light bg-gradient-to-r text-white h-10 shadow-md hover:shadow-lg", scheme.from, scheme.to)}
+              >
+                Confirm &amp; Promote
+                <ArrowRight className="size-4 ml-2" />
+              </Button>
             </div>
           </div>
         </div>

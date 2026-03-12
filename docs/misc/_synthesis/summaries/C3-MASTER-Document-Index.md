@@ -21,7 +21,7 @@
 |---|----------|---------|
 | 1 | **90:10 Open Access Model - Guidance** | Procedure for achieving open access, key concepts, role accountabilities, process steps |
 | 2 | **Open Access Collection (OAC) Agreement** | Defines the Open Access Collection criteria/scope (does not grant access) |
-| 3 | **Agreement of Terms (AOT)** | Formalizes agreement between DDOs and Data Consumers - data scope, user base, terms of use |
+| 3 | **Data Use Terms (AOT)** | Formalizes agreement between DDOs and Data Consumers - data scope, user base, terms of use |
 | 4 | **User Guide** | Explains model and required steps in User Journey, links to training |
 | 5 | **Collection Manager Solution** | Live view of studies (Study Manager) & users (People Manager) in scope |
 | 6 | **Comms & Change Materials** | Master comms materials, rollout plan, stakeholder details |
@@ -34,7 +34,7 @@
 |------|------|--------------|
 | (A) | Agreement in Principle | R&D Data Office Lead |
 | (B) | OAC Agreement | Delegate Data Owner |
-| (C) | Agreement of Terms | R&D Data Office Lead, Data Consumer Leads (review only) |
+| (C) | Data Use Terms | R&D Data Office Lead, Data Consumer Leads (review only) |
 | (D) | Implement Open Data Access | - |
 | (E) | Open Access Granted | Access enables users! |
 | (F) | Maintain Open Collections | - |

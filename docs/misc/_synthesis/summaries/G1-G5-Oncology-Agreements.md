@@ -11,14 +11,14 @@
 | ID | Document | Collection | Status |
 |----|----------|------------|--------|
 | G1 | (B) OAC Agreement - Oncology Closed Collection.pdf | Oncology Closed | PDF - not readable |
-| G2 | ODS&AI Open access Data Collection - Agreement of Terms.pdf | ODSAI Closed | PDF - not readable |
+| G2 | ODS&AI Open access Data Collection - Data Use Terms.pdf | ODSAI Closed | PDF - not readable |
 | G3 | Ongoing Data Collection - Opt in and Out.md | Oncology Ongoing | Template v0.9 |
-| G4 | Agreement of Terms - Closed Collection.md | Oncology Closed | v1.0, 02-Oct-2025 |
-| G5 | Agreement of Terms - Ongoing Collection.md | Oncology Ongoing | v1.0, 26-Sep-2025 |
+| G4 | Data Use Terms - Closed Collection.md | Oncology Closed | v1.0, 02-Oct-2025 |
+| G5 | Data Use Terms - Ongoing Collection.md | Oncology Ongoing | v1.0, 26-Sep-2025 |
 
 ---
 
-## Oncology Closed Collection AOT (G4) `[ref: Agreement of Terms - Closed Collection.md]`
+## Oncology Closed Collection AOT (G4) `[ref: Data Use Terms - Closed Collection.md]`
 
 ### Base Definition:
 - **AOT ID:** AoT-2.00
@@ -48,7 +48,7 @@
 
 ---
 
-## Oncology Ongoing Collection AOT (G5) `[ref: Agreement of Terms - Ongoing Collection.md]`
+## Oncology Ongoing Collection AOT (G5) `[ref: Data Use Terms - Ongoing Collection.md]`
 
 ### Base Definition:
 - **AOT ID:** AoT-2.00

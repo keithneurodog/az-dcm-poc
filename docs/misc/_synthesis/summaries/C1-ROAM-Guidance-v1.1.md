@@ -27,7 +27,7 @@
   - **Included, opt-in:** Included only after active opt-in review
 - **Exclusion Criteria:** Always removed from scope by default
 
-### Agreement of Terms (AOT) `[ref: Section 2.2]`
+### Data Use Terms (AOT) `[ref: Section 2.2]`
 - Formally written, approved document defining terms of use for an Open Access Collection
 - **One AOT = One OAC** (but multiple AOTs can exist per OAC for different user groups)
 - **Four main elements:**
@@ -54,7 +54,7 @@
 |------|------|-------------|
 | **(A)** | Agreement in Principle (AIP) | Seek sponsorship from Data Owners, Consumer Leads, DO Leads |
 | **(B)** | OAC Agreement | Define data scope with inclusions/exclusions, get DDO approval |
-| **(C)** | Agreement of Terms (AOT) | Define who accesses what data under what terms; DDO approval |
+| **(C)** | Data Use Terms (AOT) | Define who accesses what data under what terms; DDO approval |
 | **(D)** | Implement Open Data Access | Translate to study/user lists, training, technical setup |
 | **(E)** | Open Access Granted | Users access via Data Product Solution, Golden Ticket, etc. |
 | **(F)** | Maintain Open Collections | Periodic review, compliance checks, incremental updates |

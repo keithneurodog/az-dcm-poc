@@ -532,9 +532,12 @@ export default function CollectionsBrowserV2() {
                   {/* Top Row */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2.5">
-                      {col.isDraft ? (
-                        <Badge className="text-xs font-normal py-1 px-2 bg-amber-100 text-amber-800 border border-amber-200">
-                          <FileEdit className="size-3 mr-1" />
+                      {col.status === "concept" ? (
+                        <Badge className="text-xs font-normal py-1 px-2 bg-neutral-100 text-neutral-600 border border-neutral-200">
+                          Concept
+                        </Badge>
+                      ) : col.status === "draft" ? (
+                        <Badge className="text-xs font-normal py-1 px-2 bg-amber-50 text-amber-700 border border-amber-200">
                           Draft
                         </Badge>
                       ) : (

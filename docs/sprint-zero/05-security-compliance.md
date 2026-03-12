@@ -692,7 +692,9 @@ Every event below MUST produce an immutable `audit_events` record. No exceptions
 | Collection created | `collection.created` | DCM creates new collection | Collection ID, name, request type, creator |
 | Collection updated | `collection.updated` | Any field change on collection | Changed fields (before/after), modifier |
 | Collection published | `collection.published` | Collection made visible | Target audience |
-| Collection status changed | `collection.status_changed` | Status transition | Previous status, new status, trigger (user/system) |
+| Governance stage changed | `collection.governance_stage_changed` | Governance stage transition | Previous governance_stage, new governance_stage, trigger (user/system) |
+| Operational state changed | `collection.operational_state_changed` | Operational state transition | Previous operational_state, new operational_state, trigger (user/system/auto) |
+| Proposition status changed | `proposition.status_changed` | Proposition status transition | Proposition ID, collection ID, previous status, new status, trigger (user/system) |
 | Collection submitted for approval | `collection.submitted_for_approval` | DCM submits for TA Lead review | Identified approvers, TA list |
 | Collection archived | `collection.archived` | DCM archives collection | Archive reason, affected user count |
 | Collection version created | `collection.version_created` | Any change producing new version | Version number, change type, change summary, full snapshot reference |
@@ -713,7 +715,7 @@ Every event below MUST produce an immutable `audit_events` record. No exceptions
 | Approval decided | `approval.decided` | Approver approves or rejects | Decision (approve/reject), comment, approver ID, team, TA |
 | Approval delegated | `approval.delegated` | Approver delegates to another | Delegator, delegate, reason |
 | Approval expired | `approval.expired` | SLA exceeded without decision | Approver ID, SLA threshold, escalation triggered |
-| All TAs approved | `approval.all_approved` | Last required TA Lead approves | All approver decisions, collection status transition |
+| All TAs approved | `approval.all_approved` | Last required TA Lead approves | All approver decisions, governance_stage transition (pending_approval → approved), auto-triggered operational_state transition (→ provisioning) |
 | Approval chain rejected | `approval.chain_rejected` | Any TA Lead rejects (all-or-nothing) | Rejecting approver, rejection reason, affected TAs |
 | Approval chain invalidated | `approval.chain_invalidated` | Collection change requires re-approval | Reason (version change, scope change), previous approvals voided |
 | Signature captured | `approval.signature_captured` | TA Lead provides formal signature | Digital acknowledgement method, acknowledgement reference, IP address, user agent |
@@ -746,7 +748,7 @@ Every event below MUST produce an immutable `audit_events` record. No exceptions
 
 | Event | Action Key | Trigger | Required Context |
 |-------|------------|---------|------------------|
-| AoT created | `aot.created` | DCM creates Agreement of Terms | AoT ID, collection ID, terms summary |
+| AoT created | `aot.created` | DCM creates Data Use Terms | AoT ID, collection ID, terms summary |
 | AoT version created | `aot.version_created` | Terms changed | Version number, changed fields |
 | AoT approved | `aot.approved` | DDO/TA Lead approves AoT | Approver, approval chain |
 | AoT revoked | `aot.revoked` | AoT withdrawn or superseded | Revocation reason, affected users |
@@ -1624,7 +1626,7 @@ The ROAM (Role-based Open Access Model) defines the governance framework that Co
 | **Role-based access** | Collectoid RBAC mirrors ROAM roles (DCM, Approver, Consumer, Team Lead, DPO, Data Office Lead) |
 | **Open Access Collections (90-route)** | Pre-approved access via approved OAC; audit trail records auto-approval events |
 | **Closed/Request-based access (10-route)** | Multi-stage approval workflow with atomic all-or-nothing TA approval |
-| **Agreement of Terms** | AoT versioning with signature capture and audit trail |
+| **Data Use Terms** | AoT versioning with signature capture and audit trail |
 | **Training before access** | Cornerstone integration validates training completion before granting access |
 | **Quarterly review** | System supports periodic review workflow with documented opt-in/opt-out decisions |
 | **Compliance audit** | Comprehensive audit trail with reporting, export, and integrity verification |
@@ -1846,7 +1848,7 @@ This checklist summarises all security controls. It can be used for security rev
 |------|------------|
 | **ACL** | Access Control List |
 | **ALCOA+** | Attributable, Legible, Contemporaneous, Original, Accurate (+ Complete, Consistent, Enduring, Available) -- data integrity framework |
-| **AoT** | Agreement of Terms -- formal document defining data access terms |
+| **AoT** | Data Use Terms -- formal document defining data access terms |
 | **CMK** | Customer-Managed Key (AWS KMS) |
 | **CSP** | Content Security Policy -- HTTP header controlling browser resource loading |
 | **CSRF** | Cross-Site Request Forgery |

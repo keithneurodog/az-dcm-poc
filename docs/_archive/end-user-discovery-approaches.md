@@ -119,7 +119,7 @@ Traditional browsing with filters:
 
 Shows:
 - **Collection Overview**: Purpose, target audience, created by DCM
-- **Agreement of Terms**: Visual display of allowed uses
+- **Data Use Terms**: Visual display of allowed uses
   - Primary use categories (5 checkboxes)
   - Beyond primary use (AI research, software dev)
   - Publication rights (internal, external)
@@ -246,9 +246,9 @@ Collection: Oncology ctDNA Outcomes Collection
 
 ---
 
-## Agreement of Terms (AoT) Integration
+## Data Use Terms (AoT) Integration
 
-Every collection includes an **Agreement of Terms** defining:
+Every collection includes an **Data Use Terms** defining:
 
 ### Terms and Conditions of Use
 
@@ -441,7 +441,7 @@ When user's intent doesn't match collection's AoT:
 **Source Material:**
 - `/docs/collectoid-poc-requirements.md` - Original POC requirements
 - `/docs/dcm-workflow-learnings.md` - DCM workflow insights
-- `/docs/misc/Agreement of Terms - Ongoing Collection.docx` - AoT structure
+- `/docs/misc/Data Use Terms - Ongoing Collection.docx` - AoT structure
 - `/docs/misc/Ongoing Data Collection - Opt in and Out.docx` - Dataset approval process
 
 **Design System:**
@@ -456,7 +456,7 @@ When user's intent doesn't match collection's AoT:
 - ✅ Removed Collections-Agnostic (Approach A) entirely
 - ✅ Confirmed dual entry point (LLM + Browse)
 - ✅ Confirmed soft intent filtering (show all, warn about mismatches)
-- ✅ Confirmed Agreement of Terms integration
+- ✅ Confirmed Data Use Terms integration
 - ✅ Confirmed customization creates propositions (not separate collections)
 - ✅ Ready to proceed with implementation in `/app/poc/2/`
 

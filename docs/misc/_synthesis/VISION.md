@@ -43,7 +43,7 @@ DOVS2 (Data Office Value Stream 2) is transforming how AstraZeneca R&D shares an
 | Component | Description |
 |-----------|-------------|
 | **Open Access Collection (OAC)** | Defined scope of data (studies, modalities, geographies) |
-| **Agreement of Terms (AOT)** | Who can access, what they can do, under what terms |
+| **Data Use Terms (AOT)** | Who can access, what they can do, under what terms |
 | **90%** | User needs met through open collections |
 | **10%** | Streamlined requests for edge cases (iDAP) |
 
@@ -54,7 +54,7 @@ DOVS2 (Data Office Value Stream 2) is transforming how AstraZeneca R&D shares an
     ↓
 (B) OAC Agreement (define data scope) → DDO Approval
     ↓
-(C) Agreement of Terms (define users/terms) → DDO Approval
+(C) Data Use Terms (define users/terms) → DDO Approval
     ↓
 (D) Implement (study lists, user lists, training)
     ↓

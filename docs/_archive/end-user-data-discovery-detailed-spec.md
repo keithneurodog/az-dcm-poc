@@ -10,7 +10,7 @@
 
 ## Table of Contents
 1. [Design Decisions Summary](#design-decisions-summary)
-2. [Agreement of Terms (AoT) Integration](#agreement-of-terms-aot-integration)
+2. [Data Use Terms (AoT) Integration](#agreement-of-terms-aot-integration)
 3. [User Journey Overview](#user-journey-overview)
 4. [Detailed Screen Specifications](#detailed-screen-specifications)
 5. [Future Features (Not in Initial Scope)](#future-features-not-in-initial-scope)
@@ -35,9 +35,9 @@ Based on stakeholder input, the following decisions have been made:
 | **DCM Intent Control** | Smart suggestions + full override | System suggests restrictions based on dataset metadata, DCM has final say |
 | **Data Access** | Single click-through to platform | Dummy links in POC, assume best UX |
 
-### 📋 Agreement of Terms Requirements
+### 📋 Data Use Terms Requirements
 
-Every collection includes an **Agreement of Terms (AoT)** defining:
+Every collection includes an **Data Use Terms (AoT)** defining:
 
 **1. Terms and Conditions of Use:**
 - **Primary use categories** (IMI-guided):
@@ -377,7 +377,7 @@ Access Granted
 │  Created by Divya (DCM) | Updated Nov 15, 2025              │
 │  120 users | 16 datasets | ✅ Matches your intent           │
 │                                                              │
-│  [Overview] [Datasets] [Agreement of Terms] [Activity]      │
+│  [Overview] [Datasets] [Data Use Terms] [Activity]      │
 │                                                              │
 │  ═══════════════════════════════════════════════════════════│
 │                                                              │
@@ -409,7 +409,7 @@ Access Granted
 │                                                              │
 │  ───────────────────────────────────────────────────────────│
 │                                                              │
-│  🎯 ALLOWED USES (Agreement of Terms)                       │
+│  🎯 ALLOWED USES (Data Use Terms)                       │
 │                                                              │
 │  Primary Use (Protocol-Guided):                             │
 │  ✅ Understand how drugs work in the body                   │
@@ -429,7 +429,7 @@ Access Granted
 │  External Sharing:                                           │
 │  ⚠️ Standard External Sharing process applies               │
 │                                                              │
-│  [View Full Agreement of Terms]                             │
+│  [View Full Data Use Terms]                             │
 │                                                              │
 │  ───────────────────────────────────────────────────────────│
 │                                                              │
@@ -479,7 +479,7 @@ Access Granted
 - Based on user's role, department, and training status
 - Instant vs. approval required breakdown
 
-**Agreement of Terms Visibility:**
+**Data Use Terms Visibility:**
 - Display allowed uses prominently
 - Use simple checkmarks/X icons
 - Link to full AoT document
@@ -557,8 +557,8 @@ Access Granted
 │  You will be added to the existing "Oncology ctDNA          │
 │  Outcomes Collection" and notified when access is granted.  │
 │                                                              │
-│  ☑ I agree to the Agreement of Terms for this collection   │
-│     [View Agreement of Terms]                               │
+│  ☑ I agree to the Data Use Terms for this collection   │
+│     [View Data Use Terms]                               │
 │                                                              │
 │  [Cancel] [Submit Access Request]                           │
 │                                                              │
@@ -1241,7 +1241,7 @@ Your data is available via:
 • AiBench: [Direct Link]
 
 COLLECTION DETAILS:
-View full collection information, datasets, and Agreement of Terms:
+View full collection information, datasets, and Data Use Terms:
 [View Collection →]
 
 Questions? Contact your Data Collection Manager:
@@ -1392,7 +1392,7 @@ interface Collection {
 
   datasets: string[] // Dataset codes
 
-  // NEW: Agreement of Terms
+  // NEW: Data Use Terms
   agreementOfTerms: AgreementOfTerms
 
   // User scope
@@ -1414,7 +1414,7 @@ interface Collection {
   accessCount: number
 }
 
-// NEW: Agreement of Terms
+// NEW: Data Use Terms
 interface AgreementOfTerms {
   id: string
   version: string
@@ -1603,13 +1603,13 @@ interface Dataset {
 - `/collectoid/dcm/create/categories` - Therapeutic areas
 - `/collectoid/dcm/create/filters` - Dataset filtering
 - `/collectoid/dcm/create/activities` - Activity selection
-- `/collectoid/dcm/create/agreements` - Agreement of Terms
+- `/collectoid/dcm/create/agreements` - Data Use Terms
 - `/collectoid/dcm/create/review` - Review & submit
 - `/collectoid/dcm/create/publishing` - Publishing with live status
 
 ✅ **Progress Dashboard** - `/collectoid/dcm/progress`:
 - Overview tab with collection summary
-- Agreement of Terms tab
+- Data Use Terms tab
 - Dataset Status tab with pagination
 - User Status tab with:
   - Compact stat bar

@@ -245,8 +245,8 @@ height="3.2736111111111112in"}
 - **Top-Down Approval:** Delegate Data Owners work with the R&D Data
   Office to agree, up front, the specific Data Collections (studies/data
   sets), the permitted usages, and the user groups who can access them
-  under an Agreement of Terms (AoT). Approval is formally documented via
-  the Open Access Collection (OAC) Agreement, and the Agreement of Terms
+  under a Data Use Terms (AoT). Approval is formally documented via
+  the Open Access Collection (OAC) Agreement, and the Data Use Terms
   (AOT).
 
 - **Rollout -- Comms & Solution**: Once approval is granted, you will
@@ -372,15 +372,15 @@ examples to help distinguish Primary from Secondary use:
   - External data sharing
 
 Users are granted access to an *Open Access Collection* in line with the
-agreement set out in the Agreement of Terms -- approved by Delegate Data
+agreement set out in the Data Use Terms -- approved by Delegate Data
 Owners. Under this agreement for the Oncology Closed Collection - users
 can only conduct analysis that classifies as Primary Use as per the
 above definitions and explanation -- Secondary Use is out of scope for
-the *Open Access Collection* -- as in the Agreement of Terms.
+the *Open Access Collection* -- as in the Data Use Terms.
 
 When accessing data, you are also responsible for handling data as
 detailed in the [mandatory training](#mandatory-training). This is also
-spelled out in the Agreement of Terms. Please refer to the Support
+spelled out in the Data Use Terms. Please refer to the Support
 section below if any additional questions remain, or users are unsure of
 permitted use.
 
@@ -413,7 +413,7 @@ Studies that are included in an Open Access Collection will have already
 gone through these checks -- and so users can be safe in the assumption
 that studies available in the [ROAM Power BI
 Dashboard](https://app.powerbi.com/groups/me/reports/61ad3ae5-e4c8-43dc-adcb-48a7d5aa7461/4d9e6c619e2d347100e8?ctid=af8e89a3-d9ac-422f-ad06-cc4eb4214314&experience=power-bi)
-are approved for use as in the *Agreement of Terms*.
+are approved for use as in the *Data Use Terms*.
 
 ## What's in Scope (Product Team/IEMT/ROAM)
 
@@ -436,7 +436,7 @@ height="3.419968285214348in"}
   rollout, you can access studies and data listed in the Open Access
   Collection (see the ROAM [Power BI
   dashboard](https://app.powerbi.com/groups/me/reports/61ad3ae5-e4c8-43dc-adcb-48a7d5aa7461/4d9e6c619e2d347100e8?ctid=af8e89a3-d9ac-422f-ad06-cc4eb4214314&experience=power-bi)).
-  Use is governed by the Agreement of Terms and is generally limited to
+  Use is governed by the Data Use Terms and is generally limited to
   Primary Use. See section 3 for how to access.
 
 - **iDAP Process:** For any data or use cases outside the two routes
@@ -461,7 +461,7 @@ Completion Form -- once the project has closed).
 ## Pre-Planning
 
 Confirm your intended data use aligns with collection‑specific terms
-(Agreement of Terms) and the User Guide. Complete a quick self‑review,
+(Data Use Terms) and the User Guide. Complete a quick self‑review,
 consider any risks and compliance issues, and determine resources,
 timelines, and collaborators. Contact the R&D Data Office if guidance is
 needed (see Support section below)

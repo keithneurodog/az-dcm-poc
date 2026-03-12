@@ -256,7 +256,7 @@ export default function AgreementOfTermsPage() {
         <div className="flex items-center justify-center gap-2 mb-6">
           <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 5 of 7</span>
           <span className="text-xs text-neutral-300">|</span>
-          <span className="text-xs font-light text-neutral-600">Agreement of Terms</span>
+          <span className="text-xs font-light text-neutral-600">Data Use Terms</span>
         </div>
 
         <div className="text-center mb-8">
@@ -280,7 +280,7 @@ export default function AgreementOfTermsPage() {
           </div>
 
           <h1 className="text-4xl font-extralight text-neutral-900 mb-4 tracking-tight">
-            Agreement of Terms
+            Data Use Terms
           </h1>
           <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto">
             Define data use restrictions and publication rights for this collection
@@ -1044,7 +1044,7 @@ export default function AgreementOfTermsPage() {
                   className="mt-0.5"
                 />
                 <Label htmlFor="acknowledgeConflicts" className="font-light text-neutral-700 cursor-pointer">
-                  I acknowledge these conflicts and take responsibility for proceeding with this Agreement of Terms
+                  I acknowledge these conflicts and take responsibility for proceeding with this Data Use Terms
                 </Label>
               </div>
             </CardContent>
@@ -1104,7 +1104,7 @@ export default function AgreementOfTermsPage() {
         <div className="flex items-center justify-center gap-2">
           <span className="text-xs font-light text-neutral-500 uppercase tracking-wider">Step 5 of 7</span>
           <span className="text-xs text-neutral-300">|</span>
-          <span className="text-xs font-light text-neutral-600">Agreement of Terms</span>
+          <span className="text-xs font-light text-neutral-600">Data Use Terms</span>
         </div>
 
         <div className="flex gap-4">

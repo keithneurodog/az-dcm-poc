@@ -6,8 +6,6 @@
 
 **BRD Refs:** FR-COL-001 through FR-COL-017
 
-**Sizing Key:** S = 1-2 days | M = 3-5 days | L = 1-2 weeks | XL = 2+ weeks
-
 ---
 
 ## Phase 1 — Concept Creation
@@ -17,6 +15,7 @@
 **As a** DCM, **I want to** create a new collection concept by providing a title and optional description, **so that** I have a lightweight starting point without needing to complete all details upfront.
 
 **BRD Refs:** FR-COL-001, FR-COL-002
+
 
 ### Acceptance Criteria
 
@@ -143,12 +142,12 @@ Feature: Workspace Overview Hub
 
   Scenario: Section cards are displayed
     Given I am on the workspace overview
-    Then I see section cards for: Datasets, Activities & Purpose, Agreement of Terms, Access & Users
+    Then I see section cards for: Datasets, Activities & Purpose, Data Use Terms, Access & Users
     And each card shows: title, description, completion status (empty/complete), and item count where applicable
 
   Scenario: Required sections are indicated
     Given I am on the workspace overview
-    Then the Datasets, Activities, and Agreement of Terms cards show a "Required" badge when empty
+    Then the Datasets, Activities, and Data Use Terms cards show a "Required" badge when empty
 
   Scenario: Navigate to any section
     Given I am on the workspace overview
@@ -181,7 +180,7 @@ Feature: Workspace Sidebar Navigation
 
   Scenario: Sidebar displays all sections
     Given I am in the workspace
-    Then a sidebar is visible with navigation items: Overview, Datasets, Activities & Purpose, Agreement of Terms, Access & Users
+    Then a sidebar is visible with navigation items: Overview, Datasets, Activities & Purpose, Data Use Terms, Access & Users
 
   Scenario: Active section is highlighted
     Given I am viewing the Datasets section
@@ -282,6 +281,7 @@ Feature: AI Suggestions Panel
 
 **BRD Refs:** FR-COL-004, FR-COL-005, VS2-329
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -371,6 +371,7 @@ Feature: Workspace Dataset Refine Selection
 
 **BRD Refs:** FR-COL-006
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -397,6 +398,7 @@ Feature: Configure Inclusion Mechanisms
 **As a** DCM, **I want to** specify which data modalities and sources are included for each study, **so that** DPO knows what to provision and from where.
 
 **BRD Refs:** FR-COL-008 through FR-COL-012, VS2-332, VS2-333
+
 
 ### Acceptance Criteria
 
@@ -437,6 +439,7 @@ Feature: Configure Data Modalities & Sources
 
 **BRD Refs:** FR-COL-013 through FR-COL-015, VS2-334
 
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -456,7 +459,7 @@ Feature: Select Consumption Environments
 
 ### 1.14 - Workspace: Define Activities & Purpose `[M]`
 
-**As a** DCM, **I want to** define permitted activities organized by category, **so that** the Agreement of Terms accurately reflects what users can do with the data.
+**As a** DCM, **I want to** define permitted activities organized by category, **so that** the Data Use Terms accurately reflects what users can do with the data.
 
 ### Acceptance Criteria
 
@@ -491,16 +494,17 @@ Feature: Define Activities & Purpose
 
 ---
 
-### 1.15 - Workspace: Configure Agreement of Terms `[L]`
+### 1.15 - Workspace: Configure Data Use Terms `[L]`
 
-**As a** DCM, **I want to** define the Agreement of Terms including permitted uses, ML/AI permissions, publication rights, and restrictions, **so that** governance is clear.
+**As a** DCM, **I want to** define the Data Use Terms including permitted uses, ML/AI permissions, publication rights, and restrictions, **so that** governance is clear.
 
 **BRD Refs:** FR-COL-016
+
 
 ### Acceptance Criteria
 
 ```gherkin
-Feature: Configure Agreement of Terms
+Feature: Configure Data Use Terms
 
   Scenario: Primary use permissions
     Given I am on the Terms section
@@ -543,6 +547,7 @@ Feature: Configure Agreement of Terms
 **As a** DCM, **I want to** define who can access this collection by selecting from existing Immuta role groups and adding individual user overrides, **so that** the access scope is clear before promotion.
 
 **BRD Refs:** FR-COL-040, FR-COL-041
+
 
 > **Design Decision:** The workspace "Access & Users" section focuses on *access scope* — selecting which Immuta/ROAM role groups and individual users should receive access. This is distinct from *governance role assignment* (DCL, DDO, Collection Leader) which is covered in Epic 6 for post-draft management.
 
@@ -607,13 +612,14 @@ Feature: Define Access & Users
 
 **BRD Refs:** FR-COL-020
 
+
 ### Acceptance Criteria
 
 ```gherkin
 Feature: Promote Concept to Draft
 
   Scenario: Promote button enabled when all required sections complete
-    Given the Datasets, Activities, and Agreement of Terms sections are complete
+    Given the Datasets, Activities, and Data Use Terms sections are complete
     Then the "Promote to Draft" button is enabled in the sidebar
 
   Scenario: Promote button disabled when sections incomplete
@@ -649,6 +655,7 @@ Feature: Promote Concept to Draft
 **As a** DCM, **I want to** be warned if a similar collection already exists, **so I** don't create redundant collections.
 
 **BRD Refs:** VS2-340
+
 
 ### Acceptance Criteria
 

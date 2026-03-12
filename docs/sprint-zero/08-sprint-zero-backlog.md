@@ -803,12 +803,12 @@ Sprint Zero is complete when ALL of the following are true:
 |-------|-------|
 | **Task ID** | SZ-EXT-008 |
 | **Title** | Design In-App Approval Workflow and State Machine |
-| **Description** | Design the complete in-app approval workflow including: (1) Approval state machine (pending, in_review, approved, rejected, expired, invalidated) with valid transitions, (2) Digital acknowledgement capture requirements (timestamp, IP, user agent, session ID), (3) Notification triggers for each state transition (in-app + email), (4) Multi-TA "all or nothing" approval chain logic, (5) Audit trail events for every approval action, (6) SLA tracking and escalation rules. Output: Approval workflow specification document with state diagram, reviewed by compliance team. |
+| **Description** | Design the complete in-app approval workflow using the two-dimensional collection state model: (1) **governance_stage** transitions (concept → draft → pending_approval → approved / rejected) with valid transitions, (2) **operational_state** transitions (provisioning → live → suspended → decommissioned) triggered once governance_stage reaches approved, (3) **proposition lifecycle** (draft → submitted → approved → merged, or → rejected) for tracking in-flight changes to live collections — propositions are a separate entity; multiple concurrent propositions per collection are allowed with merge-time conflict resolution, (4) Digital acknowledgement capture requirements (timestamp, IP, user agent, session ID), (5) Notification triggers for each state dimension and proposition status change (in-app + email), (6) Multi-TA "all or nothing" approval chain logic, (7) Audit trail events for every approval action across both state dimensions and proposition lifecycle, (8) SLA tracking and escalation rules. Output: Approval workflow specification document with state diagrams for both collection dimensions and the proposition lifecycle, reviewed by compliance team. |
 | **Priority** | P0 |
 | **Effort** | M (3 days) -- requires compliance team input |
 | **Dependencies** | SZ-DB-001 (database schema) |
 | **Owner** | Tech Lead (TBC) |
-| **Definition of Done** | Approval state machine designed and documented; compliance team has reviewed audit trail requirements; notification triggers defined for each state transition; digital acknowledgement fields specified |
+| **Definition of Done** | Two-dimensional state model (governance_stage, operational_state) plus proposition lifecycle (draft → submitted → approved → merged / rejected) designed and documented with valid transitions; compliance team has reviewed audit trail requirements; notification triggers defined for each state dimension and proposition status change; digital acknowledgement fields specified |
 | **Status** | Not Started |
 
 ---

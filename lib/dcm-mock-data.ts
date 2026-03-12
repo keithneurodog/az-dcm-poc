@@ -449,7 +449,7 @@ export interface DatasetApprovalAction {
   timestamp: Date
 }
 
-// Agreement of Terms (AoT) interface
+// Data Use Terms (AoT) interface
 export interface AgreementOfTerms {
   id: string
   version: string
@@ -465,7 +465,8 @@ export interface AgreementOfTerms {
 
   // Beyond primary use
   beyondPrimaryUse: {
-    aiResearch: boolean                 // AI research / AI model training
+    aiResearch: boolean                 // Train AI/ML models
+    storeInAiMlModel: boolean           // Store data in AI/ML model
     softwareDevelopment: boolean        // Software development and testing
   }
 
@@ -3725,7 +3726,7 @@ export interface Collection {
   createdAt: Date
   createdBy: string
   creatorId: string // User ID of the creator for filtering "my collections"
-  isDraft: boolean // Draft collections are private and hidden from browse
+  isDraft: boolean // Concept collections are private and hidden from browse; drafts are public
   therapeuticAreas: string[] // For filtering
   tags: string[] // Additional metadata
   accessLevel: "member" | "public" | "restricted" | "request" // User's access status
@@ -3751,7 +3752,7 @@ export interface Collection {
     estimatedTime?: Date
   }[]
 
-  // Agreement of Terms
+  // Data Use Terms
   agreementOfTerms?: AgreementOfTerms
 }
 
@@ -3826,6 +3827,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
       },
       beyondPrimaryUse: {
         aiResearch: true,
+        storeInAiMlModel: true,
         softwareDevelopment: true,
       },
       publication: {
@@ -4277,7 +4279,7 @@ export const MOCK_COLLECTIONS: Collection[] = [
     createdAt: new Date("2026-01-25T14:30:00"),
     createdBy: "Jennifer Martinez",
     creatorId: "user-current",
-    isDraft: true,
+    isDraft: false,
     therapeuticAreas: ["Oncology"],
     tags: ["breast cancer", "genomics", "biomarkers", "draft"],
     accessLevel: "restricted",
@@ -4329,14 +4331,14 @@ export const MOCK_COLLECTIONS: Collection[] = [
 // Current user ID - in a real app this would come from auth
 export const CURRENT_USER_ID = "user-current"
 
-// Get collections that are visible to the current user (excludes other users' drafts)
+// Get collections that are visible to the current user (excludes other users' concepts)
 export function getVisibleCollections(): Collection[] {
-  return MOCK_COLLECTIONS.filter(col => !col.isDraft || col.creatorId === CURRENT_USER_ID)
+  return MOCK_COLLECTIONS.filter(col => col.status !== "concept" || col.creatorId === CURRENT_USER_ID)
 }
 
-// Get only published (non-draft) collections for browse
+// Get only public collections for browse (everything except concepts)
 export function getPublishedCollections(): Collection[] {
-  return MOCK_COLLECTIONS.filter(col => !col.isDraft)
+  return MOCK_COLLECTIONS.filter(col => col.status !== "concept")
 }
 
 // Get current user's collections (both drafts and published)
@@ -5104,7 +5106,7 @@ export function getTeamContact(teamName: string): TeamContact | undefined {
 }
 
 // ============================================================================
-// Agreement of Terms (AoT) Helper Functions
+// Data Use Terms (AoT) Helper Functions
 // ============================================================================
 
 export interface Activity {
@@ -5124,7 +5126,7 @@ export interface AoTConflict {
 }
 
 /**
- * Suggests Agreement of Terms based on selected activities and datasets
+ * Suggests Data Use Terms based on selected activities and datasets
  */
 export function suggestAoT(
   activities: Activity[],
@@ -5181,6 +5183,7 @@ export function suggestAoT(
     // Beyond primary use - conditional on activities and restrictions
     beyondPrimaryUse: {
       aiResearch: hasMLActivity && datasetsRestrictML.length === 0,
+      storeInAiMlModel: hasMLActivity && datasetsRestrictML.length === 0,
       softwareDevelopment: hasSoftwareDevActivity && datasetsRestrictSoftwareDev.length === 0
     },
 
@@ -5222,14 +5225,14 @@ export function detectAoTConflicts(
     if (!dataset.aotMetadata) continue
 
     // Check ML restriction
-    if (dataset.aotMetadata.restrictML && aot.beyondPrimaryUse.aiResearch) {
+    if (dataset.aotMetadata.restrictML && (aot.beyondPrimaryUse.aiResearch || aot.beyondPrimaryUse.storeInAiMlModel)) {
       conflicts.push({
         datasetId: dataset.id,
         datasetName: dataset.name,
         datasetCode: dataset.code,
         conflictType: 'ai_research',
-        conflictDescription: `Dataset ${dataset.code} requires AI/ML restriction, but AoT allows AI research`,
-        requiredAction: 'Restrict AI/ML research in AoT or remove this dataset',
+        conflictDescription: `Dataset ${dataset.code} requires AI/ML restriction, but AoT allows AI/ML usage`,
+        requiredAction: 'Disable AI/ML options in AoT or remove this dataset',
         severity: 'high'
       })
     }
@@ -5262,7 +5265,7 @@ export function detectAoTConflicts(
 
     // Check primary use only requirement
     if (dataset.aotMetadata.requirePrimaryUseOnly) {
-      if (aot.beyondPrimaryUse.aiResearch || aot.beyondPrimaryUse.softwareDevelopment) {
+      if (aot.beyondPrimaryUse.aiResearch || aot.beyondPrimaryUse.storeInAiMlModel || aot.beyondPrimaryUse.softwareDevelopment) {
         conflicts.push({
           datasetId: dataset.id,
           datasetName: dataset.name,

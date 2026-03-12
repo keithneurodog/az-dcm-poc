@@ -48,7 +48,7 @@ From Program Charter (A2):
 |------|------|-------------|
 | (A) | Agreement in Principle | Seek sponsorship from stakeholders |
 | (B) | OAC Agreement | Define data scope with DDO approval |
-| (C) | Agreement of Terms | Define users, terms, permissions |
+| (C) | Data Use Terms | Define users, terms, permissions |
 | (D) | Implement | Study lists, user lists, training, technical setup |
 | (E) | Access Granted | Users access via PDP or Entimice |
 | (F) | Maintain | Quarterly reviews, compliance checks |

@@ -73,7 +73,7 @@ The official ROAM process involves **4 actors** across swimlanes:
 - **Current:** Select permitted activities, AI suggests based on intent
 - **Captures:** Activity types, access levels, conflict detection
 
-### Step 5: Agreement of Terms
+### Step 5: Data Use Terms
 - **Current:** Configure AOT (ML/AI, publication rights, user scope)
 - **Captures:** Usage permissions, user count by department, conflict acknowledgment
 
@@ -584,7 +584,7 @@ THEN status across all layers is shown
    - Existing Step 4
    - No changes needed
 
-6. Agreement of Terms
+6. Data Use Terms
    - Existing Step 5
    - Add: Training requirements summary
    - Add: OAC template selection (if applicable)

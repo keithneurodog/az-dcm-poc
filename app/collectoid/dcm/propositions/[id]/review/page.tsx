@@ -380,7 +380,7 @@ export default function DCMPropositionReviewPage() {
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Shield className="size-4 text-neutral-500" strokeWidth={1.5} />
-                <h3 className="text-base font-normal text-neutral-900">Agreement of Terms Comparison</h3>
+                <h3 className="text-base font-normal text-neutral-900">Data Use Terms Comparison</h3>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
