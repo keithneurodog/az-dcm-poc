@@ -15,7 +15,6 @@ import {
   MessageSquare,
   LayoutDashboard,
   Clock,
-  Layers,
 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
