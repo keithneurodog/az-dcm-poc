@@ -2,18 +2,17 @@
 
 import { useState } from "react"
 import { Bell, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useColorScheme } from "./color-context"
 import { useNotifications } from "./notification-context"
 import { NotificationPanel } from "./notification-panel"
-import { cn } from "@/lib/utils"
 
 export function TopBar() {
   const { scheme } = useColorScheme()
   const { unreadCount } = useNotifications()
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false)
+  const [hoverOpen, setHoverOpen] = useState(false)
 
   return (
     <>
@@ -32,24 +31,33 @@ export function TopBar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setNotificationPanelOpen(true)}
-              className="relative size-9 p-0 rounded-full hover:bg-neutral-100"
-            >
-              <Bell className="size-5 text-neutral-600" />
-              {unreadCount > 0 && (
-                <Badge
-                  className={cn(
-                    "absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center text-xs font-light bg-gradient-to-r border-0 text-white",
-                    scheme.from, scheme.to
-                  )}
+            <Popover open={hoverOpen} onOpenChange={setHoverOpen}>
+              <PopoverTrigger asChild>
+                <div
+                  className="relative size-9 flex items-center justify-center rounded-full opacity-40 cursor-default"
+                  onMouseEnter={() => setHoverOpen(true)}
+                  onMouseLeave={() => setHoverOpen(false)}
                 >
-                  {unreadCount}
-                </Badge>
-              )}
-            </Button>
+                  <Bell className="size-5 text-neutral-400" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                side="bottom"
+                align="end"
+                className="w-64 p-4 rounded-xl"
+                onMouseEnter={() => setHoverOpen(true)}
+                onMouseLeave={() => setHoverOpen(false)}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <div className="flex flex-col items-center text-center gap-2">
+                  <Bell className="size-5 text-neutral-300" strokeWidth={1.5} />
+                  <p className="text-sm font-normal text-neutral-700">Notifications</p>
+                  <p className="text-xs font-light text-neutral-400 leading-relaxed">
+                    Real-time alerts for approvals, access changes, and collection updates are coming soon.
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>

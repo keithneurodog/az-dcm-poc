@@ -33,6 +33,8 @@ export function Sidebar() {
 
   const basePath = "/collectoid-v2/delivery-demo"
 
+  const comingSoonItems = new Set(["Notifications"])
+
   const navigation = [
     { name: "Dashboard", href: `${basePath}/dashboard`, icon: LayoutDashboard },
     { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle },
@@ -85,42 +87,33 @@ export function Sidebar() {
               isActive = pathname === item.href
             }
 
+            const isComingSoon = comingSoonItems.has(item.name)
+
             const linkContent = (
               <Link
                 href={item.href}
                 className={cn(
                   "group flex items-center gap-3 py-3 text-sm font-light transition-all rounded-xl relative",
                   isCollapsed ? "justify-center px-2" : "px-4",
-                  isActive
-                    ? cn("bg-gradient-to-r text-white shadow-md", scheme.from, scheme.to)
-                    : "text-neutral-600 hover:bg-neutral-50"
+                  isComingSoon
+                    ? "text-neutral-400 hover:bg-neutral-50 hover:text-neutral-500"
+                    : isActive
+                      ? cn("bg-gradient-to-r text-white shadow-md", scheme.from, scheme.to)
+                      : "text-neutral-600 hover:bg-neutral-50"
                 )}
               >
-                <Icon className="size-5 shrink-0" />
+                <Icon className={cn("size-5 shrink-0", isComingSoon && "opacity-60")} />
                 {!isCollapsed && <span className="flex-1">{item.name}</span>}
-                {item.name === "Dashboard" && criticalCount > 0 && (
+                {!isCollapsed && isComingSoon && (
+                  <span className="text-[10px] font-normal px-2 py-0.5 rounded-full border border-neutral-300 text-neutral-400">
+                    Soon
+                  </span>
+                )}
+                {!isComingSoon && item.name === "Dashboard" && criticalCount > 0 && (
                   <div className={cn(
                     "size-2 rounded-full bg-red-500 animate-pulse shadow-lg",
                     isCollapsed && "absolute top-1 right-1"
                   )} />
-                )}
-                {item.name === "Notifications" && unreadCount > 0 && (
-                  isCollapsed ? (
-                    <div className="absolute -top-1 -right-1 size-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </div>
-                  ) : (
-                    <Badge
-                      className={cn(
-                        "text-xs font-light border-0",
-                        isActive
-                          ? "bg-white/20 text-white"
-                          : cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
-                      )}
-                    >
-                      {unreadCount}
-                    </Badge>
-                  )
                 )}
               </Link>
             )

@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useColorScheme } from "../_components"
-import { useNotifications } from "../_components"
+import { useColorScheme, useNotifications, ComingSoonPanel } from "../_components"
 import { cn } from "@/lib/utils"
 import {
   Clock,
@@ -31,6 +30,9 @@ import {
   ChevronUp,
   FileEdit,
   EyeOff,
+  ShieldCheck,
+  Users,
+  FileText,
 } from "lucide-react"
 import { MOCK_COLLECTIONS, CURRENT_USER_ID, getMyCollections, getMyDraftCollections, getMyConceptCollections, getMyDraftStageCollections } from "@/lib/dcm-mock-data"
 import { useMemo, useState } from "react"
@@ -593,84 +595,17 @@ export default function CollectoidDashboard() {
           </CardContent>
         </Card>
 
-        {/* Recent Notifications */}
-        <Card className="border-neutral-200 rounded-2xl overflow-hidden">
-          <CardHeader className="border-b border-neutral-100 bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-light text-neutral-900">
-                  Recent Notifications
-                </CardTitle>
-                <CardDescription className="font-light">{unreadCount} unread</CardDescription>
-              </div>
-              {(() => {
-                const displayedCritical = getActiveNotifications().slice(0, 4).filter(n => n.priority === "critical").length
-                return displayedCritical > 0 ? (
-                  <Badge className={cn("bg-gradient-to-r text-white border-0 font-light", scheme.from, scheme.to)}>
-                    {displayedCritical} Critical
-                  </Badge>
-                ) : null
-              })()}
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-3">
-            {getActiveNotifications()
-              .slice(0, 4)
-              .map((notification) => {
-                const priorityColors = {
-                  critical: "bg-red-50 border-red-100 text-red-900",
-                  high: "bg-amber-50 border-amber-100 text-amber-900",
-                  medium: "bg-blue-50 border-blue-100 text-blue-900",
-                  low: "bg-green-50 border-green-100 text-green-900",
-                }
-                return (
-                  <div
-                    key={notification.id}
-                    onClick={() => {
-                      if (typeof window !== "undefined") {
-                        sessionStorage.setItem("dcm_current_collection_id", notification.collectionId)
-                      }
-                      router.push("/collectoid-v2/delivery-demo/notifications")
-                    }}
-                    className={cn(
-                      "p-3 rounded-xl border cursor-pointer hover:shadow-md transition-all",
-                      notification.isRead ? "bg-white border-neutral-100" : priorityColors[notification.priority]
-                    )}
-                  >
-                    <div className="flex items-start gap-2 mb-1">
-                      {!notification.isRead && (
-                        <div className={cn("size-2 rounded-full bg-gradient-to-r mt-1.5 shrink-0", scheme.from, scheme.to)} />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-normal block truncate">
-                          {notification.title}
-                        </span>
-                        <p className="text-xs font-light text-neutral-600 mt-1 line-clamp-1">
-                          {notification.message}
-                        </p>
-                        <p className="text-xs font-light text-neutral-500 mt-1" suppressHydrationWarning>
-                          {notification.timestamp.toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-
-            <Button
-              variant="outline"
-              onClick={() => router.push("/collectoid-v2/delivery-demo/notifications")}
-              className="w-full rounded-xl font-light border-neutral-200"
-            >
-              View All Notifications
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Notifications — Coming Soon */}
+        <ComingSoonPanel
+          icon={Bell}
+          title="Notifications"
+          description="Never miss an approval request, access change, or collection update. Notifications will keep you informed so you can act quickly when it counts."
+          benefits={[
+            { icon: ShieldCheck, text: "Approval alerts when collections need your review" },
+            { icon: Users, text: "Access updates as users are granted or provisioned" },
+            { icon: FileText, text: "Collection changes when datasets or terms are modified" },
+          ]}
+        />
       </div>
 
       {/* Recent Activity Stream */}
