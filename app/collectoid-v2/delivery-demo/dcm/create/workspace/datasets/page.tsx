@@ -8,6 +8,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
@@ -61,6 +69,10 @@ import {
   Columns3,
   Eye,
   EyeOff,
+  Filter,
+  TrendingUp,
+  Lightbulb,
+  Info,
 } from "lucide-react"
 import { getEnrichedDatasets, DatasetWithROAMFields } from "@/lib/dcm-mock-data"
 
@@ -649,14 +661,198 @@ export default function WorkspaceDatasetsPage() {
           <p className="text-base font-light text-neutral-600 max-w-2xl mx-auto mb-3">
             Filter and select the datasets you need for your collection
           </p>
-          <button className={cn(
-            "inline-flex items-center gap-2 text-sm font-light transition-colors",
-            scheme.from.replace("from-", "text-"),
-            "hover:underline"
-          )}>
-            <HelpCircle className="size-4" />
-            Learn about smart filtering
-          </button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <button className={cn(
+                "inline-flex items-center gap-2 text-sm font-light transition-colors",
+                scheme.from.replace("from-", "text-"),
+                "hover:underline"
+              )}>
+                <HelpCircle className="size-4" />
+                Learn about smart filtering
+              </button>
+            </SheetTrigger>
+            <SheetContent className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+              <div className="px-6 pb-6">
+                <SheetHeader>
+                  <SheetTitle className="text-2xl font-light text-neutral-900 flex items-center gap-2">
+                    <Filter className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                    Smart Filtering Explained
+                  </SheetTitle>
+                  <SheetDescription className="font-light">
+                    Understanding multi-dimensional dataset refinement
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="mt-6 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-normal text-neutral-900 mb-3">What is this screen for?</h3>
+                    <p className="text-sm font-light text-neutral-700 leading-relaxed">
+                      This screen helps you narrow down the exact studies you need. Think of it as a sophisticated
+                      search tool that lets you combine different filtering approaches to find the perfect datasets
+                      for your collection.
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="text-lg font-normal text-neutral-900 mb-4 flex items-center gap-2">
+                      <Zap className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      Two Ways to Filter
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                        <div className="flex items-start gap-3">
+                          <div className={cn(
+                            "flex size-8 shrink-0 items-center justify-center rounded-full text-white bg-gradient-to-br",
+                            scheme.from, scheme.to
+                          )}>
+                            <Sparkles className="size-4" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-normal text-neutral-900 mb-2">AI Smart Filter (Recommended)</h4>
+                            <p className="text-xs font-light text-neutral-600 leading-relaxed mb-2">
+                              Describe what you&apos;re looking for in plain language. The AI understands complex
+                              requirements and applies intelligent semantic filtering.
+                            </p>
+                            <p className="text-xs font-light text-neutral-500 italic">
+                              Example: &quot;Show me recent oncology studies with imaging data in Europe&quot;
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-neutral-200 p-4 bg-white">
+                        <div className="flex items-start gap-3">
+                          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600">
+                            <Sliders className="size-4" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-sm font-normal text-neutral-900 mb-2">Traditional Filters (Left Sidebar)</h4>
+                            <p className="text-xs font-light text-neutral-600 leading-relaxed mb-2">
+                              Use checkboxes and dropdowns to filter by specific criteria like phase, status,
+                              geography, and more. Perfect for precise, structured filtering.
+                            </p>
+                            <p className="text-xs font-light text-neutral-500 italic">
+                              Tip: You can combine both approaches for maximum precision!
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="text-lg font-normal text-neutral-900 mb-4 flex items-center gap-2">
+                      <Layers className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      Filter Dimensions Available
+                    </h3>
+                    <div className="space-y-2 text-sm font-light text-neutral-700">
+                      {[
+                        { label: "Study Characteristics", desc: "Phase, status, therapeutic area, geography, patient population, objectives" },
+                        { label: "Data Reuse & Compliance", desc: "Internal/external research permissions and restrictions" },
+                        { label: "Data Modalities", desc: "Clinical, genomic, imaging, biomarker, patient-reported outcomes" },
+                        { label: "Collection Context", desc: "Crossover (how many other collections include this data) and usage patterns" },
+                        { label: "Study Sponsor", desc: "Who ran the study (sponsor, investigator, academic, etc.)" },
+                      ].map((dim) => (
+                        <div key={dim.label} className="flex items-start gap-2">
+                          <CheckCircle2 className={cn("size-4 shrink-0 mt-0.5", scheme.from.replace("from-", "text-"))} />
+                          <div><span className="font-normal">{dim.label}</span> - {dim.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="text-lg font-normal text-neutral-900 mb-3 flex items-center gap-2">
+                      <TrendingUp className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      Real-Time Result Updates
+                    </h3>
+                    <p className="text-sm font-light text-neutral-700 leading-relaxed mb-3">
+                      As you adjust filters, the dataset count updates instantly. You&apos;ll see:
+                    </p>
+                    <div className="space-y-2 text-sm font-light text-neutral-700">
+                      {[
+                        { color: "bg-green-500", text: "How many datasets match your criteria" },
+                        { color: "bg-blue-500", text: "Which specific studies meet your requirements" },
+                        { color: "bg-amber-500", text: "Access eligibility breakdown for each dataset" },
+                        { color: "bg-purple-500", text: "Smart suggestions (frequently bundled datasets)" },
+                      ].map((item) => (
+                        <div key={item.text} className="flex items-start gap-2">
+                          <div className={cn("size-1.5 rounded-full shrink-0 mt-2", item.color)} />
+                          <div>{item.text}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="text-lg font-normal text-neutral-900 mb-3 flex items-center gap-2">
+                      <Database className={cn("size-5", scheme.from.replace("from-", "text-"))} />
+                      Building Your Collection
+                    </h3>
+                    <p className="text-sm font-light text-neutral-700 leading-relaxed mb-3">
+                      Click &quot;Add to Collection&quot; on any dataset to include it. Your selections appear in:
+                    </p>
+                    <div className="space-y-2">
+                      <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
+                        <p className="text-xs font-normal text-neutral-900 mb-1">Right Sidebar (if visible)</p>
+                        <p className="text-xs font-light text-neutral-600">
+                          Quick access panel showing all your selected datasets with mini access breakdowns
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
+                        <p className="text-xs font-normal text-neutral-900 mb-1">Bottom Floating Cart</p>
+                        <p className="text-xs font-light text-neutral-600">
+                          Aggregate view with combined access provisioning breakdown and continue button
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
+                    <div className="flex gap-3">
+                      <Lightbulb className="size-5 shrink-0 text-blue-600 mt-0.5" />
+                      <div className="text-sm font-light text-blue-900">
+                        <p className="mb-2 font-normal">Pro Tips</p>
+                        <ul className="text-blue-700 leading-relaxed space-y-1 text-xs">
+                          <li>Start broad with AI Smart Filter, then refine with traditional filters</li>
+                          <li>Watch the &quot;Collection Crossover&quot; info to avoid duplicate data</li>
+                          <li>Check &quot;Frequently bundled with&quot; suggestions for related datasets</li>
+                          <li>Use the access breakdown to understand provisioning complexity</li>
+                          <li>You can always go back and adjust your category selections</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="rounded-xl bg-green-50 border border-green-100 p-4">
+                    <div className="flex gap-3">
+                      <Info className="size-5 shrink-0 text-green-600 mt-0.5" />
+                      <div className="text-sm font-light text-green-900">
+                        <p className="mb-2 font-normal">What happens next?</p>
+                        <p className="text-green-700 leading-relaxed text-xs">
+                          After selecting your datasets, you&apos;ll define the activities and intents for your collection
+                          (data engineering vs. scientific analysis), which affects access provisioning levels.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Compact Filter Panel */}
