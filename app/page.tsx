@@ -257,6 +257,16 @@ export default function IntroductionPage() {
                 <ArrowRight className="ml-1.5 size-3" />
               </Button>
             </Link>
+            <Link href="/collectoid-v2/delivery-demo/dashboard">
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full text-xs h-8 px-4 border-neutral-300 hover:border-neutral-900 hover:bg-transparent"
+              >
+                Delivery Demo
+                <ArrowRight className="ml-1.5 size-3" />
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -282,6 +292,12 @@ export default function IntroductionPage() {
             <Link href="/collectoid-v2">
               <Button className="rounded-full h-10 px-5 bg-neutral-900 hover:bg-neutral-800 text-sm">
                 DCM Only
+                <ArrowRight className="ml-2 size-3.5" />
+              </Button>
+            </Link>
+            <Link href="/collectoid-v2/delivery-demo/dashboard">
+              <Button className="rounded-full h-10 px-5 bg-neutral-900 hover:bg-neutral-800 text-sm">
+                Delivery Demo
                 <ArrowRight className="ml-2 size-3.5" />
               </Button>
             </Link>
