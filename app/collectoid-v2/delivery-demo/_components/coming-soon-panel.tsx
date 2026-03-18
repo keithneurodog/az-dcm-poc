@@ -20,11 +20,7 @@ export function ComingSoonPanel({
   const { scheme } = useColorScheme()
 
   return (
-    <div className={cn(
-      "flex flex-col items-center justify-center text-center rounded-xl border border-dashed p-10",
-      scheme.from.replace("from-", "border-").replace("500", "200"),
-      scheme.from.replace("from-", "bg-").replace("500", "50/30"),
-    )}>
+    <div className="flex flex-col items-center justify-center text-center rounded-xl border border-neutral-200 bg-white p-10">
       <div className="flex items-center gap-2 mb-3">
         <Icon className={cn("size-4", scheme.from.replace("from-", "text-").replace("500", "300"))} strokeWidth={1.5} />
         <span className="text-sm font-normal text-neutral-600">{title}</span>
