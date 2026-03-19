@@ -1,6 +1,8 @@
 "use client"
 
 import { ReactNode } from "react"
+import Link from "next/link"
+import { ArrowLeft, Archive } from "lucide-react"
 import {
   ColorSchemeProvider,
   NotificationProvider,
@@ -8,55 +10,37 @@ import {
   VariationProvider,
   Sidebar,
   TopBar,
-  DevWidget,
-  NotesProvider,
-  NotesWrapper,
-  NotesFloatingPanel,
 } from "./_components"
-import { FEATURE_FLAGS } from "@/lib/feature-flags"
 
 export default function CollectoidLayout({ children }: { children: ReactNode }) {
-  const notesEnabled = FEATURE_FLAGS.NOTES_ENABLED
-
-  const content = (
-    <div className="mx-auto px-6 xl:px-12 py-6 xl:py-8 max-w-[1600px]">{children}</div>
-  )
-
   return (
     <ColorSchemeProvider>
       <NotificationProvider>
-        {notesEnabled ? (
-          <NotesProvider>
-            <VariationProvider>
-              <SidebarProvider>
-                <div className="flex h-screen bg-neutral-50 relative">
-                  <Sidebar />
-                  <div className="flex flex-1 flex-col overflow-hidden">
-                    <TopBar />
-                    <main className="flex-1 overflow-auto">
-                      <NotesWrapper>{content}</NotesWrapper>
-                    </main>
-                  </div>
-                  <DevWidget />
-                  <NotesFloatingPanel />
+        <VariationProvider>
+          <SidebarProvider>
+            <div className="flex h-screen bg-neutral-50 relative">
+              <Sidebar />
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <TopBar />
+                {/* Legacy banner */}
+                <div className="bg-amber-50 border-b border-amber-200 px-6 py-2 flex items-center gap-3">
+                  <Archive className="size-4 text-amber-600" />
+                  <span className="text-xs text-amber-700 font-light">Legacy Archive — This is the original V1 create flow, kept for reference.</span>
+                  <Link
+                    href="/collectoid-v2"
+                    className="ml-auto flex items-center gap-1.5 text-xs text-amber-700 hover:text-amber-900 font-light transition-colors"
+                  >
+                    <ArrowLeft className="size-3" />
+                    Back to main app
+                  </Link>
                 </div>
-              </SidebarProvider>
-            </VariationProvider>
-          </NotesProvider>
-        ) : (
-          <VariationProvider>
-            <SidebarProvider>
-              <div className="flex h-screen bg-neutral-50 relative">
-                <Sidebar />
-                <div className="flex flex-1 flex-col overflow-hidden">
-                  <TopBar />
-                  <main className="flex-1 overflow-auto">{content}</main>
-                </div>
-                <DevWidget />
+                <main className="flex-1 overflow-auto">
+                  <div className="mx-auto px-6 xl:px-12 py-6 xl:py-8 max-w-[1600px]">{children}</div>
+                </main>
               </div>
-            </SidebarProvider>
-          </VariationProvider>
-        )}
+            </div>
+          </SidebarProvider>
+        </VariationProvider>
       </NotificationProvider>
     </ColorSchemeProvider>
   )

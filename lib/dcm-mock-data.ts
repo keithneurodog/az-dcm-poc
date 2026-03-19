@@ -4467,7 +4467,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 7200000), // 2 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. Sarah Martinez", role: "GPT-Oncology Lead" }],
   },
   {
@@ -4482,7 +4482,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 14400000), // 4 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. David Kumar", role: "Collection Owner" }],
   },
   {
@@ -4497,7 +4497,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 3600000), // 1 hour ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Emily Rodriguez", role: "Data Scientist" }],
   },
   {
@@ -4512,7 +4512,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 10800000), // 3 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "GPT-Oncology Team", role: "Approval Team" }],
   },
   {
@@ -4526,7 +4526,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 172800000), // 2 days ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4540,7 +4540,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 1800000), // 30 minutes ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4555,7 +4555,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 21600000), // 6 hours ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Lisa Thompson", role: "Collection Owner" }],
   },
   {
@@ -4569,7 +4569,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 432000000), // 5 days ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4584,7 +4584,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 28800000), // 8 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. Michael Chen", role: "Collection Owner" }],
   },
   {
@@ -4598,7 +4598,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 43200000), // 12 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "GPT-Rare-Disease Team", role: "Approval Team" }],
   },
   // Additional notifications for full-screen view
@@ -4613,7 +4613,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 86400000), // 1 day ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4627,7 +4627,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 54000000), // 15 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Emily Rodriguez", role: "Collection Owner" }],
   },
   {
@@ -4642,7 +4642,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 79200000), // 22 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. David Kumar", role: "Collection Owner" }],
   },
   {
@@ -4656,7 +4656,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 129600000), // 1.5 days ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "GPT-Neurology Team", role: "Approval Team" }],
   },
   {
@@ -4670,7 +4670,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 259200000), // 3 days ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4684,7 +4684,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 18000000), // 5 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "TALT-Legal Team", role: "Compliance" }],
   },
   {
@@ -4698,7 +4698,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 345600000), // 4 days ago
     isRead: true,
     isArchived: true,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "System", role: "Automated" }],
   },
   {
@@ -4713,7 +4713,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 194400000), // 2.25 days ago
     isRead: true,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. Sarah Martinez", role: "GPT-Cardiology" }],
   },
   {
@@ -4727,7 +4727,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 604800000), // 7 days ago
     isRead: true,
     isArchived: true,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "Dr. Sarah Martinez", role: "Principal Investigator" }],
   },
   {
@@ -4741,7 +4741,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     timestamp: new Date(Date.now() - 25200000), // 7 hours ago
     isRead: false,
     isArchived: false,
-    actionUrl: "/collectoid/dcm/progress",
+    actionUrl: "/collectoid-v2/dcm/progress",
     actors: [{ name: "GPT-Immunology Team", role: "Clinical Trial Lead" }],
   },
 ]

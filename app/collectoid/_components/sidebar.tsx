@@ -3,25 +3,15 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard,
   PlusCircle,
-  Settings,
   Circle,
   Sparkles,
-  Database,
-  Bell,
-  Search,
-  FileText,
-  Inbox,
   ChevronLeft,
   ChevronRight,
-  BarChart3,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useColorScheme } from "./color-context"
-import { useNotifications } from "./notification-context"
 import { useSidebar } from "./sidebar-context"
-import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
   TooltipContent,
@@ -32,21 +22,12 @@ import {
 export function Sidebar() {
   const pathname = usePathname()
   const { scheme } = useColorScheme()
-  const { criticalCount, unreadCount } = useNotifications()
   const { isCollapsed, toggleSidebar } = useSidebar()
 
   const basePath = "/collectoid"
 
   const navigation = [
-    { name: "Dashboard", href: basePath, icon: LayoutDashboard },
-    { name: "Discover Data", href: `${basePath}/discover`, icon: Search, section: "end-user" },
-    { name: "Browse Collections", href: `${basePath}/collections`, icon: Database },
-    { name: "My Requests", href: `${basePath}/my-requests`, icon: FileText, section: "end-user" },
-    { name: "Notifications", href: `${basePath}/notifications`, icon: Bell },
-    { name: "DCM Propositions", href: `${basePath}/dcm/propositions`, icon: Inbox, section: "dcm" },
-    { name: "Analytics", href: `${basePath}/dcm/analytics`, icon: BarChart3, section: "dcm" },
-    { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle, section: "dcm" },
-    { name: "Settings", href: "#", icon: Settings },
+    { name: "Create Collection", href: `${basePath}/dcm/create`, icon: PlusCircle },
   ]
 
   return (
@@ -69,7 +50,7 @@ export function Sidebar() {
             {!isCollapsed && (
               <div>
                 <span className="font-light text-lg text-neutral-900 tracking-tight">DCM Platform</span>
-                <p className="text-xs text-neutral-500">Prototype</p>
+                <p className="text-xs text-neutral-500">Legacy Archive</p>
               </div>
             )}
           </div>
@@ -81,20 +62,8 @@ export function Sidebar() {
             const Icon = item.icon
             let isActive
 
-            if (item.name === "Dashboard") {
-              isActive = pathname === basePath
-            } else if (item.name === "Create Collection") {
+            if (item.name === "Create Collection") {
               isActive = pathname.startsWith(`${basePath}/dcm/create`)
-            } else if (item.name === "Discover Data") {
-              isActive = pathname.startsWith(`${basePath}/discover`)
-            } else if (item.name === "My Requests") {
-              isActive = pathname.startsWith(`${basePath}/my-requests`) || pathname.startsWith(`${basePath}/requests`)
-            } else if (item.name === "DCM Propositions") {
-              isActive = pathname.startsWith(`${basePath}/dcm/propositions`)
-            } else if (item.name === "Analytics") {
-              isActive = pathname.startsWith(`${basePath}/dcm/analytics`)
-            } else if (item.name === "Browse Collections") {
-              isActive = pathname === `${basePath}/collections` || pathname.startsWith(`${basePath}/collections/`) || pathname.startsWith(`${basePath}/dcm/progress`)
             } else {
               isActive = pathname === item.href
             }
@@ -112,30 +81,6 @@ export function Sidebar() {
               >
                 <Icon className="size-5 shrink-0" />
                 {!isCollapsed && <span className="flex-1">{item.name}</span>}
-                {item.name === "Dashboard" && criticalCount > 0 && (
-                  <div className={cn(
-                    "size-2 rounded-full bg-red-500 animate-pulse shadow-lg",
-                    isCollapsed && "absolute top-1 right-1"
-                  )} />
-                )}
-                {item.name === "Notifications" && unreadCount > 0 && (
-                  isCollapsed ? (
-                    <div className="absolute -top-1 -right-1 size-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </div>
-                  ) : (
-                    <Badge
-                      className={cn(
-                        "text-xs font-light border-0",
-                        isActive
-                          ? "bg-white/20 text-white"
-                          : cn("bg-gradient-to-r text-white", scheme.from, scheme.to)
-                      )}
-                    >
-                      {unreadCount}
-                    </Badge>
-                  )
-                )}
               </Link>
             )
 

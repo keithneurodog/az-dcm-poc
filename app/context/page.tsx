@@ -198,7 +198,7 @@ export default function ContextPage() {
                 </ul>
               </div>
               <Button asChild className="w-full">
-                <Link href="/collectoid/dcm/create">
+                <Link href="/collectoid-v2/dcm/create">
                   Explore DCM Prototype
                   <ArrowRight className="ml-2 size-4" />
                 </Link>

@@ -14,21 +14,6 @@ const variationLoaders: Record<string, () => Promise<RouteVariations>> = {
       defaultVariation: mod.defaultVariation,
     }
   },
-  "/collectoid/collections": async () => {
-    const mod = await import("@/app/collectoid/collections/_variations")
-    return {
-      variations: mod.variations,
-      defaultVariation: mod.defaultVariation,
-    }
-  },
-  "/collectoid/discover/ai": async () => {
-    const mod = await import("@/app/collectoid/discover/ai/_variations")
-    return {
-      variations: mod.variations,
-      defaultVariation: mod.defaultVariation,
-    }
-  },
-  // Add more routes as needed
 }
 
 // Cache for loaded variations
