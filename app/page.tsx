@@ -243,7 +243,7 @@ export default function IntroductionPage() {
                 variant="outline"
                 className="rounded-full text-xs h-8 px-4 border-neutral-300 hover:border-neutral-900 hover:bg-transparent"
               >
-                DCM + End User
+                Version 1
                 <ArrowRight className="ml-1.5 size-3" />
               </Button>
             </Link>
@@ -253,7 +253,7 @@ export default function IntroductionPage() {
                 variant="outline"
                 className="rounded-full text-xs h-8 px-4 border-neutral-300 hover:border-neutral-900 hover:bg-transparent"
               >
-                DCM Only
+                Version 2
                 <ArrowRight className="ml-1.5 size-3" />
               </Button>
             </Link>
@@ -285,13 +285,13 @@ export default function IntroductionPage() {
           <div className="flex items-center gap-4 mt-8">
             <Link href="/collectoid">
               <Button className="rounded-full h-10 px-5 bg-neutral-900 hover:bg-neutral-800 text-sm">
-                DCM + End User
+                Version 1
                 <ArrowRight className="ml-2 size-3.5" />
               </Button>
             </Link>
             <Link href="/collectoid-v2">
               <Button className="rounded-full h-10 px-5 bg-neutral-900 hover:bg-neutral-800 text-sm">
-                DCM Only
+                Version 2
                 <ArrowRight className="ml-2 size-3.5" />
               </Button>
             </Link>

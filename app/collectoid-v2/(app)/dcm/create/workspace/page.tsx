@@ -7,6 +7,47 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import type { AgreementOfTerms } from "@/lib/dcm-mock-data"
+
+// Activity name lookup
+const ACTIVITY_NAMES: Record<string, string> = {
+  "cross-study": "Cross-Study Learning",
+  "publications": "Scientific Publications",
+  "biomarker": "Biomarker Identification",
+  "drug-dev": "Drug Development Support",
+  "regulatory": "Regulatory Submissions",
+  "diagnostic": "Diagnostic Development",
+  "safety-monitoring": "Safety Monitoring",
+  "signal-detection": "Signal Detection",
+  "ai-analytics": "AI Analytics",
+  "ai-training": "AI Model Development & Training",
+  "cohort-builder": "Cohort Identification",
+}
+
+// Role group name lookup
+const ROLE_GROUP_NAMES: Record<string, { name: string; members: number }> = {
+  "rg-onc-bio": { name: "Oncology Biometrics", members: 45 },
+  "rg-onc-ds": { name: "Oncology Data Science", members: 62 },
+  "rg-cvrm": { name: "CVRM Analytics", members: 28 },
+  "rg-neuro": { name: "Neuroscience Research", members: 19 },
+  "rg-ri-bio": { name: "R&I Biometrics", members: 34 },
+  "rg-vi-stats": { name: "V&I Statistics", members: 22 },
+  "rg-data-eng": { name: "Data Engineering", members: 41 },
+  "rg-bioinformatics": { name: "Bioinformatics", members: 27 },
+  "rg-stat-prog": { name: "Statistical Programming", members: 53 },
+  "rg-cpqp": { name: "Clinical Pharmacology", members: 18 },
+  "rg-pdp-team": { name: "PDP Platform Team", members: 12 },
+  "rg-immuta-admins": { name: "Immuta Administrators", members: 8 },
+  "rg-starburst-users": { name: "Starburst Platform Users", members: 156 },
+}
+
+const PRIMARY_USE_LABELS: Record<string, string> = {
+  understandDrugMechanism: "Understand how drugs work",
+  understandDisease: "Better understand disease",
+  developDiagnosticTests: "Develop diagnostic tests",
+  learnFromPastStudies: "Learn from past studies",
+  improveAnalysisMethods: "Improve analysis methods",
+}
 import { useColorScheme } from "@/app/collectoid-v2/(app)/_components"
 import { useWorkspace } from "./layout"
 import { cn } from "@/lib/utils"
@@ -26,6 +67,10 @@ import {
   Check,
   Share2,
   ArrowRight,
+  Calendar,
+  Beaker,
+  MapPin,
+  ChevronDown as ChevronDownIcon,
 } from "lucide-react"
 
 interface SectionCard {
@@ -37,6 +82,181 @@ interface SectionCard {
   required: boolean
   count?: number
   href: string
+}
+
+// Variation C helper component
+function SummaryStrip({
+  scheme,
+  datasets,
+  patients,
+  activities,
+  activityNames,
+  accessGroups,
+  roleDetails,
+  totalMembers,
+  therapeuticAreas,
+  phases,
+  modalities,
+  hasTerms,
+  terms,
+  termsSummary,
+  createdAt,
+}: {
+  scheme: ReturnType<typeof useColorScheme>["scheme"]
+  datasets: number
+  patients: number
+  activities: number
+  activityNames: string[]
+  accessGroups: number
+  roleDetails: { name: string; members: number }[]
+  totalMembers: number
+  therapeuticAreas: string[]
+  phases: string[]
+  modalities: string[]
+  hasTerms: boolean
+  terms: AgreementOfTerms | null
+  termsSummary: string[]
+  createdAt: string | null
+}) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <Card className="border-neutral-200 rounded-2xl overflow-hidden">
+      <CardContent className="p-0">
+        {/* Collapsed strip */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-between px-6 py-4 hover:bg-neutral-50 transition-colors"
+        >
+          <div className="flex items-center gap-6 text-sm font-light text-neutral-700">
+            <span className="flex items-center gap-1.5">
+              <Database className="size-3.5 text-neutral-400" />
+              <span className="font-normal">{datasets}</span> datasets
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Target className="size-3.5 text-neutral-400" />
+              <span className="font-normal">{activities}</span> activities
+            </span>
+            {therapeuticAreas.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <Beaker className="size-3.5 text-neutral-400" />
+                <span className="font-normal">{therapeuticAreas.length}</span> TA{therapeuticAreas.length !== 1 ? "s" : ""}
+              </span>
+            )}
+            {accessGroups > 0 && (
+              <span className="flex items-center gap-1.5">
+                <Users className="size-3.5 text-neutral-400" />
+                <span className="font-normal">{accessGroups}</span> groups
+              </span>
+            )}
+            {hasTerms && (
+              <span className="flex items-center gap-1.5 text-neutral-400">
+                <Shield className="size-3.5" />
+                Terms set
+              </span>
+            )}
+          </div>
+          <ChevronDownIcon className={cn("size-4 text-neutral-400 transition-transform", expanded && "rotate-180")} />
+        </button>
+
+        {/* Expanded detail */}
+        {expanded && (
+          <div className="px-6 pb-5 pt-1 border-t border-neutral-100">
+            <div className="flex flex-wrap gap-x-8 gap-y-4 mt-3">
+              {patients > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Patients</p>
+                  <p className="text-sm font-light text-neutral-700">{patients.toLocaleString()}</p>
+                </div>
+              )}
+              {therapeuticAreas.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Therapeutic Areas</p>
+                  <div className="flex flex-wrap gap-1">
+                    {therapeuticAreas.map(ta => (
+                      <span key={ta} className={cn("text-xs font-light px-2 py-0.5 rounded-md", scheme.bg, scheme.from.replace("from-", "text-").replace("500", "700"))}>{ta}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {phases.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Phases</p>
+                  <div className="flex flex-wrap gap-1">
+                    {phases.map(p => (
+                      <span key={p} className="text-xs font-light text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-md">{p}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {modalities.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Modalities</p>
+                  <div className="flex flex-wrap gap-1">
+                    {modalities.map(m => (
+                      <span key={m} className="text-xs font-light text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-md">{m}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Activities list */}
+              {activityNames.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Activities</p>
+                  <div className="space-y-0.5">
+                    {activityNames.map(name => (
+                      <div key={name} className="flex items-center gap-2 text-xs font-light text-neutral-600">
+                        <div className={cn("size-1.5 rounded-full", scheme.from.replace("from-", "bg-"))} />
+                        {name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Terms summary */}
+              {terms && termsSummary.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Data Use Terms</p>
+                  <div className="space-y-0.5">
+                    {termsSummary.map(line => (
+                      <div key={line} className="flex items-start gap-2 text-xs font-light text-neutral-600">
+                        <CheckCircle2 className="size-3 text-green-500 shrink-0 mt-0.5" />
+                        {line}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Access groups */}
+              {roleDetails.length > 0 && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Access Groups</p>
+                  <div className="space-y-0.5">
+                    {roleDetails.map(role => (
+                      <div key={role.name} className="flex items-center justify-between gap-4 text-xs font-light">
+                        <span className="text-neutral-600">{role.name}</span>
+                        <span className="text-neutral-400">{role.members}</span>
+                      </div>
+                    ))}
+                    <div className="border-t border-neutral-100 pt-1 mt-1 flex items-center justify-between text-xs font-normal">
+                      <span className="text-neutral-700">Total</span>
+                      <span className="text-neutral-700">{totalMembers}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {createdAt && (
+                <div>
+                  <p className="text-xs font-light text-neutral-400 uppercase tracking-wider mb-1">Created</p>
+                  <p className="text-sm font-light text-neutral-700">{new Date(createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
 }
 
 export default function WorkspaceOverviewPage() {
@@ -308,6 +528,72 @@ export default function WorkspaceOverviewPage() {
           </div>
         </div>
       )}
+
+      {/* Concept Summary */}
+      {(() => {
+        const therapeuticAreas = [...new Set(workspace.selectedDatasets.flatMap(d => d.therapeuticArea))]
+        const phases = [...new Set(workspace.selectedDatasets.map(d => d.phase))]
+        const modalities = [...new Set(workspace.selectedDatasets.flatMap(d => d.modalities || []))]
+        const totalPatients = workspace.selectedDatasets.reduce((sum, d) => sum + (d.patientCount || 0), 0)
+        const createdAt = typeof window !== "undefined" ? sessionStorage.getItem("dcm_concept_created") : null
+        const hasContent = workspace.selectedDatasets.length > 0 || workspace.selectedActivities.length > 0
+
+        // Parse terms from sessionStorage
+        const termsRaw = typeof window !== "undefined" ? sessionStorage.getItem("dcm_agreement_of_terms") : null
+        const terms: AgreementOfTerms | null = termsRaw ? JSON.parse(termsRaw) : null
+
+        // Resolve activity names — handle both string IDs and full activity objects from sessionStorage
+        const activityNames = workspace.selectedActivities.map(item => {
+          if (typeof item === "string") return ACTIVITY_NAMES[item] || item
+          const obj = item as unknown as { id?: string; name?: string }
+          return obj.name || ACTIVITY_NAMES[obj.id || ""] || obj.id || "Unknown"
+        })
+
+        // Resolve role group names — handle both string IDs and full objects from sessionStorage
+        const roleDetails = workspace.assignedRoles.map(item => {
+          if (typeof item === "string") return ROLE_GROUP_NAMES[item] || { name: item, members: 0 }
+          const obj = item as unknown as { id?: string; name?: string; memberCount?: number }
+          return { name: obj.name || obj.id || "Unknown", members: obj.memberCount || 0 }
+        })
+        const totalMembers = roleDetails.reduce((sum, r) => sum + r.members, 0)
+
+        // Build terms summary lines
+        const termsSummary: string[] = []
+        if (terms) {
+          const enabledPrimary = Object.entries(terms.primaryUse).filter(([, v]) => v).map(([k]) => PRIMARY_USE_LABELS[k] || k)
+          if (enabledPrimary.length > 0) termsSummary.push(`Primary use: ${enabledPrimary.join(", ")}`)
+          if (terms.beyondPrimaryUse.aiResearch) termsSummary.push("Train AI/ML models")
+          if (terms.beyondPrimaryUse.storeInAiMlModel) termsSummary.push("Store data in AI/ML model")
+          if (terms.beyondPrimaryUse.softwareDevelopment) termsSummary.push("Software development")
+          if (terms.publication.externalPublication === true) termsSummary.push("External publication allowed")
+          else if (terms.publication.externalPublication === "by_exception") termsSummary.push("External publication by exception")
+          if (terms.externalSharing.allowed) termsSummary.push("External sharing allowed")
+        }
+
+        if (!hasContent) return null
+
+        return (
+          <div className="mb-8">
+            <SummaryStrip
+              scheme={scheme}
+              datasets={workspace.selectedDatasets.length}
+              patients={totalPatients}
+              activities={workspace.selectedActivities.length}
+              activityNames={activityNames}
+              accessGroups={workspace.assignedRoles.length}
+              roleDetails={roleDetails}
+              totalMembers={totalMembers}
+              therapeuticAreas={therapeuticAreas}
+              phases={phases}
+              modalities={modalities}
+              hasTerms={workspace.hasAgreementOfTerms}
+              terms={terms}
+              termsSummary={termsSummary}
+              createdAt={createdAt}
+            />
+          </div>
+        )
+      })()}
 
       {/* AI Analysis Banner */}
       {workspace.description && (

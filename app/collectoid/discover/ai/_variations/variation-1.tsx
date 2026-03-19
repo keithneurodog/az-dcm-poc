@@ -37,6 +37,7 @@ import {
   Zap,
   Info,
   Target,
+  Wand2,
 } from "lucide-react"
 
 // Mock AI response data
@@ -170,6 +171,19 @@ export default function Variation1() {
   const router = useRouter()
   const [prompt, setPrompt] = useState("")
   const [isSearching, setIsSearching] = useState(false)
+
+  // Demo scenarios for prefill
+  const DEMO_PROMPTS = [
+    "I need lung cancer data with ctDNA biomarker monitoring from immunotherapy trials for ML-based outcome prediction. Planning to publish results.",
+    "Looking for Phase III cardiovascular outcomes data across CVRM trials, specifically MACE endpoints and biomarker correlations for internal analysis.",
+    "Need genomic sequencing data from solid tumor studies with TMB and MSI scores for developing a diagnostic classifier.",
+    "Searching for real-world evidence data across oncology indications to support a HEOR submission, including patient demographics and treatment patterns.",
+  ]
+
+  const handleDemoPrefill = () => {
+    const randomPrompt = DEMO_PROMPTS[Math.floor(Math.random() * DEMO_PROMPTS.length)]
+    setPrompt(randomPrompt)
+  }
   const [hasSearched, setHasSearched] = useState(false)
   const [aiResponse, setAiResponse] = useState<typeof MOCK_AI_RESPONSE | null>(null)
 
@@ -668,7 +682,19 @@ export default function Variation1() {
       </div>
 
       {/* Smart Discovery Panel - Always Visible */}
-      <div className="mb-8">
+      <div className="mb-8 relative">
+        <button
+          onClick={handleDemoPrefill}
+          className={cn(
+            "absolute -top-3 right-4 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-all",
+            "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900",
+            "border border-neutral-200 hover:border-neutral-300"
+          )}
+          title="Prefill with demo data"
+        >
+          <Wand2 className="size-3.5" />
+          <span>Demo</span>
+        </button>
         <Card className={cn(
           "border-2 rounded-2xl overflow-hidden shadow-sm",
           hasSearched && aiResponse
