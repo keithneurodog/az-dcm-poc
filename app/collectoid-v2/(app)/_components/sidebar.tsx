@@ -56,8 +56,8 @@ export function Sidebar() {
         )}
       >
         {/* Logo */}
-        <div className={cn(
-          "flex h-20 items-center border-b border-neutral-100",
+        <Link href="/" className={cn(
+          "flex h-20 items-center border-b border-neutral-100 hover:bg-neutral-50 transition-colors",
           isCollapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ export function Sidebar() {
               </div>
             )}
           </div>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className={cn("flex-1 space-y-1 py-6", isCollapsed ? "px-2" : "px-3")}>
