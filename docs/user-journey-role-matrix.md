@@ -2,55 +2,55 @@
 
 ## MVP Scope (DCM Users)
 
-| # | Feature Area | Sub-Section | Capability | Role 1 | Role 2 | Role 3 | Role 4 | Role 5 | Role 6 |
-|---|---|---|---|---|---|---|---|---|---|
-| 1.1.1 | **1. Collections Browser** [Browse](https://az-dcm-poc.vercel.app/collectoid-v2/collections) | Navigation | Click collection card to open its detail page | | | | | | |
-| 1.1.2 | | | Toggle between My Concepts/Drafts and all collections | | | | | | |
-| 1.2.1 | | Visibility | [Visibility] Access level indicator per collection (Member, Request Access, Public, Restricted) | | | | | | |
-| 2.1.1 | **2. Collection Detail View** [Example](https://az-dcm-poc.vercel.app/collectoid-v2/collections/col-1) | Overview | [Visibility] Access provisioning breakdown (Already Open, Awaiting Policy, Needs Approval, Missing) | | | | | | |
-| 2.1.2 | | | [Visibility] Health score and progress indicator | | | | | | |
-| 2.2.1 | | Datasets | [Visibility] Per dataset compliance status (ethical, legal, DPR, locked) | | | | | | |
-| 2.2.2 | | | [Visibility] Per dataset access provisioning breakdown | | | | | | |
-| 2.2.3 | | | Approve, reject, or mark-as-aware on datasets (filtered by approver's TA) | | | | | | |
+| # | Feature Area | Sub-Section | Capability                                                                                                   | Role 1 | Role 2 | Role 3 | Role 4 | Role 5 | Role 6 |
+|---|---|---|--------------------------------------------------------------------------------------------------------------|---|---|---|---|---|---|
+| 1.1.1 | **1. Collections Browser** [Browse](https://az-dcm-poc.vercel.app/collectoid-v2/collections) | Navigation | Click collection card to open its detail page                                                                | | | | | | |
+| 1.2.1 | | Filters | Filter by access (only show collections I have access to)                                                    | | | | | | |
+| 1.2.2 | | | Other filters: scope, governance status, study phase, data modality, and therapeutic area          | | | | | | |
+| 2.1.1 | **2. Collection Detail View** [Example](https://az-dcm-poc.vercel.app/collectoid-v2/collections/col-1) | Overview | [Visibility] Access provisioning breakdown (Already Open, Awaiting Policy, Needs Approval, Missing)          | | | | | | |
+| 2.1.2 | | | [Visibility] Health score and progress indicator                                                             | | | | | | |
+| 2.2.1 | | Datasets | [Visibility] Per dataset compliance status (ethical, legal, DPR, locked)                                     | | | | | | |
+| 2.2.2 | | | [Visibility] Per dataset access provisioning breakdown                                                       | | | | | | |
+| 2.2.3 | | | Approve, reject, or mark-as-aware on datasets (filtered by approver's TA)                                    | | | | | | |
 | 2.3.1 | | Data Use Terms | [Visibility] View Data Use Terms including primary use, beyond primary use, publication, and prohibited uses | | | | | | |
-| 2.4.1 | | Users / Team | [Visibility] View collection users with roles and training compliance status | | | | | | |
-| 2.4.2 | | | Contact user group leads via email or Teams | | | | | | |
-| 2.5.1 | | Discussion | Post a comment (update, question, blocker, or suggestion) | | | | | | |
-| 2.5.2 | | | Reply to a comment | | | | | | |
-| 2.5.3 | | | @mention a user (triggers notification) | | | | | | |
-| 2.5.4 | | | Pin or unpin a comment | | | | | | |
-| 2.5.5 | | | Share a comment | | | | | | |
-| 2.5.6 | | | React to a comment | | | | | | |
-| 2.5.7 | | | Mark a blocker as resolved with resolution notes | | | | | | |
-| 2.6.1 | | Progress | [Visibility] Approval status per TA | | | | | | |
-| 2.6.2 | | | [Visibility] Per dataset provisioning status | | | | | | |
-| 2.6.3 | | | [Visibility] Timeline with milestone completion and blocker impact | | | | | | |
-| 2.7.1 | | Actions | Approve a draft collection (transitions draft to active) | | | | | | |
-| 2.7.2 | | | Send progress update email (with AD recipient search and auto-generated summary) | | | | | | |
-| 2.7.3 | | | Create a derivation (navigates to customize page) | | | | | | |
-| 2.7.4 | | | Request access to collection | | | | | | |
-| 2.8.1 | | Role Based Adaptation | DCM sees management controls: edit, submit, manage users | | | | | | |
-| 2.8.2 | | | Data Consumer sees read only view with Request Access button | | | | | | |
-| 2.8.3 | | | Approver sees approve/reject filtered to their TA | | | | | | |
-| 2.8.4 | | | Team Lead sees team management and membership controls | | | | | | |
-| 3.1.1 | **3. Collection Creation & Workspace** [Concept](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create) · [Workspace](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace) | Concept Creation | Create a new collection concept (private to creator until promoted) | | | | | | |
-| 3.1.2 | | | Edit collection title and description | | | | | | |
-| 3.1.3 | | | Generate a shareable read only preview link | | | | | | |
-| 3.2.1 | | AI Suggestions | Auto-analyse collection intent and suggest filters, activities, and terms | | | | | | |
-| 3.3.1 | | Dataset Selection [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/datasets) | Add or remove datasets from the collection | | | | | | |
-| 3.3.2 | | | [Visibility] ROAM fields per dataset: locked status, DPR, compliance, data availability | | | | | | |
-| 3.4.1 | | Activities [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/activities) | Add or remove permitted activities from predefined list | | | | | | |
-| 3.4.2 | | | [Visibility] Governance warnings on activities not permitted under Primary Use | | | | | | |
-| 3.4.3 | | | [Visibility] AI-recommended activities based on selected datasets | | | | | | |
-| 3.5.1 | | Data Use Terms [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/terms) | Configure primary use, beyond primary use, and publication permissions | | | | | | |
-| 3.5.2 | | | Configure external sharing permissions | | | | | | |
-| 3.5.3 | | | Acknowledge or remove datasets when terms conflict with dataset restrictions | | | | | | |
-| 3.5.4 | | | [Visibility] Real time conflict detection showing affected datasets and severity | | | | | | |
-| 3.5.5 | | | Define user scope by department, role, or explicit PRID | | | | | | |
-| 3.6.1 | | Access & Users [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/roles) | Add or remove Immuta role groups to define access scope | | | | | | |
-| 3.6.2 | | | Add individual users by name or PRID | | | | | | |
-| 3.7.1 | | Promote to Draft | Promote concept to draft (requires Datasets, Activities, Terms complete) | | | | | | |
-| 3.7.2 | | | [Visibility] Access provisioning breakdown and potential issues before promotion | | | | | | |
+| 2.4.1 | | Users / Team | [Visibility] View collection users with roles and training compliance status                                 | | | | | | |
+| 2.4.2 | | | Contact user group leads via email or Teams                                                                  | | | | | | |
+| 2.5.1 | | Discussion | Post a comment (update, question, blocker, or suggestion)                                                    | | | | | | |
+| 2.5.2 | | | Reply to a comment                                                                                           | | | | | | |
+| 2.5.3 | | | @mention a user (triggers notification)                                                                      | | | | | | |
+| 2.5.4 | | | Pin or unpin a comment                                                                                       | | | | | | |
+| 2.5.5 | | | Share a comment                                                                                              | | | | | | |
+| 2.5.6 | | | React to a comment                                                                                           | | | | | | |
+| 2.5.7 | | | Mark a blocker as resolved with resolution notes                                                             | | | | | | |
+| 2.6.1 | | Progress | [Visibility] Approval status per TA                                                                          | | | | | | |
+| 2.6.2 | | | [Visibility] Per dataset provisioning status                                                                 | | | | | | |
+| 2.6.3 | | | [Visibility] Timeline with milestone completion and blocker impact                                           | | | | | | |
+| 2.7.1 | | Actions | Approve a draft collection (transitions draft to active)                                                     | | | | | | |
+| 2.7.2 | | | Send progress update email (with AD recipient search and auto-generated summary)                             | | | | | | |
+| 2.7.3 | | | Create a derivation (navigates to customize page)                                                            | | | | | | |
+| 2.7.4 | | | Request access to collection                                                                                 | | | | | | |
+| 2.8.1 | | Role Based Adaptation | DCM sees management controls: edit, submit, manage users                                                     | | | | | | |
+| 2.8.2 | | | Data Consumer sees read only view with Request Access button                                                 | | | | | | |
+| 2.8.3 | | | Approver sees approve/reject filtered to their TA                                                            | | | | | | |
+| 2.8.4 | | | Team Lead sees team management and membership controls                                                       | | | | | | |
+| 3.1.1 | **3. Collection Creation & Workspace** [Concept](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create) · [Workspace](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace) | Concept Creation | Create a new collection concept (private to creator until promoted)                                          | | | | | | |
+| 3.1.2 | | | Edit collection title and description                                                                        | | | | | | |
+| 3.1.3 | | | Generate a shareable read only preview link                                                                  | | | | | | |
+| 3.2.1 | | AI Suggestions | Auto-analyse collection intent and suggest filters, activities, and terms                                    | | | | | | |
+| 3.3.1 | | Dataset Selection [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/datasets) | Add or remove datasets from the collection                                                                   | | | | | | |
+| 3.3.2 | | | [Visibility] ROAM fields per dataset: locked status, DPR, compliance, data availability                      | | | | | | |
+| 3.4.1 | | Activities [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/activities) | Add or remove permitted activities from predefined list                                                      | | | | | | |
+| 3.4.2 | | | [Visibility] Governance warnings on activities not permitted under Primary Use                               | | | | | | |
+| 3.4.3 | | | [Visibility] AI-recommended activities based on selected datasets                                            | | | | | | |
+| 3.5.1 | | Data Use Terms [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/terms) | Configure primary use, beyond primary use, and publication permissions                                       | | | | | | |
+| 3.5.2 | | | Configure external sharing permissions                                                                       | | | | | | |
+| 3.5.3 | | | Acknowledge or remove datasets when terms conflict with dataset restrictions                                 | | | | | | |
+| 3.5.4 | | | [Visibility] Real time conflict detection showing affected datasets and severity                             | | | | | | |
+| 3.5.5 | | | Define user scope by department, role, or explicit PRID                                                      | | | | | | |
+| 3.6.1 | | Access & Users [Demo](https://az-dcm-poc.vercel.app/collectoid-v2/dcm/create/workspace/roles) | Add or remove Immuta role groups to define access scope                                                      | | | | | | |
+| 3.6.2 | | | Add individual users by name or PRID                                                                         | | | | | | |
+| 3.7.1 | | Promote to Draft | Promote concept to draft (requires Datasets, Activities, Terms complete)                                     | | | | | | |
+| 3.7.2 | | | [Visibility] Access provisioning breakdown and potential issues before promotion                             | | | | | | |
 
 ---
 
