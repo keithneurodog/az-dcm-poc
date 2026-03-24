@@ -14,3 +14,9 @@ collection screen:
 - blocked does that mean no access? what is the heuristic to collectoin health?
 - Collection health bad for normal users, good for managem,ent but lacking details - change to be more of a summary of users and datasets somehow?
 - 
+
+
+# Meet with Immuta guys:
+- test env?
+- API and handling aysnc requests / failures
+
