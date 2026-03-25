@@ -184,17 +184,21 @@ export default function CollectoidDashboard() {
               scheme.from.replace("from-", "border-").replace("500", "100")
             )}
           >
-            <div className="text-center mb-8">
-              <h1 className="text-5xl font-extralight text-neutral-900 mb-4 tracking-tight">
-                Data Collection Manager
+            <div className="text-center mb-6">
+              <h1 className="text-5xl font-extralight text-neutral-900 mb-2 tracking-tight">
+                Collectoid
               </h1>
-              <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto">
-                Find collections, datasets, users, requests, and propositions
+              <p className="text-sm font-light text-neutral-400 tracking-wide uppercase">
+                Data Collection Manager
               </p>
             </div>
 
+            <p className="text-sm font-light text-neutral-400 text-center mb-3">
+              Find collections, datasets, users, requests, and propositions
+            </p>
+
             {/* Search */}
-            <div className="max-w-2xl mx-auto mb-8 relative">
+            <div className="max-w-2xl mx-auto mb-6 relative">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-neutral-400 z-10" />
               <Input
                 ref={heroInputRef}
