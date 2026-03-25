@@ -21,12 +21,8 @@ export default function LandingPage() {
       {/* Header */}
       <header className="pt-20 pb-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 text-neutral-400 mb-6">
-            <div className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs tracking-wide uppercase">Collectoid Prototype</span>
-          </div>
-          <h1 className="text-3xl font-extralight tracking-tight text-neutral-900 mb-3">
-            DCM Platform
+          <h1 className="text-3xl font-extralight tracking-tight text-neutral-900 mb-3 mt-6">
+            Collectoid UX Prototype
           </h1>
           <p className="text-neutral-500 font-light max-w-lg mx-auto">
             Data collection management prototype exploring AI-assisted workflows, discovery, and analytics for clinical trial data access.
@@ -53,7 +49,7 @@ export default function LandingPage() {
                   <span className="text-[10px] tracking-wider uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Current</span>
                 </div>
                 <p className="text-sm text-neutral-500 font-light leading-relaxed">
-                  The unified DCM platform combining all features — collection creation workspace, AI discovery, analytics dashboard, approval workflows, and request management.
+                  The unified Collectoid prototype combining all features: collection creation workspace, AI discovery, analytics dashboard, approval workflows, and request management.
                 </p>
               </div>
               <ArrowRight className="size-5 text-neutral-300 group-hover:text-neutral-600 group-hover:translate-x-1 transition-all shrink-0 mt-1" />
