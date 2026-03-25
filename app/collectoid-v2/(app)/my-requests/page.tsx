@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useColorScheme } from "@/app/collectoid-v2/(app)/_components"
 import { cn } from "@/lib/utils"
+import { MOCK_REQUESTS } from "@/lib/dcm-mock-data"
 import {
   FileText,
   CheckCircle2,
@@ -22,72 +23,6 @@ import {
   Bell,
 } from "lucide-react"
 
-// Mock requests data
-const MOCK_REQUESTS = [
-  {
-    id: "req-123456",
-    type: "simple",
-    status: "partial_access",
-    collectionName: "Oncology ctDNA Outcomes Collection",
-    submittedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-    totalDatasets: 16,
-    instantAccess: 8,
-    pendingApproval: 8,
-    estimatedDays: "2-3",
-    progress: 50,
-    latestActivity: "8 datasets granted instant access",
-  },
-  {
-    id: "prop-789012",
-    type: "proposition",
-    status: "under_review",
-    propositionName: "Immunotherapy + ML Research Collection",
-    parentCollection: "Immunotherapy Response Collection",
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-    estimatedDays: "3-5",
-    progress: 30,
-    latestActivity: "DCM review in progress",
-    hasUnreadMessage: true,
-  },
-  {
-    id: "req-234567",
-    type: "simple",
-    status: "completed",
-    collectionName: "Cardiovascular Outcomes Studies",
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 days ago
-    totalDatasets: 12,
-    instantAccess: 12,
-    pendingApproval: 0,
-    progress: 100,
-    latestActivity: "Full access granted",
-    completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-  },
-  {
-    id: "prop-345678",
-    type: "proposition",
-    status: "approved",
-    propositionName: "Biomarker Discovery Extended Collection",
-    parentCollection: "Lung Cancer Biomarker Studies",
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), // 10 days ago
-    progress: 100,
-    latestActivity: "Proposition approved by DCM",
-    completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-  },
-  {
-    id: "req-456789",
-    type: "simple",
-    status: "action_required",
-    collectionName: "Neurology Clinical Trials",
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
-    totalDatasets: 8,
-    instantAccess: 4,
-    pendingApproval: 4,
-    estimatedDays: "1-2",
-    progress: 50,
-    latestActivity: "Additional information requested",
-    hasActionRequired: true,
-  },
-]
 
 const MOCK_ACTIVITY = [
   {

@@ -296,6 +296,7 @@ export default function CollectionsBrowserV2() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const [searchFocused, setSearchFocused] = useState(false)
   const searchContainerRef = useRef<HTMLDivElement>(null)
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [sortBy, setSortBy] = useState<string>("status")
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false)
 
@@ -578,8 +579,8 @@ export default function CollectionsBrowserV2() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => { setTimeout(() => setSearchFocused(false), 150) }}
+                onFocus={() => { if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current); setSearchFocused(true) }}
+                onBlur={() => { blurTimeoutRef.current = setTimeout(() => setSearchFocused(false), 150) }}
                 placeholder="Search collections, datasets, users, roles..."
                 className="pl-9 h-9 rounded-lg border-neutral-200 font-normal text-sm bg-white/50"
               />

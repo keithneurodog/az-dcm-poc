@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { useColorScheme } from "@/app/collectoid-v2/(app)/_components"
 import { cn } from "@/lib/utils"
+import { MOCK_PROPOSITIONS } from "@/lib/dcm-mock-data"
 import {
   FileText,
   CheckCircle2,
@@ -34,129 +35,6 @@ import {
   Filter,
   Calendar,
 } from "lucide-react"
-
-// Mock propositions data
-const MOCK_PROPOSITIONS = [
-  {
-    id: "prop-001",
-    type: "custom_collection",
-    name: "Immunotherapy + ML Research Collection",
-    parentCollection: "Immunotherapy Response Collection",
-    requester: {
-      name: "Dr. Sarah Chen",
-      department: "Oncology Data Science",
-      email: "sarah.chen@company.com",
-    },
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    status: "pending",
-    priority: "high",
-    changes: {
-      datasetsAdded: 2,
-      datasetsRemoved: 0,
-      intentChanges: ["AI research / AI model training (added)"],
-    },
-    recommendation: "auto_approve",
-    recommendationReason: "Minor changes, requester has good standing",
-    estimatedReviewTime: "< 30 min",
-    hasMessages: false,
-  },
-  {
-    id: "prop-002",
-    type: "modification",
-    name: "Request to add publication rights",
-    parentCollection: "Oncology ctDNA Outcomes Collection",
-    requester: {
-      name: "Dr. James Wilson",
-      department: "Translational Medicine",
-      email: "james.wilson@company.com",
-    },
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    status: "pending",
-    priority: "medium",
-    changes: {
-      datasetsAdded: 0,
-      datasetsRemoved: 0,
-      intentChanges: ["External publication (added)"],
-    },
-    recommendation: "review",
-    recommendationReason: "Publication rights require legal review",
-    estimatedReviewTime: "1-2 hours",
-    hasMessages: true,
-    messageCount: 2,
-  },
-  {
-    id: "prop-003",
-    type: "custom_collection",
-    name: "Cardiovascular + Imaging Fusion Collection",
-    parentCollection: "Cardiovascular Outcomes Studies",
-    requester: {
-      name: "Dr. Emily Park",
-      department: "Biostatistics",
-      email: "emily.park@company.com",
-    },
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
-    status: "pending",
-    priority: "low",
-    changes: {
-      datasetsAdded: 5,
-      datasetsRemoved: 3,
-      intentChanges: [],
-    },
-    recommendation: "merge",
-    recommendationReason: "Similar to existing 'CV Imaging Studies' collection",
-    mergeTarget: "CV Imaging Studies Collection",
-    estimatedReviewTime: "30 min - 1 hour",
-    hasMessages: false,
-  },
-  {
-    id: "prop-004",
-    type: "simple_access",
-    name: "Access request for Neurology Clinical Trials",
-    parentCollection: "Neurology Clinical Trials",
-    requester: {
-      name: "Dr. Michael Brown",
-      department: "Neuroscience",
-      email: "michael.brown@company.com",
-    },
-    submittedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
-    status: "pending",
-    priority: "high",
-    changes: {
-      datasetsAdded: 0,
-      datasetsRemoved: 0,
-      intentChanges: [],
-    },
-    recommendation: "auto_approve",
-    recommendationReason: "Standard access, all intents match, user in allowed department",
-    estimatedReviewTime: "< 15 min",
-    hasMessages: false,
-  },
-  {
-    id: "prop-005",
-    type: "custom_collection",
-    name: "Multi-Therapeutic Area Research Bundle",
-    parentCollection: null,
-    requester: {
-      name: "Dr. Lisa Anderson",
-      department: "Data Science Platform",
-      email: "lisa.anderson@company.com",
-    },
-    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 72), // 3 days ago
-    status: "in_review",
-    priority: "medium",
-    changes: {
-      datasetsAdded: 12,
-      datasetsRemoved: 0,
-      intentChanges: ["AI research / AI model training", "Software development"],
-    },
-    recommendation: "review",
-    recommendationReason: "Large collection with multiple use cases",
-    estimatedReviewTime: "2-3 hours",
-    hasMessages: true,
-    messageCount: 5,
-    assignedTo: "You",
-  },
-]
 
 export default function DCMPropositionsPage() {
   const { scheme } = useColorScheme()

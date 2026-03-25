@@ -5465,6 +5465,136 @@ export const MOCK_NOTES: Note[] = [
   }
 ]
 
+// --- Shared mock data for propositions and requests (used by global search + page components) ---
+
+export interface MockProposition {
+  id: string
+  type: "custom_collection" | "modification" | "simple_access"
+  name: string
+  parentCollection: string | null
+  requester: { name: string; department: string; email: string }
+  submittedAt: Date
+  status: string
+  priority: string
+  changes: { datasetsAdded: number; datasetsRemoved: number; intentChanges: string[] }
+  recommendation: string
+  recommendationReason: string
+  estimatedReviewTime: string
+  hasMessages: boolean
+  messageCount?: number
+  mergeTarget?: string
+  assignedTo?: string
+}
+
+export const MOCK_PROPOSITIONS: MockProposition[] = [
+  {
+    id: "prop-001",
+    type: "custom_collection",
+    name: "Immunotherapy + ML Research Collection",
+    parentCollection: "Immunotherapy Response Collection",
+    requester: { name: "Dr. Sarah Chen", department: "Oncology Data Science", email: "sarah.chen@company.com" },
+    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    status: "pending",
+    priority: "high",
+    changes: { datasetsAdded: 2, datasetsRemoved: 0, intentChanges: ["AI research / AI model training (added)"] },
+    recommendation: "auto_approve",
+    recommendationReason: "Minor changes, requester has good standing",
+    estimatedReviewTime: "< 30 min",
+    hasMessages: false,
+  },
+  {
+    id: "prop-002",
+    type: "modification",
+    name: "Request to add publication rights",
+    parentCollection: "Oncology ctDNA Outcomes Collection",
+    requester: { name: "Dr. James Wilson", department: "Translational Medicine", email: "james.wilson@company.com" },
+    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    status: "pending",
+    priority: "medium",
+    changes: { datasetsAdded: 0, datasetsRemoved: 0, intentChanges: ["External publication (added)"] },
+    recommendation: "review",
+    recommendationReason: "Publication rights require legal review",
+    estimatedReviewTime: "1-2 hours",
+    hasMessages: true,
+    messageCount: 2,
+  },
+  {
+    id: "prop-003",
+    type: "custom_collection",
+    name: "Cardiovascular + Imaging Fusion Collection",
+    parentCollection: "Cardiovascular Outcomes Studies",
+    requester: { name: "Dr. Emily Park", department: "Biostatistics", email: "emily.park@company.com" },
+    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 48),
+    status: "pending",
+    priority: "low",
+    changes: { datasetsAdded: 5, datasetsRemoved: 3, intentChanges: [] },
+    recommendation: "merge",
+    recommendationReason: "Similar to existing 'CV Imaging Studies' collection",
+    mergeTarget: "CV Imaging Studies Collection",
+    estimatedReviewTime: "30 min - 1 hour",
+    hasMessages: false,
+  },
+  {
+    id: "prop-004",
+    type: "simple_access",
+    name: "Access request for Neurology Clinical Trials",
+    parentCollection: "Neurology Clinical Trials",
+    requester: { name: "Dr. Michael Brown", department: "Neuroscience", email: "michael.brown@company.com" },
+    submittedAt: new Date(Date.now() - 1000 * 60 * 30),
+    status: "pending",
+    priority: "high",
+    changes: { datasetsAdded: 0, datasetsRemoved: 0, intentChanges: [] },
+    recommendation: "auto_approve",
+    recommendationReason: "Standard access, all intents match, user in allowed department",
+    estimatedReviewTime: "< 15 min",
+    hasMessages: false,
+  },
+  {
+    id: "prop-005",
+    type: "custom_collection",
+    name: "Multi-Therapeutic Area Research Bundle",
+    parentCollection: null,
+    requester: { name: "Dr. Lisa Anderson", department: "Data Science Platform", email: "lisa.anderson@company.com" },
+    submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 72),
+    status: "in_review",
+    priority: "medium",
+    changes: { datasetsAdded: 12, datasetsRemoved: 0, intentChanges: ["AI research / AI model training", "Software development"] },
+    recommendation: "review",
+    recommendationReason: "Large collection with multiple use cases",
+    estimatedReviewTime: "2-3 hours",
+    hasMessages: true,
+    messageCount: 5,
+    assignedTo: "You",
+  },
+]
+
+export interface MockRequest {
+  id: string
+  type: "simple" | "proposition"
+  status: string
+  collectionName?: string
+  propositionName?: string
+  parentCollection?: string
+  submittedAt: Date
+  totalDatasets?: number
+  instantAccess?: number
+  pendingApproval?: number
+  estimatedDays?: string
+  progress: number
+  latestActivity: string
+  completedAt?: Date
+  hasActionRequired?: boolean
+  hasUnreadMessage?: boolean
+}
+
+export const MOCK_REQUESTS: MockRequest[] = [
+  { id: "req-123456", type: "simple", status: "partial_access", collectionName: "Oncology ctDNA Outcomes Collection", submittedAt: new Date(Date.now() - 1000 * 60 * 30), totalDatasets: 16, instantAccess: 8, pendingApproval: 8, estimatedDays: "2-3", progress: 50, latestActivity: "8 datasets granted instant access" },
+  { id: "prop-789012", type: "proposition", status: "under_review", propositionName: "Immunotherapy + ML Research Collection", parentCollection: "Immunotherapy Response Collection", submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), estimatedDays: "3-5", progress: 30, latestActivity: "DCM review in progress", hasUnreadMessage: true },
+  { id: "req-234567", type: "simple", status: "completed", collectionName: "Cardiovascular Outcomes Studies", submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), totalDatasets: 12, instantAccess: 12, pendingApproval: 0, progress: 100, latestActivity: "Full access granted", completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5) },
+  { id: "prop-345678", type: "proposition", status: "approved", propositionName: "Biomarker Discovery Extended Collection", parentCollection: "Lung Cancer Biomarker Studies", submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), progress: 100, latestActivity: "Proposition approved by DCM", completedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3) },
+  { id: "req-456789", type: "simple", status: "action_required", collectionName: "Neurology Clinical Trials", submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), totalDatasets: 8, instantAccess: 4, pendingApproval: 4, estimatedDays: "1-2", progress: 50, latestActivity: "Additional information requested", hasActionRequired: true },
+]
+
 export function getAllCollectionMembers(): Array<CollectionMember & { collectionId: string; collectionName: string }> {
   return MOCK_COLLECTIONS.flatMap(col =>
     (col.members ?? []).map(m => ({ ...m, collectionId: col.id, collectionName: col.name }))
