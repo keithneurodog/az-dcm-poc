@@ -50,6 +50,7 @@ import {
 import {
   getAllTherapeuticAreas,
   getAllOwners,
+  getAllCollectionMembers,
   CURRENT_USER_ID,
 } from "@/lib/dcm-mock-data"
 import { useCollectionsStore } from "@/lib/collections-store"
@@ -61,6 +62,87 @@ const STUDY_PHASES = ["Phase I", "Phase II", "Phase III", "Phase IV", "Pre-clini
 const DATA_TYPES = ["Clinical", "Genomics", "Imaging", "Real World", "Biomarker", "Patient Reported"]
 const REGIONS = ["North America", "Europe", "Asia Pacific", "Latin America", "Global", "Multi-regional"]
 const TIME_PERIODS = ["Last 7 days", "Last 30 days", "Last 90 days", "Last year"]
+
+// --- Search match types and components ---
+
+type MatchItem = { category: "Collection" | "Dataset" | "User"; label: string; detail: string; refineTo: string }
+
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return <span className="text-sm text-neutral-700 font-light truncate">{text}</span>
+  return (
+    <span className="text-sm text-neutral-700 font-light truncate">
+      {text.slice(0, idx)}
+      <mark className="bg-amber-100 text-amber-900 rounded-sm px-0.5 font-normal">{text.slice(idx, idx + query.length)}</mark>
+      {text.slice(idx + query.length)}
+    </span>
+  )
+}
+
+function SearchMatchPanel({
+  matches,
+  query,
+  onSelect,
+}: {
+  matches: { Collection: MatchItem[]; Dataset: MatchItem[]; User: MatchItem[] }
+  query: string
+  onSelect: (refineTo: string) => void
+}) {
+  const hasAny = matches.Collection.length > 0 || matches.Dataset.length > 0 || matches.User.length > 0
+  const MAX_PER_CATEGORY = 3
+
+  if (!hasAny) {
+    return (
+      <div className="absolute top-full left-0 mt-1.5 w-full bg-white rounded-xl border border-neutral-200 shadow-lg z-50 px-4 py-3">
+        <p className="text-xs text-neutral-400">No matches for &ldquo;{query}&rdquo;</p>
+      </div>
+    )
+  }
+
+  const CATEGORY_CONFIG = {
+    Collection: { label: "Collections", icon: Database },
+    Dataset: { label: "Datasets", icon: FlaskConical },
+    User: { label: "Users", icon: Users },
+  } as const
+
+  return (
+    <div className="absolute top-full left-0 mt-1.5 w-full bg-white rounded-xl border border-neutral-200 shadow-lg z-50 overflow-hidden max-h-80 overflow-y-auto">
+      {(["Collection", "Dataset", "User"] as const).map(cat => {
+        const items = matches[cat]
+        if (items.length === 0) return null
+        const visible = items.slice(0, MAX_PER_CATEGORY)
+        const overflow = items.length - MAX_PER_CATEGORY
+        const Icon = CATEGORY_CONFIG[cat].icon
+
+        return (
+          <div key={cat}>
+            <div className="px-3 pt-2.5 pb-1 flex items-center gap-1.5">
+              <Icon className="size-3 text-neutral-400" />
+              <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400">{CATEGORY_CONFIG[cat].label}</span>
+            </div>
+            {visible.map((item, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onMouseDown={(e) => { e.preventDefault(); onSelect(item.refineTo) }}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-left hover:bg-neutral-50 transition-colors"
+              >
+                <HighlightMatch text={item.label} query={query} />
+                <span className="text-[11px] text-neutral-400 ml-auto shrink-0">{item.detail}</span>
+              </button>
+            ))}
+            {overflow > 0 && (
+              <div className="px-3 pb-1.5 text-[11px] text-neutral-400">+{overflow} more</div>
+            )}
+          </div>
+        )
+      })}
+      <div className="border-t border-neutral-100 px-3 py-1.5">
+        <span className="text-[10px] text-neutral-400">Click a result to refine search</span>
+      </div>
+    </div>
+  )
+}
 
 // --- Extracted filter components (must be outside parent to preserve state across re-renders) ---
 
@@ -212,6 +294,8 @@ export default function CollectionsBrowserV2() {
   // View & UI state
   const [viewMode, setViewMode] = useState<"cards" | "table" | "kanban">("cards")
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
+  const [searchFocused, setSearchFocused] = useState(false)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
   const [sortBy, setSortBy] = useState<string>("status")
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false)
 
@@ -326,6 +410,12 @@ export default function CollectionsBrowserV2() {
         c.selectedDatasets.some(d =>
           d.code.toLowerCase().includes(q) ||
           d.name.toLowerCase().includes(q)
+        ) ||
+        (c.members ?? []).some(m =>
+          m.name.toLowerCase().includes(q) ||
+          m.email.toLowerCase().includes(q) ||
+          m.prid.toLowerCase().includes(q) ||
+          m.role.toLowerCase().includes(q)
         )
       )
     }
@@ -393,6 +483,54 @@ export default function CollectionsBrowserV2() {
     return filtered.sort((a, b) => (a.isFavorite === b.isFavorite ? 0 : a.isFavorite ? -1 : 1))
   }, [searchQuery, filters, multiFilters, sortBy, scope, viewMode])
 
+  // Search match engine for the results panel
+  const allMembers = useMemo(() => getAllCollectionMembers(), [])
+  const searchMatches = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return null
+    const q = searchQuery.toLowerCase()
+    const results: MatchItem[] = []
+
+    // Collections: name, description, tags, TAs
+    for (const col of COLLECTIONS_WITH_AOT) {
+      if (col.name.toLowerCase().includes(q))
+        results.push({ category: "Collection", label: col.name, detail: "name", refineTo: col.name })
+      else if (col.description.toLowerCase().includes(q))
+        results.push({ category: "Collection", label: col.name, detail: "description", refineTo: col.name })
+      for (const ta of col.therapeuticAreas) {
+        if (ta.toLowerCase().includes(q) && !results.some(r => r.category === "Collection" && r.label === col.name))
+          results.push({ category: "Collection", label: col.name, detail: `area: ${ta}`, refineTo: ta })
+      }
+    }
+
+    // Datasets: code, name (deduplicated)
+    const seenDatasets = new Set<string>()
+    for (const col of COLLECTIONS_WITH_AOT) {
+      for (const d of col.selectedDatasets) {
+        if (seenDatasets.has(d.code)) continue
+        if (d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q)) {
+          seenDatasets.add(d.code)
+          results.push({ category: "Dataset", label: `${d.code} — ${d.name}`, detail: d.code, refineTo: d.code })
+        }
+      }
+    }
+
+    // Users: name, email, prid, role (deduplicated by prid)
+    const seenPrids = new Set<string>()
+    for (const m of allMembers) {
+      if (seenPrids.has(m.prid)) continue
+      if (m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.prid.toLowerCase().includes(q) || m.role.toLowerCase().includes(q)) {
+        seenPrids.add(m.prid)
+        results.push({ category: "User", label: m.name, detail: `${m.prid} · ${m.role}`, refineTo: m.name })
+      }
+    }
+
+    return {
+      Collection: results.filter(r => r.category === "Collection"),
+      Dataset: results.filter(r => r.category === "Dataset"),
+      User: results.filter(r => r.category === "User"),
+    }
+  }, [searchQuery, COLLECTIONS_WITH_AOT, allMembers])
+
   const handleViewCollection = (id: string) => {
     router.push(`/collectoid-v2/collections/${id}`)
   }
@@ -435,18 +573,23 @@ export default function CollectionsBrowserV2() {
           <div className="flex items-center gap-6 mb-4">
             <h1 className="text-2xl font-light text-neutral-900 shrink-0">Collections</h1>
 
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+            <div className="relative flex-1 max-w-sm" ref={searchContainerRef}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-400 z-10" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => { setTimeout(() => setSearchFocused(false), 150) }}
                 placeholder="Search collections, datasets, users, roles..."
                 className="pl-9 h-9 rounded-lg border-neutral-200 font-normal text-sm bg-white/50"
               />
               {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
                   <X className="size-3.5 text-neutral-400 hover:text-neutral-600" />
                 </button>
+              )}
+              {searchFocused && searchQuery.length >= 2 && searchMatches && (
+                <SearchMatchPanel matches={searchMatches} query={searchQuery} onSelect={(refineTo) => { setSearchQuery(refineTo); setSearchFocused(false) }} />
               )}
             </div>
 

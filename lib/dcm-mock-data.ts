@@ -3755,8 +3755,18 @@ export interface Collection {
   // Geographic scope — collections are global by default unless countries are excluded
   excludedCountries?: string[]
 
+  // Collection members (lean type for search)
+  members?: CollectionMember[]
+
   // Data Use Terms
   agreementOfTerms?: AgreementOfTerms
+}
+
+export interface CollectionMember {
+  prid: string
+  name: string
+  email: string
+  role: string
 }
 
 export const MOCK_COLLECTIONS: Collection[] = [
@@ -3817,6 +3827,13 @@ export const MOCK_COLLECTIONS: Collection[] = [
         status: "pending",
         estimatedTime: new Date(Date.now() + 432000000),
       },
+    ],
+    members: [
+      { prid: "PRID-10001", name: "Jennifer Martinez", email: "jennifer.martinez@astrazeneca.com", role: "Data Collection Manager" },
+      { prid: "PRID-10021", name: "Sarah Chen", email: "sarah.chen@astrazeneca.com", role: "Senior Data Scientist" },
+      { prid: "PRID-10033", name: "Tom Griffiths", email: "tom.griffiths@astrazeneca.com", role: "Biostatistician" },
+      { prid: "PRID-10044", name: "Elena Vasquez", email: "elena.vasquez@astrazeneca.com", role: "Clinical Research Scientist" },
+      { prid: "PRID-10052", name: "Raj Patel", email: "raj.patel@astrazeneca.com", role: "Data Engineer" },
     ],
     agreementOfTerms: {
       id: "aot-1",
@@ -3912,6 +3929,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-10-31T09:00:00"),
       },
     ],
+    members: [
+      { prid: "PRID-10002", name: "Dr. Sarah Martinez", email: "sarah.martinez@astrazeneca.com", role: "Principal Investigator" },
+      { prid: "PRID-10014", name: "James O'Brien", email: "james.obrien@astrazeneca.com", role: "Cardiovascular Data Analyst" },
+      { prid: "PRID-10028", name: "Anika Reddy", email: "anika.reddy@astrazeneca.com", role: "Statistical Programmer" },
+      { prid: "PRID-10039", name: "Carlos Mendoza", email: "carlos.mendoza@astrazeneca.com", role: "Clinical Data Manager" },
+    ],
   },
   {
     id: "col-3",
@@ -3963,6 +3986,13 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-10-18T11:30:00"),
       },
     ],
+    members: [
+      { prid: "PRID-10003", name: "Dr. Michael Chen", email: "michael.chen@astrazeneca.com", role: "Immuno-Oncology Lead" },
+      { prid: "PRID-10021", name: "Sarah Chen", email: "sarah.chen@astrazeneca.com", role: "Senior Data Scientist" },
+      { prid: "PRID-10033", name: "Tom Griffiths", email: "tom.griffiths@astrazeneca.com", role: "Biostatistician" },
+      { prid: "PRID-10055", name: "Fatima Al-Hassan", email: "fatima.alhassan@astrazeneca.com", role: "Bioinformatics Scientist" },
+      { prid: "PRID-10061", name: "Oliver Wright", email: "oliver.wright@astrazeneca.com", role: "Data Engineer" },
+    ],
   },
   {
     id: "col-4",
@@ -4003,6 +4033,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         status: "completed",
         timestamp: new Date("2025-09-20T08:35:00"),
       },
+    ],
+    members: [
+      { prid: "PRID-10004", name: "Emily Rodriguez", email: "emily.rodriguez@astrazeneca.com", role: "Real World Evidence Lead" },
+      { prid: "PRID-10016", name: "Nathan Brooks", email: "nathan.brooks@astrazeneca.com", role: "Epidemiologist" },
+      { prid: "PRID-10029", name: "Lisa Tanaka", email: "lisa.tanaka@astrazeneca.com", role: "Health Economics Analyst" },
+      { prid: "PRID-10042", name: "Tom Griffiths", email: "tom.griffiths@astrazeneca.com", role: "Biostatistician" },
     ],
   },
   {
@@ -4048,6 +4084,11 @@ export const MOCK_COLLECTIONS: Collection[] = [
         estimatedTime: new Date(Date.now() + 432000000),
       },
     ],
+    members: [
+      { prid: "PRID-10005", name: "Dr. David Kumar", email: "david.kumar@astrazeneca.com", role: "Rare Disease Specialist" },
+      { prid: "PRID-10019", name: "Hannah Johansson", email: "hannah.johansson@astrazeneca.com", role: "Genetic Counsellor" },
+      { prid: "PRID-10035", name: "Marcus Thompson", email: "marcus.thompson@astrazeneca.com", role: "Clinical Genomics Analyst" },
+    ],
   },
   {
     id: "col-6",
@@ -4088,6 +4129,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         status: "completed",
         timestamp: new Date("2025-08-15T11:25:00"),
       },
+    ],
+    members: [
+      { prid: "PRID-10002", name: "Dr. Sarah Martinez", email: "sarah.martinez@astrazeneca.com", role: "Principal Investigator" },
+      { prid: "PRID-10022", name: "Kwame Asante", email: "kwame.asante@astrazeneca.com", role: "Vaccine Safety Analyst" },
+      { prid: "PRID-10037", name: "Sophie Laurent", email: "sophie.laurent@astrazeneca.com", role: "Pharmacovigilance Scientist" },
+      { prid: "PRID-10048", name: "Yuki Nakamura", email: "yuki.nakamura@astrazeneca.com", role: "Epidemiologist" },
     ],
   },
   {
@@ -4137,6 +4184,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         estimatedTime: new Date(Date.now() + 7200000),
       },
     ],
+    members: [
+      { prid: "PRID-10003", name: "Dr. Michael Chen", email: "michael.chen@astrazeneca.com", role: "Neuroscience Lead" },
+      { prid: "PRID-10025", name: "Anna Kowalski", email: "anna.kowalski@astrazeneca.com", role: "Neuroimaging Scientist" },
+      { prid: "PRID-10040", name: "Ben Harper", email: "ben.harper@astrazeneca.com", role: "Biomarker Analyst" },
+      { prid: "PRID-10055", name: "Fatima Al-Hassan", email: "fatima.alhassan@astrazeneca.com", role: "Bioinformatics Scientist" },
+    ],
   },
   {
     id: "col-8",
@@ -4177,6 +4230,13 @@ export const MOCK_COLLECTIONS: Collection[] = [
         status: "completed",
         timestamp: new Date("2025-07-23T08:00:00"),
       },
+    ],
+    members: [
+      { prid: "PRID-10006", name: "Lisa Thompson", email: "lisa.thompson@astrazeneca.com", role: "Pediatric Oncology Lead" },
+      { prid: "PRID-10021", name: "Sarah Chen", email: "sarah.chen@astrazeneca.com", role: "Senior Data Scientist" },
+      { prid: "PRID-10030", name: "Daniel Okafor", email: "daniel.okafor@astrazeneca.com", role: "Clinical Data Analyst" },
+      { prid: "PRID-10046", name: "Maria Santos", email: "maria.santos@astrazeneca.com", role: "Statistical Programmer" },
+      { prid: "PRID-10058", name: "Thomas Reid", email: "thomas.reid@astrazeneca.com", role: "Data Quality Manager" },
     ],
   },
   {
@@ -4226,6 +4286,11 @@ export const MOCK_COLLECTIONS: Collection[] = [
         estimatedTime: new Date(Date.now() + 10800000),
       },
     ],
+    members: [
+      { prid: "PRID-10001", name: "Jennifer Martinez", email: "jennifer.martinez@astrazeneca.com", role: "Data Collection Manager" },
+      { prid: "PRID-10016", name: "Nathan Brooks", email: "nathan.brooks@astrazeneca.com", role: "Epidemiologist" },
+      { prid: "PRID-10044", name: "Elena Vasquez", email: "elena.vasquez@astrazeneca.com", role: "Clinical Research Scientist" },
+    ],
   },
   {
     id: "col-10",
@@ -4267,6 +4332,12 @@ export const MOCK_COLLECTIONS: Collection[] = [
         timestamp: new Date("2025-06-10T10:10:00"),
       },
     ],
+    members: [
+      { prid: "PRID-10005", name: "Dr. David Kumar", email: "david.kumar@astrazeneca.com", role: "Gastroenterology Lead" },
+      { prid: "PRID-10033", name: "Tom Griffiths", email: "tom.griffiths@astrazeneca.com", role: "Biostatistician" },
+      { prid: "PRID-10049", name: "Rachel Kim", email: "rachel.kim@astrazeneca.com", role: "Immunology Data Analyst" },
+      { prid: "PRID-10061", name: "Oliver Wright", email: "oliver.wright@astrazeneca.com", role: "Data Engineer" },
+    ],
   },
   // Draft collections - private to the creator
   {
@@ -4298,6 +4369,11 @@ export const MOCK_COLLECTIONS: Collection[] = [
     instantGrantProgress: 0,
     approvalRequests: [],
     milestones: [],
+    members: [
+      { prid: "PRID-10001", name: "Jennifer Martinez", email: "jennifer.martinez@astrazeneca.com", role: "Data Collection Manager" },
+      { prid: "PRID-10021", name: "Sarah Chen", email: "sarah.chen@astrazeneca.com", role: "Senior Data Scientist" },
+      { prid: "PRID-10040", name: "Ben Harper", email: "ben.harper@astrazeneca.com", role: "Biomarker Analyst" },
+    ],
   },
   {
     id: "col-draft-2",
@@ -4328,6 +4404,9 @@ export const MOCK_COLLECTIONS: Collection[] = [
     instantGrantProgress: 0,
     approvalRequests: [],
     milestones: [],
+    members: [
+      { prid: "PRID-10001", name: "Jennifer Martinez", email: "jennifer.martinez@astrazeneca.com", role: "Data Collection Manager" },
+    ],
   },
 ]
 
@@ -5385,3 +5464,9 @@ export const MOCK_NOTES: Note[] = [
     ]
   }
 ]
+
+export function getAllCollectionMembers(): Array<CollectionMember & { collectionId: string; collectionName: string }> {
+  return MOCK_COLLECTIONS.flatMap(col =>
+    (col.members ?? []).map(m => ({ ...m, collectionId: col.id, collectionName: col.name }))
+  )
+}
