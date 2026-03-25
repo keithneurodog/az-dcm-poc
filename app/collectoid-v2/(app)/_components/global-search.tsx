@@ -95,11 +95,11 @@ export function useGlobalSearch(query: string) {
         category: "Collection",
         label: m.collectionName,
         sublabel: matchedField,
-        href: `/collectoid-v2/collections/${m.collectionId}`,
+        href: `/collectoid-v2/collections/${m.collectionId}?tab=users&q=${encodeURIComponent(query)}`,
       })
     }
 
-    // Datasets (deduplicated, with parent collection context)
+    // Datasets (deduplicated, with parent collection context) → navigate to datasets tab
     const seenDatasets = new Set<string>()
     for (const col of MOCK_COLLECTIONS) {
       for (const d of col.selectedDatasets) {
@@ -110,7 +110,7 @@ export function useGlobalSearch(query: string) {
             category: "Dataset",
             label: `${d.code} \u2014 ${d.name}`,
             sublabel: `in ${col.name}`,
-            href: `/collectoid-v2/collections/${col.id}`,
+            href: `/collectoid-v2/collections/${col.id}?tab=datasets&q=${encodeURIComponent(query)}`,
           })
         }
       }
@@ -130,19 +130,20 @@ export function useGlobalSearch(query: string) {
       }
     }
 
-    // Propositions: match on name, parentCollection, requester name
+    // Propositions: match on name, parentCollection, requester name, dataset codes → navigate to review page
     for (const prop of MOCK_PROPOSITIONS) {
       let matchReason = ""
       if (prop.name.toLowerCase().includes(q)) matchReason = ""
       else if (prop.parentCollection && prop.parentCollection.toLowerCase().includes(q)) matchReason = `Parent: ${prop.parentCollection}`
       else if (prop.requester.name.toLowerCase().includes(q)) matchReason = `Requester: ${prop.requester.name}`
+      else if (prop.changes.datasetCodes?.some(code => code.toLowerCase().includes(q))) matchReason = `Dataset: ${prop.changes.datasetCodes.find(code => code.toLowerCase().includes(q))}`
       else continue
 
       results.push({
         category: "Proposition",
         label: prop.name,
         sublabel: matchReason || (prop.parentCollection ? `for ${prop.parentCollection}` : "New collection"),
-        href: "/collectoid-v2/dcm/propositions",
+        href: `/collectoid-v2/dcm/propositions/${prop.id}/review`,
         status: prop.status.replace(/_/g, " "),
       })
     }

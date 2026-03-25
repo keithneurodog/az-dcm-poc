@@ -331,6 +331,10 @@ export default function DCMProgressDashboard() {
       else if (tab === "users") setActiveTab("users")
       else if (tab === "timeline") setActiveTab("timeline")
       else if (tab === "discussion") setActiveTab("discussion")
+
+      const q = searchParams.get("q")
+      if (q && tab === "users") setUserSearchFilter(q)
+      if (q && tab === "datasets") setDatasetSearchFilter(q)
     }
   }, [])
 
@@ -2164,7 +2168,8 @@ ${currentUser.email}`
             const filteredUsers = allUsers.filter(user => {
               const matchesSearch =
                 user.name.toLowerCase().includes(userSearchFilter.toLowerCase()) ||
-                user.email.toLowerCase().includes(userSearchFilter.toLowerCase())
+                user.email.toLowerCase().includes(userSearchFilter.toLowerCase()) ||
+                (user.prid && user.prid.toLowerCase().includes(userSearchFilter.toLowerCase()))
               const matchesStatus = userStatusFilter === "all" || user.accessStatus === userStatusFilter
               return matchesSearch && matchesStatus
             })

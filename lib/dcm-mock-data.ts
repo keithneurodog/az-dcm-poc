@@ -4868,6 +4868,7 @@ export function getApprovalNotifications(): Notification[] {
 // User Management Types and Data
 export interface User {
   id: string
+  prid?: string
   name: string
   email: string
   role: string
@@ -5115,15 +5116,44 @@ export function getUsersByCollection(collectionId: string): User[] {
   const collection = MOCK_COLLECTIONS.find(c => c.id === collectionId)
   if (!collection) return []
 
+  // Convert static members to User objects so they appear in the rendered user list
+  const memberUsers: User[] = (collection.members ?? []).map((m, i) => ({
+    id: `${collectionId}-member-${i}`,
+    prid: m.prid,
+    name: m.name,
+    email: m.email,
+    role: m.role,
+    department: m.role.includes("Lead") || m.role.includes("Manager") ? "R&D Data Office" : "Data Science",
+    manager: { name: "Dr. Michael Roberts", email: "michael.roberts@astrazeneca.com" },
+    accessStatus: "immediate" as const,
+    datasetsAccessible: ["DCODE-101", "DCODE-102"],
+    datasetsPending: [],
+    trainingStatus: {
+      required: ["GCP", "GDPR Training", "Immuta Basics"],
+      completed: ["GCP", "GDPR Training", "Immuta Basics"],
+      inProgress: [],
+      missing: [],
+      completionPercent: 100,
+      isOverdue: false,
+    },
+    enrollmentDate: new Date(2025, 9, 1 + i),
+    lastActive: new Date(Date.now() - (i + 1) * 24 * 60 * 60 * 1000),
+    daysWaiting: 0,
+    reminderCount: 0,
+    approvalRequests: [],
+  }))
+
   // Calculate the breakdown based on accessBreakdown percentages
+  const remainingTotal = Math.max(0, collection.totalUsers - memberUsers.length)
   const breakdown = {
-    immediate: Math.floor(collection.totalUsers * (collection.accessBreakdown.immediate / 100)),
-    instant_grant: Math.floor(collection.totalUsers * (collection.accessBreakdown.instantGrant / 100)),
-    pending_approval: Math.floor(collection.totalUsers * (collection.accessBreakdown.pendingApproval / 100)),
-    blocked_training: Math.floor(collection.totalUsers * (collection.accessBreakdown.dataDiscovery / 100))
+    immediate: Math.max(0, Math.floor(remainingTotal * (collection.accessBreakdown.immediate / 100))),
+    instant_grant: Math.floor(remainingTotal * (collection.accessBreakdown.instantGrant / 100)),
+    pending_approval: Math.floor(remainingTotal * (collection.accessBreakdown.pendingApproval / 100)),
+    blocked_training: Math.floor(remainingTotal * (collection.accessBreakdown.dataDiscovery / 100)),
   }
 
-  return generateUsersForCollection(collectionId, collection.totalUsers, breakdown)
+  const generated = generateUsersForCollection(collectionId, remainingTotal, breakdown)
+  return [...memberUsers, ...generated]
 }
 
 // Helper function to get users by status
@@ -5476,7 +5506,7 @@ export interface MockProposition {
   submittedAt: Date
   status: string
   priority: string
-  changes: { datasetsAdded: number; datasetsRemoved: number; intentChanges: string[] }
+  changes: { datasetsAdded: number; datasetsRemoved: number; intentChanges: string[]; datasetCodes?: string[] }
   recommendation: string
   recommendationReason: string
   estimatedReviewTime: string
@@ -5496,7 +5526,7 @@ export const MOCK_PROPOSITIONS: MockProposition[] = [
     submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
     status: "pending",
     priority: "high",
-    changes: { datasetsAdded: 2, datasetsRemoved: 0, intentChanges: ["AI research / AI model training (added)"] },
+    changes: { datasetsAdded: 2, datasetsRemoved: 0, intentChanges: ["AI research / AI model training (added)"], datasetCodes: ["DCODE-401", "DCODE-422"] },
     recommendation: "auto_approve",
     recommendationReason: "Minor changes, requester has good standing",
     estimatedReviewTime: "< 30 min",
@@ -5527,7 +5557,7 @@ export const MOCK_PROPOSITIONS: MockProposition[] = [
     submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 48),
     status: "pending",
     priority: "low",
-    changes: { datasetsAdded: 5, datasetsRemoved: 3, intentChanges: [] },
+    changes: { datasetsAdded: 5, datasetsRemoved: 3, intentChanges: [], datasetCodes: ["DCODE-156", "DCODE-203", "DCODE-287", "DCODE-312", "DCODE-445"] },
     recommendation: "merge",
     recommendationReason: "Similar to existing 'CV Imaging Studies' collection",
     mergeTarget: "CV Imaging Studies Collection",
@@ -5558,7 +5588,7 @@ export const MOCK_PROPOSITIONS: MockProposition[] = [
     submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 72),
     status: "in_review",
     priority: "medium",
-    changes: { datasetsAdded: 12, datasetsRemoved: 0, intentChanges: ["AI research / AI model training", "Software development"] },
+    changes: { datasetsAdded: 12, datasetsRemoved: 0, intentChanges: ["AI research / AI model training", "Software development"], datasetCodes: ["DCODE-101", "DCODE-102", "DCODE-156", "DCODE-203", "DCODE-287", "DCODE-312", "DCODE-330", "DCODE-445", "DCODE-501", "DCODE-502", "DCODE-503", "DCODE-510"] },
     recommendation: "review",
     recommendationReason: "Large collection with multiple use cases",
     estimatedReviewTime: "2-3 hours",

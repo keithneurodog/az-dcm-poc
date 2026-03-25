@@ -31,9 +31,17 @@ import {
   ChevronUp,
   FileEdit,
   EyeOff,
+  Search,
+  X,
+  FlaskConical,
+  GitBranch,
+  FileText,
+  Users,
 } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import { MOCK_COLLECTIONS, CURRENT_USER_ID, getMyCollections, getMyDraftCollections, getMyConceptCollections, getMyDraftStageCollections } from "@/lib/dcm-mock-data"
-import { useMemo, useState } from "react"
+import { GlobalSearchPanel, useGlobalSearch } from "@/app/collectoid-v2/(app)/_components/global-search"
+import { useMemo, useState, useRef } from "react"
 
 export default function CollectoidDashboard() {
   const { scheme } = useColorScheme()
@@ -152,47 +160,102 @@ export default function CollectoidDashboard() {
 
   return (
     <>
-      {/* Hero Section - DCM Portal */}
-      <div
-        className={cn(
-          "rounded-3xl p-12 mb-8 border bg-gradient-to-br",
-          scheme.bg,
-          scheme.bgHover,
-          scheme.from.replace("from-", "border-").replace("500", "100")
-        )}
-      >
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-extralight text-neutral-900 mb-4 tracking-tight">
-            Data Collection Manager
-          </h1>
-          <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto">
-            Create and manage curated data collections with AI-assisted discovery
-          </p>
-        </div>
+      {/* Hero Section - Search First */}
+      {(() => {
+        const [heroQuery, setHeroQuery] = useState("")
+        const [heroFocused, setHeroFocused] = useState(false)
+        const heroBlurRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+        const heroInputRef = useRef<HTMLInputElement>(null)
+        const heroMatches = useGlobalSearch(heroQuery)
 
-        {/* CTA */}
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            onClick={() => router.push("/collectoid-v2/collections")}
-            variant="outline"
-            className="rounded-full px-8 font-light h-14 text-base border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
-          >
-            <Database className="mr-2 size-5" strokeWidth={1.5} />
-            Browse Collections
-          </Button>
-          <Button
-            onClick={() => router.push("/collectoid-v2/dcm/create")}
+        const handleHeroSelect = (href: string) => {
+          setHeroQuery("")
+          setHeroFocused(false)
+          heroInputRef.current?.blur()
+          router.push(href)
+        }
+
+        return (
+          <div
             className={cn(
-              "bg-gradient-to-r text-white rounded-full px-10 font-light h-14 text-base shadow-lg hover:shadow-xl transition-all",
-              scheme.from,
-              scheme.to
+              "rounded-3xl p-12 mb-8 border bg-gradient-to-br",
+              scheme.bg,
+              scheme.bgHover,
+              scheme.from.replace("from-", "border-").replace("500", "100")
             )}
           >
-            <PlusCircle className="mr-2 size-5" strokeWidth={1.5} />
-            Create New Collection
-          </Button>
-        </div>
-      </div>
+            <div className="text-center mb-8">
+              <h1 className="text-5xl font-extralight text-neutral-900 mb-4 tracking-tight">
+                Data Collection Manager
+              </h1>
+              <p className="text-lg font-light text-neutral-600 max-w-2xl mx-auto">
+                Find collections, datasets, users, requests, and propositions
+              </p>
+            </div>
+
+            {/* Search */}
+            <div className="max-w-2xl mx-auto mb-8 relative">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-neutral-400 z-10" />
+              <Input
+                ref={heroInputRef}
+                value={heroQuery}
+                onChange={(e) => setHeroQuery(e.target.value)}
+                onFocus={() => { if (heroBlurRef.current) clearTimeout(heroBlurRef.current); setHeroFocused(true) }}
+                onBlur={() => { heroBlurRef.current = setTimeout(() => setHeroFocused(false), 150) }}
+                placeholder="Search anything... collections, datasets, users, d-codes, PRIDs, roles"
+                className="pl-14 pr-12 h-14 rounded-full border-neutral-200 bg-white/80 backdrop-blur-sm font-light text-base shadow-sm focus:shadow-md focus:bg-white transition-all"
+              />
+              {heroQuery && (
+                <button
+                  onClick={() => { setHeroQuery(""); setHeroFocused(false) }}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 z-10"
+                >
+                  <X className="size-4 text-neutral-400 hover:text-neutral-600" />
+                </button>
+              )}
+              {heroFocused && heroQuery.length >= 2 && heroMatches && (
+                <GlobalSearchPanel matches={heroMatches} query={heroQuery} onSelect={handleHeroSelect} />
+              )}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center justify-center gap-3">
+              <Button
+                onClick={() => router.push("/collectoid-v2/collections")}
+                variant="outline"
+                className="rounded-full px-6 font-light h-10 text-sm border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
+              >
+                <Database className="mr-2 size-4" strokeWidth={1.5} />
+                Browse Collections
+              </Button>
+              <Button
+                onClick={() => router.push("/collectoid-v2/dcm/create")}
+                variant="outline"
+                className="rounded-full px-6 font-light h-10 text-sm border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
+              >
+                <PlusCircle className="mr-2 size-4" strokeWidth={1.5} />
+                Create Collection
+              </Button>
+              <Button
+                onClick={() => router.push("/collectoid-v2/my-requests")}
+                variant="outline"
+                className="rounded-full px-6 font-light h-10 text-sm border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
+              >
+                <FileText className="mr-2 size-4" strokeWidth={1.5} />
+                My Requests
+              </Button>
+              <Button
+                onClick={() => router.push("/collectoid-v2/dcm/propositions")}
+                variant="outline"
+                className="rounded-full px-6 font-light h-10 text-sm border-neutral-300 hover:border-neutral-400 hover:bg-white/50"
+              >
+                <GitBranch className="mr-2 size-4" strokeWidth={1.5} />
+                Propositions
+              </Button>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Needs Attention Cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6 mb-8">
