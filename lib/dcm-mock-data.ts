@@ -3752,6 +3752,9 @@ export interface Collection {
     estimatedTime?: Date
   }[]
 
+  // Geographic scope — collections are global by default unless countries are excluded
+  excludedCountries?: string[]
+
   // Data Use Terms
   agreementOfTerms?: AgreementOfTerms
 }

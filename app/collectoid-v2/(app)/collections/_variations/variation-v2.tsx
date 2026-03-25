@@ -26,15 +26,26 @@ import {
   Users,
   Database,
   X,
-  Lock,
-  Unlock,
   ChevronDown,
+  ChevronUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   LayoutGrid,
   Table2,
   Kanban,
   Check,
   FileEdit,
   SlidersHorizontal,
+  MessageSquare,
+  Microscope,
+  Dna,
+  ScanEye,
+  Globe,
+  FlaskConical,
+  HeartPulse,
 } from "lucide-react"
 import {
   getAllTherapeuticAreas,
@@ -42,6 +53,7 @@ import {
   CURRENT_USER_ID,
 } from "@/lib/dcm-mock-data"
 import { useCollectionsStore } from "@/lib/collections-store"
+import { computeCollectionHealth } from "@/lib/collection-health"
 
 // Constants
 const USER_GROUPS = ["Oncology Data Science", "Oncology Biometrics", "Cardiovascular Research", "Neuroscience Analytics", "Translational Medicine", "Biostatistics", "Data Science Platform", "Clinical Operations"]
@@ -187,8 +199,9 @@ export default function CollectionsBrowserV2() {
       ? { aiResearch: !!col.agreementOfTerms.beyondPrimaryUse?.aiResearch, softwareDevelopment: !!col.agreementOfTerms.beyondPrimaryUse?.softwareDevelopment, externalPublication: !!col.agreementOfTerms.publication?.externalPublication, internalPublication: true }
       : { aiResearch: i % 3 !== 2, softwareDevelopment: i % 4 === 0, externalPublication: i % 2 === 0, internalPublication: true },
     userAccess: { currentUserHasAccess: i % 3 !== 0, accessGroups: USER_GROUPS.filter((_, idx) => (i + idx) % 3 === 0).slice(0, 3) },
-    studyPhase: STUDY_PHASES[i % STUDY_PHASES.length],
+    studyPhases: STUDY_PHASES.filter((_, idx) => (i + idx) % 3 === 0).slice(0, 1 + (i % 3)),
     dataTypes: DATA_TYPES.filter((_, idx) => (i + idx) % 2 === 0),
+    excludedCountries: i % 3 === 0 ? [] : i % 3 === 1 ? ["China", "Russia"] : ["Brazil", "India", "South Africa"],
     region: REGIONS[i % REGIONS.length],
     patientCount: Math.floor(Math.random() * 50000) + 100,
     lastUpdated: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
@@ -199,8 +212,13 @@ export default function CollectionsBrowserV2() {
   // View & UI state
   const [viewMode, setViewMode] = useState<"cards" | "table" | "kanban">("cards")
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
-  const [sortBy, setSortBy] = useState<string>("recent")
+  const [sortBy, setSortBy] = useState<string>("status")
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false)
+
+  // Table sorting & pagination
+  const [tableSort, setTableSort] = useState<{ column: string; direction: "asc" | "desc" } | null>(null)
+  const [tablePage, setTablePage] = useState(0)
+  const [tablePageSize, setTablePageSize] = useState(20)
 
   // Combined scope/status filter
   const [scope, setScope] = useState<"all" | "concepts" | "draft" | "active">("all")
@@ -289,8 +307,8 @@ export default function CollectionsBrowserV2() {
         case "active":
           filtered = filtered.filter(c => c.status === "active" || c.status === "pending_approval" || c.status === "provisioning")
           break
-        default: // "all" shows everything except private concepts
-          filtered = filtered.filter(c => c.status !== "concept")
+        default: // "all" shows everything, including current user's own concepts
+          filtered = filtered.filter(c => c.status !== "concept" || c.creatorId === CURRENT_USER_ID)
       }
     } else {
       // In kanban, only show concepts owned by current user (not others' private concepts)
@@ -299,7 +317,17 @@ export default function CollectionsBrowserV2() {
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
-      filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q))
+      filtered = filtered.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.description.toLowerCase().includes(q) ||
+        c.createdBy.toLowerCase().includes(q) ||
+        c.tags.some(t => t.toLowerCase().includes(q)) ||
+        c.therapeuticAreas.some(ta => ta.toLowerCase().includes(q)) ||
+        c.selectedDatasets.some(d =>
+          d.code.toLowerCase().includes(q) ||
+          d.name.toLowerCase().includes(q)
+        )
+      )
     }
     if (multiFilters.area.length > 0) filtered = filtered.filter(c => c.therapeuticAreas.some(ta => multiFilters.area.includes(ta)))
     if (filters.myAccess !== "all") {
@@ -309,7 +337,7 @@ export default function CollectionsBrowserV2() {
     if (filters.accessLevel !== "all") filtered = filtered.filter(c => c.accessLevel === filters.accessLevel)
     if (filters.userGroup !== "all") filtered = filtered.filter(c => c.userAccess?.accessGroups?.includes(filters.userGroup))
     if (filters.compliance !== "all") filtered = filtered.filter(c => c.compliance === filters.compliance)
-    if (multiFilters.studyPhase.length > 0) filtered = filtered.filter(c => multiFilters.studyPhase.includes(c.studyPhase))
+    if (multiFilters.studyPhase.length > 0) filtered = filtered.filter(c => c.studyPhases.some(p => multiFilters.studyPhase.includes(p)))
     if (multiFilters.dataType.length > 0) filtered = filtered.filter(c => c.dataTypes.some(dt => multiFilters.dataType.includes(dt)))
     if (multiFilters.region.length > 0) filtered = filtered.filter(c => multiFilters.region.includes(c.region))
     if (filters.quality !== "all") filtered = filtered.filter(c => c.quality === filters.quality)
@@ -348,13 +376,17 @@ export default function CollectionsBrowserV2() {
     }
 
     // Sort
+    const statusOrder: Record<string, number> = { concept: 0, draft: 1, active: 2, pending_approval: 3, provisioning: 4 }
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "name": return a.name.localeCompare(b.name)
         case "users": return b.totalUsers - a.totalUsers
         case "progress": return b.progress - a.progress
         case "patients": return b.patientCount - a.patientCount
-        default: return b.createdAt.getTime() - a.createdAt.getTime()
+        case "recent": return b.createdAt.getTime() - a.createdAt.getTime()
+        case "status":
+        default:
+          return (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99)
       }
     })
 
@@ -395,7 +427,7 @@ export default function CollectionsBrowserV2() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100">
+    <div className="bg-gradient-to-br from-neutral-50 to-neutral-100">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-neutral-200/50">
         <div className="px-8 pt-5 pb-4">
@@ -408,7 +440,7 @@ export default function CollectionsBrowserV2() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
+                placeholder="Search collections, datasets, users, roles..."
                 className="pl-9 h-9 rounded-lg border-neutral-200 font-normal text-sm bg-white/50"
               />
               {searchQuery && (
@@ -424,6 +456,7 @@ export default function CollectionsBrowserV2() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="status">Status</SelectItem>
                   <SelectItem value="recent">Most Recent</SelectItem>
                   <SelectItem value="name">Name (A-Z)</SelectItem>
                   <SelectItem value="users">Most Users</SelectItem>
@@ -491,9 +524,9 @@ export default function CollectionsBrowserV2() {
                 ))}
               </div>
               {viewMode === "kanban" && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-1.5 bg-neutral-900 text-white text-[11px] rounded-md whitespace-nowrap opacity-0 group-hover/scope:opacity-100 transition-opacity pointer-events-none z-50">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-1.5 bg-white border border-neutral-200 text-neutral-600 text-[11px] rounded-md whitespace-nowrap opacity-0 group-hover/scope:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
                   Board columns show all stages
-                  <div className="absolute left-1/2 -translate-x-1/2 -top-1 size-2 bg-neutral-900 rotate-45" />
+                  <div className="absolute left-1/2 -translate-x-1/2 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
                 </div>
               )}
             </div>
@@ -703,131 +736,542 @@ export default function CollectionsBrowserV2() {
         ) : viewMode === "cards" ? (
           /* Card Grid View */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {filteredCollections.map((col) => (
-              <Card
-                key={col.id}
-                onClick={() => handleViewCollection(col.id)}
-                className="group cursor-pointer border-0 bg-white/70 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden"
-              >
-                <CardContent className="px-5 pt-4 pb-3.5 flex flex-col h-full">
-                  {/* Title & Favourite */}
-                  <div className="flex items-start justify-between mb-1.5">
-                    <h3 className="text-base font-medium text-neutral-900 line-clamp-1 group-hover:text-neutral-700">
-                      {col.name}
-                    </h3>
-                    {col.isFavorite && <Star className="size-4 fill-amber-400 text-amber-400 shrink-0 ml-2" />}
-                  </div>
+            {filteredCollections.map((col) => {
+              const isConcept = col.status === "concept"
+              const isDraft = col.status === "draft"
 
-                  {/* Description */}
-                  <p className="text-sm font-light text-neutral-500 line-clamp-2 mb-3">
-                    {col.description}
-                  </p>
-
-                  {/* Progress */}
-                  <div className="mb-3">
-                    <div className="flex justify-between text-xs text-neutral-500 mb-1.5">
-                      <span>Progress</span>
-                      <span className="font-medium text-neutral-700">{col.progress}%</span>
-                    </div>
-                    <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
-                      <div className={cn("h-full rounded-full bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: `${col.progress}%` }} />
-                    </div>
-                  </div>
-
-                  {/* Meta */}
-                  <div className="flex items-center justify-between text-xs text-neutral-400 mb-3">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1.5"><Users className="size-4" />{col.totalUsers}</span>
-                      <span className="flex items-center gap-1.5"><Database className="size-4" />{col.totalDatasets}</span>
-                    </div>
-                    <span>{col.region}</span>
-                  </div>
-
-                  {/* Tags - pushed to bottom */}
-                  <div className="flex items-center gap-1.5 flex-wrap mt-auto">
-                    {col.status === "concept" ? (
-                      <Badge className="text-[11px] font-normal py-0.5 px-2 bg-neutral-100 text-neutral-600 border border-neutral-200">
-                        Concept
-                      </Badge>
-                    ) : col.status === "draft" ? (
-                      <Badge className="text-[11px] font-normal py-0.5 px-2 bg-amber-50 text-amber-700 border border-amber-200">
-                        Draft
-                      </Badge>
-                    ) : (
-                      <>
-                        <StatusDot status={col.status} />
-                        <Badge variant="outline" className="text-[11px] font-normal py-0.5 px-2">{col.studyPhase}</Badge>
-                      </>
-                    )}
-                    <Badge className={cn(
-                      "text-[11px] font-normal border py-0.5 px-2",
-                      col.userAccess?.currentUserHasAccess
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-amber-50 text-amber-700 border-amber-200"
+              return (
+                <div
+                  key={col.id}
+                  onClick={() => handleViewCollection(col.id)}
+                  className={cn(
+                    "group cursor-pointer rounded-2xl transition-all duration-300 flex flex-col relative hover:z-10 overflow-visible",
+                    isConcept
+                      ? "border-2 border-neutral-300 bg-white/70 hover:bg-white hover:shadow-xl"
+                      : isDraft
+                        ? "border-2 border-amber-300 bg-white/70 hover:bg-white hover:shadow-xl"
+                        : "border border-transparent bg-white/70 backdrop-blur-sm hover:bg-white hover:shadow-xl"
+                  )}
+                >
+                  {/* Status badge - overlapping top right */}
+                  {(isConcept || isDraft) && (
+                    <div className={cn(
+                      "absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full text-[11px] font-medium shadow-sm",
+                      isConcept
+                        ? "bg-neutral-100 text-neutral-600 border border-neutral-300"
+                        : "bg-amber-50 text-amber-700 border border-amber-300"
                     )}>
-                      {col.userAccess?.currentUserHasAccess ? "Access" : "Request"}
-                    </Badge>
+                      {isConcept ? "Concept" : "Draft"}
+                    </div>
+                  )}
+
+                  <div className="px-5 pt-4 pb-4 flex flex-col h-full">
+                    {/* Title & Favourite */}
+                    <div className="flex items-start justify-between mb-1.5">
+                      <h3 className="text-base font-medium text-neutral-900 line-clamp-1 group-hover:text-neutral-700">
+                        {col.name}
+                      </h3>
+                      {col.isFavorite && <Star className="size-4 fill-amber-400 text-amber-400 shrink-0 ml-2" />}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-sm font-light text-neutral-500 line-clamp-2 mb-3">
+                      {col.description}
+                    </p>
+
+                    {/* Data Type Icon Bar + Geographic Scope */}
+                    <div className="flex items-center gap-2 mb-3">
+                      {/* Data types with own hover group */}
+                      <div className="relative group/datatypes flex items-center gap-2">
+                        {[
+                          { type: "Clinical", icon: HeartPulse },
+                          { type: "Genomics", icon: Dna },
+                          { type: "Imaging", icon: ScanEye },
+                          { type: "Real World", icon: Globe },
+                          { type: "Biomarker", icon: FlaskConical },
+                          { type: "Patient Reported", icon: Microscope },
+                        ].map(({ type, icon: Icon }) => {
+                          const hasType = col.dataTypes.includes(type)
+                          return (
+                            <div
+                              key={type}
+                              className={cn(
+                                "size-6 rounded flex items-center justify-center transition-colors",
+                                hasType
+                                  ? "text-neutral-700 bg-neutral-100"
+                                  : "text-neutral-200"
+                              )}
+                            >
+                              <Icon className="size-3.5" strokeWidth={1.5} />
+                            </div>
+                          )
+                        })}
+                        {/* Data types hover popover */}
+                        <div className="absolute left-0 top-full mt-2 w-52 bg-white border border-neutral-200 rounded-lg p-3 opacity-0 group-hover/datatypes:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                          <div className="absolute left-4 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
+                          <p className="text-[11px] font-medium text-neutral-400 mb-2">Data Types</p>
+                          <div className="space-y-1.5">
+                            {[
+                              { type: "Clinical", icon: HeartPulse },
+                              { type: "Genomics", icon: Dna },
+                              { type: "Imaging", icon: ScanEye },
+                              { type: "Real World", icon: Globe },
+                              { type: "Biomarker", icon: FlaskConical },
+                              { type: "Patient Reported", icon: Microscope },
+                            ].map(({ type, icon: Icon }) => {
+                              const hasType = col.dataTypes.includes(type)
+                              return (
+                                <div key={type} className="flex items-center gap-2">
+                                  <Icon className={cn("size-3.5", hasType ? "text-neutral-700" : "text-neutral-300")} strokeWidth={1.5} />
+                                  <span className={cn("text-xs", hasType ? "text-neutral-700" : "text-neutral-300 line-through")}>{type}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Geographic scope icon - right aligned, own hover group */}
+                      <div className="relative group/geo ml-auto">
+                        <Globe className={cn("size-4 cursor-default", !col.excludedCountries?.length ? "text-neutral-400" : "text-amber-500")} strokeWidth={1.5} />
+                        <div className="absolute right-0 bottom-full mb-2 bg-white border border-neutral-200 rounded-lg px-3 py-2 opacity-0 group-hover/geo:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                          <div className="absolute right-2 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                          {!col.excludedCountries?.length ? (
+                            <span className="text-xs text-neutral-500 font-medium">Global</span>
+                          ) : (
+                            <div>
+                              <span className="text-[11px] font-medium text-neutral-400 block mb-1">Excluded Countries</span>
+                              <ul className="space-y-0.5">
+                                {col.excludedCountries.map((c: string) => (
+                                  <li key={c} className="text-xs text-neutral-700">{c}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Health */}
+                    {(() => {
+                      const health = computeCollectionHealth(col)
+                      return (
+                        <div className="relative group/health mb-3">
+                          <div className="flex items-center justify-between text-xs mb-1.5">
+                            <span className="text-neutral-500">Health</span>
+                            <span className={cn("font-medium", health.color)}>{health.label}</span>
+                          </div>
+                          <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
+                            <div className={cn("h-full rounded-full transition-all", health.bgColor)} style={{ width: `${health.overall}%` }} />
+                          </div>
+                          {/* Health breakdown popover */}
+                          <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-neutral-200 rounded-lg p-3 opacity-0 group-hover/health:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                            <div className="absolute left-1/4 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
+                            <div className="flex items-center justify-between mb-2.5">
+                              <span className="text-[11px] font-medium text-neutral-400">Health Breakdown</span>
+                              <span className={cn("text-xs font-medium", health.color)}>{health.overall}%</span>
+                            </div>
+                            <div className="space-y-2.5">
+                              {health.dimensions.map(dim => (
+                                <div key={dim.label}>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-[11px] text-neutral-600">{dim.label}</span>
+                                    <span className={cn(
+                                      "text-[11px] font-medium",
+                                      dim.score >= 75 ? "text-green-600" : dim.score >= 50 ? "text-amber-600" : "text-red-600"
+                                    )}>{dim.score}%</span>
+                                  </div>
+                                  <div className="h-1 bg-neutral-100 rounded-full overflow-hidden">
+                                    <div className={cn(
+                                      "h-full rounded-full",
+                                      dim.score >= 75 ? "bg-green-500" : dim.score >= 50 ? "bg-amber-500" : "bg-red-500"
+                                    )} style={{ width: `${dim.score}%` }} />
+                                  </div>
+                                  <p className="text-[10px] text-neutral-400 mt-0.5">{dim.detail}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })()}
+
+                    {/* Stats Row */}
+                    <div className="flex items-center gap-4 text-xs text-neutral-400 mb-3">
+                      <span className="flex items-center gap-1.5" title="Users"><Users className="size-3.5" />{col.totalUsers}</span>
+                      <span className="flex items-center gap-1.5" title="Datasets"><Database className="size-3.5" />{col.totalDatasets}</span>
+                      {col.commentCount > 0 && (
+                        <span className="flex items-center gap-1.5" title="Comments"><MessageSquare className="size-3.5" />{col.commentCount}</span>
+                      )}
+                    </div>
+
+                    {/* Tags - Phase left, TA right */}
+                    <div className="flex items-center justify-between mt-auto gap-2">
+                      {/* Phase tags */}
+                      <div className="relative group/phase flex items-center gap-1 min-w-0">
+                        <Badge variant="outline" className="text-[11px] font-normal py-0.5 px-2 shrink-0">{col.studyPhases[0]}</Badge>
+                        {col.studyPhases.length > 1 && (
+                          <Badge variant="outline" className="text-[11px] font-normal py-0.5 px-2 text-neutral-400 shrink-0">+{col.studyPhases.length - 1}</Badge>
+                        )}
+                        {col.studyPhases.length > 1 && (
+                          <div className="absolute left-0 bottom-full mb-2 bg-white border border-neutral-200 rounded-lg p-2.5 opacity-0 group-hover/phase:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg w-36">
+                            <div className="absolute left-4 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                            <p className="text-[11px] font-medium text-neutral-400 mb-1.5">Study Phases</p>
+                            <div className="space-y-1">
+                              {col.studyPhases.map(p => (
+                                <div key={p} className="text-xs text-neutral-700">{p}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* TA tags */}
+                      <div className="relative group/ta flex items-center gap-1 min-w-0 justify-end">
+                        <Badge variant="outline" className="text-[11px] font-normal py-0.5 px-2 text-neutral-500 truncate max-w-[100px]">{col.therapeuticAreas[0]}</Badge>
+                        {col.therapeuticAreas.length > 1 && (
+                          <Badge variant="outline" className="text-[11px] font-normal py-0.5 px-2 text-neutral-400 shrink-0">+{col.therapeuticAreas.length - 1}</Badge>
+                        )}
+                        {col.therapeuticAreas.length > 1 && (
+                          <div className="absolute right-0 bottom-full mb-2 bg-white border border-neutral-200 rounded-lg p-2.5 opacity-0 group-hover/ta:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg w-44">
+                            <div className="absolute right-4 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                            <p className="text-[11px] font-medium text-neutral-400 mb-1.5">Therapeutic Areas</p>
+                            <div className="space-y-1">
+                              {col.therapeuticAreas.map(ta => (
+                                <div key={ta} className="text-xs text-neutral-700">{ta}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              )
+            })}
           </div>
         ) : viewMode === "table" ? (
           /* Table View */
-          <Card className="border-0 bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-neutral-50/50">
-                  <tr>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Collection</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Access</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Phase</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Region</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Progress</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Users</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Patients</th>
-                    <th className="px-5 py-4 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">ML/Pub</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-100">
-                  {filteredCollections.map((col) => (
-                    <tr key={col.id} onClick={() => handleViewCollection(col.id)} className="hover:bg-neutral-50/50 cursor-pointer transition-colors">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2.5">
-                          {col.isFavorite && <Star className="size-4 fill-amber-400 text-amber-400" />}
-                          <span className="text-sm font-medium text-neutral-900">{col.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4"><StatusDot status={col.status} /></td>
-                      <td className="px-5 py-4">
-                        <Badge className={cn("text-xs py-1 px-2", col.userAccess?.currentUserHasAccess ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700")}>
-                          {col.userAccess?.currentUserHasAccess ? "\u2713" : "Request"}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{col.studyPhase}</td>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{col.region}</td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-20 h-2 bg-neutral-100 rounded-full overflow-hidden">
-                            <div className={cn("h-full bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: `${col.progress}%` }} />
-                          </div>
-                          <span className="text-sm text-neutral-600">{col.progress}%</span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{col.totalUsers}</td>
-                      <td className="px-5 py-4 text-sm text-neutral-600">{col.patientCount.toLocaleString()}</td>
-                      <td className="px-5 py-4">
-                        <span className={cn("text-sm", col.agreementOfTerms.aiResearch ? "text-green-600" : "text-red-400")}>{col.agreementOfTerms.aiResearch ? "\u2713" : "\u2717"}</span>
-                        <span className="text-neutral-300 mx-1.5">/</span>
-                        <span className={cn("text-sm", col.agreementOfTerms.externalPublication ? "text-green-600" : "text-red-400")}>{col.agreementOfTerms.externalPublication ? "\u2713" : "\u2717"}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+          (() => {
+            const DATA_TYPE_ICONS = [
+              { type: "Clinical", icon: HeartPulse },
+              { type: "Genomics", icon: Dna },
+              { type: "Imaging", icon: ScanEye },
+              { type: "Real World", icon: Globe },
+              { type: "Biomarker", icon: FlaskConical },
+              { type: "Patient Reported", icon: Microscope },
+            ] as const
+
+            // Sorting
+            const handleTableSort = (column: string) => {
+              setTableSort(prev => {
+                if (!prev || prev.column !== column) return { column, direction: "asc" }
+                if (prev.direction === "asc") return { column, direction: "desc" }
+                return null
+              })
+              setTablePage(0)
+            }
+
+            const SortIcon = ({ column }: { column: string }) => {
+              if (!tableSort || tableSort.column !== column) return <ArrowUpDown className="size-3 text-neutral-300" />
+              return tableSort.direction === "asc" ? <ChevronUp className="size-3 text-neutral-700" /> : <ChevronDown className="size-3 text-neutral-700" />
+            }
+
+            const sortedRows = [...filteredCollections].sort((a, b) => {
+              if (!tableSort) return 0
+              const dir = tableSort.direction === "asc" ? 1 : -1
+              switch (tableSort.column) {
+                case "name": return dir * a.name.localeCompare(b.name)
+                case "health": return dir * (computeCollectionHealth(a).overall - computeCollectionHealth(b).overall)
+                case "users": return dir * (a.totalUsers - b.totalUsers)
+                case "datasets": return dir * (a.totalDatasets - b.totalDatasets)
+                case "comments": return dir * (a.commentCount - b.commentCount)
+                case "phase": return dir * ((a.studyPhases[0] || "").localeCompare(b.studyPhases[0] || ""))
+                case "ta": return dir * ((a.therapeuticAreas[0] || "").localeCompare(b.therapeuticAreas[0] || ""))
+                default: return 0
+              }
+            })
+
+            const totalPages = Math.ceil(sortedRows.length / tablePageSize)
+            const pagedRows = sortedRows.slice(tablePage * tablePageSize, (tablePage + 1) * tablePageSize)
+
+            const ThCell = ({ column, children, sortable = true, className: thClassName }: { column: string; children: React.ReactNode; sortable?: boolean; className?: string }) => (
+              <th
+                className={cn(
+                  "px-4 py-3 text-left text-[11px] font-medium text-neutral-400 uppercase tracking-wider",
+                  sortable && "cursor-pointer select-none hover:text-neutral-600 transition-colors",
+                  thClassName
+                )}
+                onClick={() => sortable && handleTableSort(column)}
+              >
+                <div className="flex items-center gap-1.5">
+                  {children}
+                  {sortable && <SortIcon column={column} />}
+                </div>
+              </th>
+            )
+
+            return (
+              <div>
+                <Card className="border-0 bg-white/70 backdrop-blur-sm rounded-2xl">
+                  <div>
+                    <table className="w-full">
+                      <thead className="bg-neutral-50/80 border-b border-neutral-200/50">
+                        <tr>
+                          <ThCell column="name" className="min-w-[260px]">Collection</ThCell>
+                          <ThCell column="datatypes" sortable={false}>Data Types</ThCell>
+                          <ThCell column="scope" sortable={false}>Scope</ThCell>
+                          <ThCell column="health">Health</ThCell>
+                          <ThCell column="users">Users</ThCell>
+                          <ThCell column="datasets">Datasets</ThCell>
+                          <ThCell column="comments">Comments</ThCell>
+                          <ThCell column="phase">Phase</ThCell>
+                          <ThCell column="ta">TA</ThCell>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-neutral-100/80">
+                        {pagedRows.map((col) => {
+                          const health = computeCollectionHealth(col)
+                          const isConcept = col.status === "concept"
+                          const isDraft = col.status === "draft"
+
+                          return (
+                            <tr key={col.id} onClick={() => handleViewCollection(col.id)} className="hover:bg-neutral-50/50 cursor-pointer transition-colors group/row">
+                              {/* Collection name + status badge + favourite */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/name">
+                                  <div className="flex items-center gap-2">
+                                    {col.isFavorite && <Star className="size-3.5 fill-amber-400 text-amber-400 shrink-0" />}
+                                    <span className="text-sm font-medium text-neutral-900 line-clamp-1">{col.name}</span>
+                                    {(isConcept || isDraft) && (
+                                      <span className={cn(
+                                        "text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0",
+                                        isConcept ? "bg-neutral-100 text-neutral-500" : "bg-amber-50 text-amber-600 border border-amber-200"
+                                      )}>
+                                        {isConcept ? "Concept" : "Draft"}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {/* Description popover */}
+                                  <div className="absolute left-0 top-full mt-1.5 w-72 bg-white border border-neutral-200 rounded-lg p-3 opacity-0 group-hover/name:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                                    <div className="absolute left-6 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
+                                    <p className="text-xs text-neutral-600 leading-relaxed">{col.description}</p>
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Data Types icon bar */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/datatypes">
+                                  <div className="flex items-center gap-1">
+                                    {DATA_TYPE_ICONS.map(({ type, icon: Icon }) => {
+                                      const hasType = col.dataTypes.includes(type)
+                                      return (
+                                        <div key={type} className={cn("size-5 rounded flex items-center justify-center", hasType ? "text-neutral-700 bg-neutral-100" : "text-neutral-200")}>
+                                          <Icon className="size-3" strokeWidth={1.5} />
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                  <div className="absolute left-0 top-full mt-1.5 w-48 bg-white border border-neutral-200 rounded-lg p-3 opacity-0 group-hover/datatypes:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                                    <div className="absolute left-4 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
+                                    <p className="text-[11px] font-medium text-neutral-400 mb-2">Data Types</p>
+                                    <div className="space-y-1.5">
+                                      {DATA_TYPE_ICONS.map(({ type, icon: Icon }) => {
+                                        const hasType = col.dataTypes.includes(type)
+                                        return (
+                                          <div key={type} className="flex items-center gap-2">
+                                            <Icon className={cn("size-3.5", hasType ? "text-neutral-700" : "text-neutral-300")} strokeWidth={1.5} />
+                                            <span className={cn("text-xs", hasType ? "text-neutral-700" : "text-neutral-300 line-through")}>{type}</span>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Geographic scope */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/geo">
+                                  <Globe className={cn("size-4", !col.excludedCountries?.length ? "text-neutral-400" : "text-amber-500")} strokeWidth={1.5} />
+                                  <div className="absolute left-0 bottom-full mb-1.5 bg-white border border-neutral-200 rounded-lg px-3 py-2 opacity-0 group-hover/geo:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                                    <div className="absolute left-3 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                                    {!col.excludedCountries?.length ? (
+                                      <span className="text-xs text-neutral-500 font-medium">Global</span>
+                                    ) : (
+                                      <div>
+                                        <span className="text-[11px] font-medium text-neutral-400 block mb-1">Excluded Countries</span>
+                                        <ul className="space-y-0.5">
+                                          {col.excludedCountries.map((c: string) => (
+                                            <li key={c} className="text-xs text-neutral-700">{c}</li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Health */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/health">
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-16 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+                                      <div className={cn("h-full rounded-full", health.bgColor)} style={{ width: `${health.overall}%` }} />
+                                    </div>
+                                    <span className={cn("text-xs font-medium tabular-nums", health.color)}>{health.overall}%</span>
+                                  </div>
+                                  <div className="absolute left-0 top-full mt-1.5 w-56 bg-white border border-neutral-200 rounded-lg p-3 opacity-0 group-hover/health:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg">
+                                    <div className="absolute left-6 -top-1.5 size-2.5 bg-white border-l border-t border-neutral-200 rotate-45" />
+                                    <div className="flex items-center justify-between mb-2.5">
+                                      <span className="text-[11px] font-medium text-neutral-400">Health Breakdown</span>
+                                      <span className={cn("text-xs font-medium", health.color)}>{health.overall}%</span>
+                                    </div>
+                                    <div className="space-y-2.5">
+                                      {health.dimensions.map(dim => (
+                                        <div key={dim.label}>
+                                          <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[11px] text-neutral-600">{dim.label}</span>
+                                            <span className={cn("text-[11px] font-medium", dim.score >= 75 ? "text-green-600" : dim.score >= 50 ? "text-amber-600" : "text-red-600")}>{dim.score}%</span>
+                                          </div>
+                                          <div className="h-1 bg-neutral-100 rounded-full overflow-hidden">
+                                            <div className={cn("h-full rounded-full", dim.score >= 75 ? "bg-green-500" : dim.score >= 50 ? "bg-amber-500" : "bg-red-500")} style={{ width: `${dim.score}%` }} />
+                                          </div>
+                                          <p className="text-[10px] text-neutral-400 mt-0.5">{dim.detail}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+
+                              {/* Users */}
+                              <td className="px-4 py-3.5">
+                                <span className="flex items-center gap-1.5 text-sm text-neutral-600">
+                                  <Users className="size-3.5 text-neutral-400" />{col.totalUsers}
+                                </span>
+                              </td>
+
+                              {/* Datasets */}
+                              <td className="px-4 py-3.5">
+                                <span className="flex items-center gap-1.5 text-sm text-neutral-600">
+                                  <Database className="size-3.5 text-neutral-400" />{col.totalDatasets}
+                                </span>
+                              </td>
+
+                              {/* Comments */}
+                              <td className="px-4 py-3.5">
+                                {col.commentCount > 0 ? (
+                                  <span className="flex items-center gap-1.5 text-sm text-neutral-600">
+                                    <MessageSquare className="size-3.5 text-neutral-400" />{col.commentCount}
+                                  </span>
+                                ) : (
+                                  <span className="text-sm text-neutral-300">-</span>
+                                )}
+                              </td>
+
+                              {/* Phase */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/phase flex items-center gap-1">
+                                  <Badge variant="outline" className="text-[10px] font-normal py-0.5 px-1.5 shrink-0">{col.studyPhases[0]}</Badge>
+                                  {col.studyPhases.length > 1 && (
+                                    <Badge variant="outline" className="text-[10px] font-normal py-0.5 px-1.5 text-neutral-400 shrink-0">+{col.studyPhases.length - 1}</Badge>
+                                  )}
+                                  {col.studyPhases.length > 1 && (
+                                    <div className="absolute right-0 bottom-full mb-1.5 bg-white border border-neutral-200 rounded-lg p-2.5 opacity-0 group-hover/phase:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg w-32">
+                                      <div className="absolute right-4 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                                      <p className="text-[11px] font-medium text-neutral-400 mb-1.5">Study Phases</p>
+                                      <div className="space-y-1">
+                                        {col.studyPhases.map(p => (
+                                          <div key={p} className="text-xs text-neutral-700">{p}</div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+
+                              {/* Therapeutic Areas */}
+                              <td className="px-4 py-3.5">
+                                <div className="relative group/ta flex items-center gap-1">
+                                  <Badge variant="outline" className="text-[10px] font-normal py-0.5 px-1.5 truncate max-w-[90px]">{col.therapeuticAreas[0]}</Badge>
+                                  {col.therapeuticAreas.length > 1 && (
+                                    <Badge variant="outline" className="text-[10px] font-normal py-0.5 px-1.5 text-neutral-400 shrink-0">+{col.therapeuticAreas.length - 1}</Badge>
+                                  )}
+                                  {col.therapeuticAreas.length > 1 && (
+                                    <div className="absolute right-0 bottom-full mb-1.5 bg-white border border-neutral-200 rounded-lg p-2.5 opacity-0 group-hover/ta:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg w-40">
+                                      <div className="absolute right-4 -bottom-1.5 size-2.5 bg-white border-r border-b border-neutral-200 rotate-45" />
+                                      <p className="text-[11px] font-medium text-neutral-400 mb-1.5">Therapeutic Areas</p>
+                                      <div className="space-y-1">
+                                        {col.therapeuticAreas.map(ta => (
+                                          <div key={ta} className="text-xs text-neutral-700">{ta}</div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-neutral-100 bg-neutral-50/50">
+                    <div className="flex items-center gap-2 text-xs text-neutral-500">
+                      <span>{sortedRows.length} results</span>
+                      <span className="text-neutral-300">|</span>
+                      <span>Rows per page</span>
+                      <select
+                        value={tablePageSize}
+                        onChange={(e) => { setTablePageSize(Number(e.target.value)); setTablePage(0) }}
+                        className="bg-white border border-neutral-200 rounded-md px-2 py-1 text-xs text-neutral-700 outline-none focus:ring-1 focus:ring-neutral-300"
+                      >
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-neutral-500 mr-2">
+                        {tablePage * tablePageSize + 1}-{Math.min((tablePage + 1) * tablePageSize, sortedRows.length)} of {sortedRows.length}
+                      </span>
+                      <button
+                        onClick={() => setTablePage(0)}
+                        disabled={tablePage === 0}
+                        className="p-1.5 rounded-md hover:bg-neutral-200/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      >
+                        <ChevronsLeft className="size-3.5 text-neutral-600" />
+                      </button>
+                      <button
+                        onClick={() => setTablePage(p => Math.max(0, p - 1))}
+                        disabled={tablePage === 0}
+                        className="p-1.5 rounded-md hover:bg-neutral-200/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      >
+                        <ChevronLeft className="size-3.5 text-neutral-600" />
+                      </button>
+                      <button
+                        onClick={() => setTablePage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={tablePage >= totalPages - 1}
+                        className="p-1.5 rounded-md hover:bg-neutral-200/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      >
+                        <ChevronRight className="size-3.5 text-neutral-600" />
+                      </button>
+                      <button
+                        onClick={() => setTablePage(totalPages - 1)}
+                        disabled={tablePage >= totalPages - 1}
+                        className="p-1.5 rounded-md hover:bg-neutral-200/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      >
+                        <ChevronsRight className="size-3.5 text-neutral-600" />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )
+          })()
         ) : (
           /* Kanban View - Grouped by Status */
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -861,7 +1305,7 @@ export default function CollectionsBrowserV2() {
                             <Badge className={cn("text-xs py-0.5 px-2", col.userAccess?.currentUserHasAccess ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700")}>
                               {col.userAccess?.currentUserHasAccess ? "Access" : "Request"}
                             </Badge>
-                            <Badge variant="outline" className="text-xs py-0.5 px-2">{col.studyPhase}</Badge>
+                            <Badge variant="outline" className="text-xs py-0.5 px-2">{col.studyPhases.join(", ")}</Badge>
                           </div>
                           <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
                             <div className={cn("h-full bg-gradient-to-r", scheme.from, scheme.to)} style={{ width: `${col.progress}%` }} />
